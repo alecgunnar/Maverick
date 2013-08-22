@@ -1,0 +1,15 @@
+{
+    "name": "gunnar94/maverick",
+    "description": "PHP Framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alec Carpenter",
+            "email": "gunnar94@me.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "1.*",
+        "php": ">=5.4"
+    }
+}

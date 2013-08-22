@@ -1,0 +1,5 @@
+/Application/Templates/Cache
+/Maverick/Logs/*.txt
+/vendor
+composer.phar
+composer.lock
