@@ -28,10 +28,23 @@ class Output_Twig extends \Maverick\Lib\Output_Loader {
      * @return null
      */
     public function __construct() {
-        $config = \Maverick\Maverick()->getConfig('output')->get('twig');
+        $config = \Maverick\Maverick::getConfig('output')->get('twig');
 
         $this->loader = new \Twig_Loader_Filesystem(ROOT_PATH . $config->get('path_to_templates'));
         $this->twig   = new \Twig_Environment($this->loader, $config->getAsArray('environment'));
+    }
+
+    /**
+     * Gets a template
+     *
+     * @param  string $tplName
+     * @param  array  $variables=array()
+     * @return string
+     */
+    public function getTemplate($tplName, $variables=array()) {
+        $tpl = $this->twig->loadTemplate($tplName . \Maverick\Maverick::getConfig('output')->get('templates')->get('extension'));
+
+        return $tpl->render($variables);
     }
 
     /**
@@ -41,12 +54,9 @@ class Output_Twig extends \Maverick\Lib\Output_Loader {
      * @return null
      */
     public function printOut($variables=array()) {
-        $tplExt = \Maverick\Maverick()->getConfig('output')->get('templates')->get('extension');
+        $tplExt = \Maverick\Maverick::getConfig('output')->get('templates')->get('extension');
 
-        $output = Output::getInstance();
-
-        $router    = \Maverick\Lib\Router::getInstance();
-        $expClass  = explode('\\', get_class($router->getController()));
+        $expClass  = explode('\\', get_class(\Maverick\Lib\Router::getController()));
         $view      = str_replace('_', '/', array_pop($expClass));
 
         try {
@@ -59,31 +69,12 @@ class Output_Twig extends \Maverick\Lib\Output_Loader {
         $layout = $this->getLayout($variables);
         $base   = $this->twig->loadTemplate('Layouts/Base' . $tplExt);
 
-        $pageTitle = Output::getInstance()->getPageTitle();
+        $pageTitle = Output::getPageTitle();
 
         $base->display(array('title'    => $pageTitle,
-                             'cssFiles' => $output->getCssFiles(),
+                             'cssFiles' => \Maverick\Lib\Output::getCssFiles(),
                              'body'     => $layout));
 
         exit;
-    }
-
-    /**
-     * Gets the rendered page layout
-     *
-     * @param  array $variables
-     * @return string
-     */
-    protected function getLayout($variables) {
-        $layout     = ucfirst(Output::getInstance()->getPageLayout()) ?: 'Default';
-        $class      = '\Application\Controller\Layouts_' . $layout;
-        $controller = new $class;
-
-        $controller->disableAutoOutput();
-        $controller->main($variables);
-
-        $layoutTpl = $this->twig->loadTemplate('Layouts/' . $layout . \Maverick\Maverick()->getConfig('output')->get('templates')->get('extension'));
-
-        return $layoutTpl->render($controller->getVariables());
     }
 }

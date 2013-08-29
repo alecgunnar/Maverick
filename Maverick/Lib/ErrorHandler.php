@@ -9,19 +9,6 @@ namespace Maverick\Lib;
 
 class ErrorHandler {
     /**
-     * The default error template
-     *
-     * @const string DEFAULT_ERROR_TEMPLATE
-     */
-    const DEFAULT_ERROR_TEMPLATE = <<<EOF
-<style>
-
-</style>
-<h1>Error!</h1>
-Something happened, and we were unable to complete your request.
-EOF;
-
-    /**
      * The error handler method
      *
      * @param  intenger $number
@@ -30,20 +17,31 @@ EOF;
      * @param  integer  $line
      * @return null
      */
-    public static function HandelError($number, $message, $file, $line) {
+    public static function handleError($number, $message, $file, $line) {
         $errorFile = MAVERICK_PATH . 'ErrorTemplates/PHPError.html';
 
-        if(file_exists($errorFile) && \Maverick\Lib\Environment::getInstance()->lessThan('PROD')) {
+        if(file_exists($errorFile) && \Maverick\Lib\Environment::lessThan('PROD') && \Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
             print sprintf(file_get_contents($errorFile), $number, $message, $file, $line);
         } else {
-            print self::DEFAULT_ERROR_TEMPLATE;
+            \Maverick\Lib\Router::loadController('Errors_500')
+                ->printOut();
         }
 
-        if(\Maverick\Maverick()->getConfig('System')->get('site')->get('email_errors')) {
+        if(\Maverick\Maverick()->getConfig('System')->get('email_errors')) {
             self::sendEmail($number, $message, $file, $line);
         }
 
         exit;
+    }
+
+    /**
+     * Handles exceptions
+     *
+     * @param  Exception $e
+     * @return null
+     */
+    public static function handleException($e) {
+        self::handleError($e->getCode(), 'There was an uncaught exception:<br /><br />' . $e->getMessage(), $e->getFile(), $e->getLine());
     }
 
     /**
@@ -66,7 +64,7 @@ Error File: <b>' . $file . '</b><br />
 Error Line: <b>' . $line . '</b>
 </span>';
 
-        mail(\Maverick\Maverick()->getConfig('System')->get('site')->get('admin_email'),
+        mail(\Maverick\Maverick()->getConfig('System')->get('admin_email'),
              'There was an Error',
              $message,
              'Content-type: text/html;' . "\r\n");

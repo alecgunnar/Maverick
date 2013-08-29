@@ -27,37 +27,39 @@ class Output {
      *
      * @var string $pageTitle
      */
-    private $pageTitle = '';
+    private static $pageTitle = '';
 
     /**
      * The layout for the page
      *
      * @var string $layout
      */
-    private $pageLayout = 'Default';
+    private static $pageLayout = 'Default';
 
     /**
      * Holds an array of all of the CSS files to be added to the page
      *
      * @var array $cssFiles
      */
-    private $cssFiles = array();
+    private static $cssFiles = array();
 
     /**
      * The constructor
      *
      * @return null
      */
-    protected function __construct() { }
+    public static function initialize() {
+        self::getTplEngine();
+    }
 
     /**
      * Gets the instance of the template engine
      *
      * @return null
      */
-    public function getTplEngine() {
+    public static function getTplEngine() {
         if(is_null(self::$tplEngInst)) {
-            $engine  = \Maverick\Maverick()->getConfig('output')->get('engine');
+            $engine  = \Maverick\Maverick::getConfig('output')->get('engine');
             $handler = 'Maverick\Lib\Output_';
 
             if(strpos($engine, __NAMESPACE__) === false) {
@@ -73,25 +75,12 @@ class Output {
     }
 
     /**
-     * Gets the instance of the class
-     *
-     * @return \Maverick\Output
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
-    }
-
-    /**
      * Sets the page layout
      *
      * @param  string $layout
      * @return null
      */
-    public function setPageLayout($layout) {
+    public static function setPageLayout($layout) {
         $this->pageLayout = $layout;
     }
 
@@ -100,8 +89,8 @@ class Output {
      *
      * @return string
      */
-    public function getPageLayout() {
-        return $this->pageLayout;
+    public static function getPageLayout() {
+        return self::$pageLayout;
     }
 
     /**
@@ -110,8 +99,8 @@ class Output {
      * @param  string $pageTitle
      * @return null
      */
-    public function setPageTitle($pageTitle) {
-        $this->pageTitle = $pageTitle;
+    public static function setPageTitle($pageTitle) {
+        self::$pageTitle = $pageTitle;
     }
 
     /**
@@ -119,8 +108,8 @@ class Output {
      *
      * @return string
      */
-    public function getPageTitle() {
-        return $this->pageTitle ?: \Maverick\Maverick()->getConfig('system')->get('site')->get('site_name');
+    public static function getPageTitle() {
+        return self::$pageTitle ?: \Maverick\Maverick()->getConfig('system')->get('site')->get('site_name');
     }
 
     /**
@@ -129,8 +118,8 @@ class Output {
      * @param  string $fileName
      * @return null
      */
-    public function addCssFile($fileName) {
-        $this->cssFiles[] = '/' . \Maverick\Maverick()->getConfig('paths')->get('public')->get('css') . $fileName . '.css';
+    public static function addCssFile($fileName) {
+        self::$cssFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('css') . $fileName . '.css';
     }
 
     /**
@@ -138,27 +127,27 @@ class Output {
      *
      * @return array
      */
-    public function getCssFiles() {
-        return $this->cssFiles;
+    public static function getCssFiles() {
+        return self::$cssFiles;
     }
 
     /**
      * Outputs the page
      *
-     * @param  $content=''
+     * @param  array $variables=array()
      * @return null
      */
-    public function printOut($content='') {
-        $controller  = \Maverick\Lib\Router::getInstance()->getController(true);
+    public static function printOut($variables=array()) {
+        $controller  = \Maverick\Lib\Router::getController(true);
         $pageCssFile = 'pages/' . strtolower(str_replace(array('\\', '_'), array('/', '-'), $controller));
-        $checkIn     = PUBLIC_PATH . \Maverick\Maverick()->getConfig('paths')->get('public')->get('css');
+        $checkIn     = PUBLIC_PATH . \Maverick\Maverick::getConfig('paths')->get('public')->get('css');
         $checkPath   = $checkIn . $pageCssFile . '.css';
 
         if(file_exists($checkIn . $pageCssFile . '.css')) {
-            $this->addCssFile($pageCssFile);
+            self::addCssFile($pageCssFile);
         }
 
-        self::$tplEngInst->printOut($content);
+        self::$tplEngInst->printOut($variables);
 
         exit;
     }

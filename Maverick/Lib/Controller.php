@@ -9,13 +9,6 @@ namespace Maverick\Lib;
 
 class Controller {
     /**
-     * The instance of the output class
-     *
-     * @var \Maverick\Output | null $output
-     */
-    protected $output = null;
-
-    /**
      * The tpl engine
      *
      * @var mixed $tpl
@@ -43,18 +36,16 @@ class Controller {
      * @return null
      */
     public function __construct() {
-        $this->output = Output::getInstance();
-        $this->tpl    = $this->output->getTplEngine();
+        $this->tpl = \Maverick\Lib\Output::getTplEngine();
     }
 
     /**
-     * Sets the page title
+     * Disable the auto-output function for the controller
      *
-     * @param  string $pageTitle
      * @return null
      */
-    public function setPageTitle($pageTitle) {
-        $this->output->setPageTitle($pageTitle);
+    public function disableAutoOutput() {
+        $this->autoOutput = false;
     }
 
     /**
@@ -83,26 +74,17 @@ class Controller {
      * @param  mixed  $value
      * @return null
      */
-    protected function setVariable($key, $value) {
+    public function setVariable($key, $value) {
         $this->variables[$key] = $value;
     }
 
     /**
-     * Gets all of the tpl variables
+     * Gets the variables for this controller
      *
      * @return array
      */
     public function getVariables() {
         return $this->variables;
-    }
-
-    /**
-     * Disable the auto-output function for the controller
-     *
-     * @return null
-     */
-    public function disableAutoOutput() {
-        $this->autoOutput = false;
     }
 
     /**
@@ -112,7 +94,7 @@ class Controller {
      */
     public function printOut() {
         if($this->autoOutput) {
-            Output::getInstance()->printOut($this->variables);
+            \Maverick\Lib\Output::printOut($this->variables);
         }
     }
 
@@ -122,6 +104,6 @@ class Controller {
      * @return null
      */
     protected function printSelf() {
-        Output::getInstance()->printOut($this->variables);
+        \Maverick\Lib\Output::printOut($this->variables);
     }
 }

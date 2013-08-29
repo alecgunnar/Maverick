@@ -2,12 +2,9 @@
 
 namespace Application\Controller;
 
+use \Maverick\Lib\Output;
+
 class Layouts_Default extends \Maverick\Lib\Controller {
-    /**
-     * The main method
-     *
-     * @return null
-     */
     public function main($variables) {
         $this->setVariables($variables);
     }

@@ -2,4 +2,4 @@
 
 require_once dirname(__DIR__) . '/Maverick/Launch.php';
 
-$maverick = \Maverick\Maverick()->launch();
+$maverick = \Maverick\Maverick::launch();

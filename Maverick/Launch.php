@@ -4,32 +4,25 @@ namespace Maverick;
 
 session_start();
 
-define('DS',               DIRECTORY_SEPARATOR);
-define('PHP_EXT',          '.php');
+if(!defined('DS'))               define('DS',               DIRECTORY_SEPARATOR);
+if(!defined('PHP_EXT'))          define('PHP_EXT',          '.php');
 
-define('ROOT_PATH',        dirname(__DIR__) . DS);
-define('MAVERICK_PATH',    __DIR__          . DS);
-define('APPLICATION_PATH', ROOT_PATH        . 'Application' . DS);
-define('PUBLIC_PATH',      ROOT_PATH        . 'Public'      . DS);
+if(!defined('ROOT_PATH'))        define('ROOT_PATH',        dirname(__DIR__) . DS);
+if(!defined('MAVERICK_PATH'))    define('MAVERICK_PATH',    __DIR__          . DS);
+if(!defined('APPLICATION_PATH')) define('APPLICATION_PATH', ROOT_PATH        . 'Application' . DS);
+if(!defined('PUBLIC_PATH'))      define('PUBLIC_PATH',      ROOT_PATH        . 'Public'      . DS);
 
-/**
- * Returns the singleton instance of \Maverick\Maverick
- *
- * @return \Maverick\Maverick
- */
-function Maverick() {
-    return Maverick::getInstance();
-}
+ob_start();
 
-// Requires to file with the debug functions
-require_once(MAVERICK_PATH . 'Debug.php');
+// Gets the debug functions
+include_once(MAVERICK_PATH . 'debug' . PHP_EXT);
 
-// Checks for the composer autoloader.
-// If it exists, it requires it.
-$composerAutoloader = ROOT_PATH . 'vendor' . DS . 'autoload.php';
+// Gets the composer autoloader, if it exists
+$composerAutoloader = ROOT_PATH . 'vendor' . DS . 'autoload' . PHP_EXT;
 
 if(file_exists($composerAutoloader)) {
     require_once($composerAutoloader);
 }
 
+// Loads Maverick
 require(MAVERICK_PATH . 'Maverick' . PHP_EXT);

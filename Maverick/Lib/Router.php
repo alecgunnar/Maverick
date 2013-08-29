@@ -9,75 +9,51 @@ namespace Maverick\Lib;
 
 class Router {
     /**
-     * The singleton instance of this class
-     *
-     * @var \Maverick\Lib\Router | null
-     */
-    private static $instance = null;
-
-    /**
      * Has the router...... routed?
      *
      * @var boolean $routed=false
      */
-    private $routed = false;
+    private static $routed = false;
 
     /**
      * The URI for the current page
      *
      * @var string $uri
      */
-    private $uri = '';
+    private static $uri = '';
 
     /**
      * The controller the page has been routed to
      *
      * @var mixed $controllerObject
      */
-    private $controllerObject = null;
+    private static $controllerObject = null;
 
     /**
      * The name of the controller's class
      *
      * @var string $controllerClass
      */
-    private $controllerClass = '';
-
-    /**
-     * The constructor
-     *
-     * @return null
-     */
-    private function __construct() { }
-
-    /**
-     * Returns the singleton instance of this class
-     *
-     * @return \Maverick\Lib\Router
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
-    }
+    private static $controllerClass = '';
 
     /**
      * Do the routing
      *
      * @return null
      */
-    public function route() {
-        if($this->routed) {
+    public static function route() {
+        if(self::$routed) {
             return false;
         }
 
-        $this->routed = true;
+        self::$routed = true;
+
+        $appRoot = new \Application\Controller\AppRoot;
+        $appRoot->main();
 
         $defaultController = 'Index';
 
-        $this->setUri();
+        self::setUri();
 
         $uri        = self::getUri();
         $pathTo     = ROOT_PATH . 'Application/Controller/';
@@ -110,16 +86,26 @@ class Router {
             $expUri     = array();
         }
 
-        $appRoot = new \Application\Controller\AppRoot;
-        $appRoot->main();
+        self::loadController($controller, $params);
+    }
 
+    /**
+     * Loads a specific controller
+     *
+     * @param  string $controller
+     * @param  array  $variables=array()
+     * @return mixed
+     */
+    public static function loadController($controller, $variables=array()) {
         $controllerClassWithNamespace = 'Application\Controller\\' . $controller;
         $inst                         = new $controllerClassWithNamespace;
 
-        $this->controllerObject = $inst;
-        $this->controllerClass  = $controller;
+        self::$controllerObject = $inst;
+        self::$controllerClass  = $controller;
 
-        call_user_func_array(array($inst, 'main'), $params);
+        call_user_func_array(array($inst, 'main'), $variables);
+
+        return $inst;
     }
 
     /**
@@ -127,7 +113,7 @@ class Router {
      *
      * @return string
      */
-    private function setUri() {
+    private static function setUri() {
         if(!array_key_exists('ORIG_PATH_INFO', $_SERVER)) {
             $uri      = explode('?', trim($_SERVER['REQUEST_URI'], '/'));
             $path     = $uri[0];
@@ -149,7 +135,7 @@ class Router {
             $uri = $_SERVER['ORIG_PATH_INFO'];
         }
 
-        $this->uri = trim(str_replace('index.php', '', $uri), '/');
+        self::$uri = trim(str_replace('index.php', '', $uri), '/');
     }
 
     /**
@@ -157,8 +143,8 @@ class Router {
      *
      * @return string
      */
-    public function getUri() {
-        return $this->uri;
+    public static function getUri() {
+        return self::$uri;
     }
 
     /**
@@ -167,11 +153,11 @@ class Router {
      * @param  boolean $getName=false
      * @return mixed
      */
-    public function getController($getName=false) {
+    public static function getController($getName=false) {
         if($getName) {
-            return $this->controllerClass;
+            return self::$controllerClass;
         }
 
-        return $this->controllerObject;
+        return self::$controllerObject;
     }
 }

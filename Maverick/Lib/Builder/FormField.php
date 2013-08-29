@@ -51,13 +51,6 @@ class Builder_FormField extends Builder_Tag {
     public $validateFor = array();
 
     /**
-     * The attributes for the field
-     *
-     * @var array $attributes
-     */
-    protected $attributes = array();
-
-    /**
      * Sets whether the field is required or not
      *
      * @param  booelan $isRequired=true

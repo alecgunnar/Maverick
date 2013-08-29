@@ -9,11 +9,11 @@ namespace Maverick\Lib;
 
 class Environment {
     /**
-     * The singleton instance
+     * The current environment
      *
-     * @var \Maverick\Environment | null $instance
+     * @var string $environment
      */
-    private static $instance = null;
+    private static $environment = 1000;
 
     /**
      * A list of possible environments in order
@@ -21,46 +21,30 @@ class Environment {
      *
      * @var array $environments
      */
-    public $environments = array('DEV'  => 1000,
-                                 'TEST' => 1500,
-                                 'BETA' => 2000,
-                                 'PROD' => 2500);
-
-    /**
-     * The current environment
-     *
-     * @var string $environment
-     */
-    public $environment = 1000;
+    private static $environments = array('DEV'  => 1000,
+                                         'TEST' => 1500,
+                                         'BETA' => 2000,
+                                         'PROD' => 2500);
 
     /**
      * Sets up the environment
      *
      * @return null
      */
-    protected function __construct() {
-        $load = ROOT_PATH . 'ENVIRONMENT';
+    public static function initialize() {
+        error_reporting(-1);
+        set_error_handler(array('\Maverick\Lib\ErrorHandler', 'handleError'));
 
-        if(file_exists($load)) {
-            $env = strtoupper(file_get_contents($load));
+        set_exception_handler(array('\Maverick\Lib\ErrorHandler', 'handleException'));
 
-            if(array_key_exists($env, $this->environments)) {
-                $this->setEnvironment($env);
-            }
-        }
-    }
-
-    /**
-     * Gets and returns the singleton instance
-     *
-     * @return \Maverick\Environment
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self;
+        if(\Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
+            ini_set('display_errors', 0);
         }
 
-        return self::$instance;
+        if(\Maverick\Maverick::getConfig('Environment')->get('log_errors')) {
+            ini_set('log_errors', 'TRUE');
+            ini_set('error_log', \Maverick\Maverick::getConfig('environment')->get('error_log_file'));
+        }
     }
 
     /**
@@ -70,7 +54,7 @@ class Environment {
      * @param  string | integer $env
      * @return integer
      */
-    public function setEnvironment($env) {
+    private static function setEnvironment($env) {
         $code = 0;
 
         if(is_numeric($env)) {
@@ -98,13 +82,25 @@ class Environment {
      * @param  boolean $getCode=false
      * @return string | integer
      */
-    public function getEnvironment($getCode=false) {
+    public static function getEnvironment($getCode=false) {
+        if(!self::$environment) {
+            $load = ROOT_PATH . 'ENVIRONMENT';
+    
+            if(file_exists($load)) {
+                $env = strtoupper(file_get_contents($load));
+    
+                if(array_key_exists($env, $this->environments)) {
+                    self::setEnvironment($env);
+                }
+            }
+        }
+
         if($getCode) {
             return $this->environment;
         }
 
-        $values = array_flip($this->environments);
-        return $values[$this->environment];
+        $values = array_flip(self::$environments);
+        return $values[self::$environment];
     }
 
     /**
@@ -114,11 +110,11 @@ class Environment {
      * @param  string $check
      * @return null
      */
-    public function lessThan($check) {
-        if(array_key_exists($check, $this->environments)) {
-            $code = $this->environments[$check];
+    public static function lessThan($check) {
+        if(array_key_exists($check, self::$environments)) {
+            $code = self::$environments[$check];
 
-            if($this->environment < $code) {
+            if(self::$environment < $code) {
                 return true;
             } else {
                 return false;

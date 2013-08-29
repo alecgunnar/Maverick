@@ -16,6 +16,15 @@ abstract class Output_Loader {
     public abstract function __construct();
 
     /**
+     * Gets a template
+     *
+     * @param  string $tplName
+     * @param  array  $variables=array()
+     * @return string
+     */
+    protected abstract function getTemplate($tplName, $variables=array());
+
+    /**
      * Outputs the page
      *
      * @param  array $variables=array()
@@ -29,5 +38,16 @@ abstract class Output_Loader {
      * @param  array $variables
      * @return string
      */
-    protected abstract function getLayout($variables);
+    protected function getLayout($variables) {
+        $layout     = ucfirst(Output::getPageLayout()) ?: 'Default';
+        $class      = '\Application\Controller\Layouts_' . $layout;
+        $controller = new $class;
+
+        $controller->disableAutoOutput();
+        $controller->main($variables);
+
+        $layoutTpl = 'Layouts/' . $layout;
+
+        return $this->getTemplate($layoutTpl, $controller->getVariables());
+    }
 }

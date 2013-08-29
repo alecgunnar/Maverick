@@ -13,14 +13,28 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      *
      * @var \Maverick\Lib\Model_Input | null $input
      */
-    protected $input = null;
+    protected $input = null;  
+
+    /**
+     * Was this form submitted
+     *
+     * @var boolean | null
+     */
+    private $status = null;
+
+    /**
+     * Was the submission valid?
+     *
+     * @var boolean | null
+     */
+    private $isValid = null;
 
     /**
      * The errors for this form
      *
      * @var array
      */
-    protected $errors = array();    
+    protected $errors = array(); 
 
     /**
      * Sets up the form and checks it
@@ -37,43 +51,77 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      *
      * @return null
      */
-    public function process() {
-        if($this->getStatus()) {
-            $input = $this->getModel();
-
-            foreach($this->fields as $name => $builder) {
-                if(count($builder->validateFor)) {
-                    foreach($builder->validateFor as $type => $validator) {
-                        $validator->value = $input->get($name);
-
-                        if(!$validator->isValid()) {
-                            $this->setFieldError($name, $validator->errorMessage);
+    private function process() {
+        if(is_null($this->isValid)) {
+            if($this->getStatus()) {
+                $input = $this->getModel();
+    
+                foreach($this->fields as $name => $builder) {
+                    if(count($builder->validateFor)) {
+                        foreach($builder->validateFor as $type => $validator) {
+                            $validator->value = $input->get($name);
+    
+                            if(!$validator->isValid()) {
+                                $this->setFieldError($name, $validator->errorMessage);
+    
+                                $this->isValid = false;
+                            }
                         }
                     }
                 }
+    
+                if(!$this->validate()) {
+                    $this->isValid = false;
+                }
+    
+                if(is_null($this->isValid)) {
+                    $this->isValid = true;
+                }
+            } else {
+                $this->isValid = false;
             }
         }
+
+        return $this->isValid;
     }
 
     /**
      * Gets the status of the form submission
      *
+     * true  = all fields were submitted
+     * false = some or none of the fields were submitted
+     *
      * @return boolean
      */
     public function getStatus() {
-        if(count($this->errors)) {
-            return false;
+        if(is_null($this->status)) {
+            if(strtolower($_SERVER['REQUEST_METHOD']) == strtolower($this->method)) {
+                $input = $this->getModel();
+    
+                foreach($this->fields as $name => $builder) {
+                    if(is_null($input->get($name))) {
+                        $this->status = false;
+                    }
+                }
+
+                if(is_null($this->status)) {
+                    $this->status = true;
+                }
+            } else {
+                $this->status = false;
+            }
         }
 
-        if(strtolower($_SERVER['REQUEST_METHOD']) == strtolower($this->method)) {
-            $input = $this->getModel();
+        return $this->status;
+    }
 
-            foreach($this->fields as $name => $builder) {
-                if(is_null($input->get($name))) {
-                    return false;
-                }
-            }
-
+    /**
+     * Gets the status of the form submission
+     *
+     * return boolean
+     */
+    public function isSubmissionValid() {
+        if($this->status && $this->isValid) {
             return true;
         }
 
@@ -140,5 +188,12 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      *
      * @return boolean
      */
-    abstract public function validate();
+    abstract protected function validate();
+
+    /**
+     * Submits the form
+     *
+     * @return mixed
+     */
+    abstract public function submit();
 }

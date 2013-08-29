@@ -9,69 +9,34 @@ namespace Maverick;
 
 class Maverick {
     /**
-     * The singleton instance
-     *
-     * @var \Maverick\Maverick | null $instance
-     */
-    private static $instance = null;
-
-    /**
      * Records whether or not the website has been "launched"
      *
      * @var boolean
      */
-    private $launched = false;
-
-    /**
-     * Just the constructor
-     *
-     * @return null
-     */
-    protected function __construct() { }
-
-    /**
-     * Gets and returns the singleton instance
-     *
-     * @return \Maverick\Environment
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
-    }
+    private static $launched = false;
 
     /**
      * Gets the application rolling
      *
      * @param  boolean $registerAutoloader=true
-     * @param  boolean $setErrorHandler=true
-     * @param  boolean $routePage=true
      * @return null
      */
-    public function Launch($registerAutoloader=true, $setErrorHandler=true) {
-        if($this->launched) {
+    public static function Launch($registerAutoloader=true) {
+        if(self::$launched) {
             return false;
         }
 
-        $this->launched = true;
+        self::$launched = true;
 
         if($registerAutoloader) {
-            $this->registerAutoloader();
+            self::registerAutoloader();
         }
 
-        \Maverick\Lib\Environment::getInstance();
+        \Maverick\Lib\Environment::initialize();
+        \Maverick\Lib\Output::initialize();
 
-        if($setErrorHandler) {
-            $this->setErrorHandler();
-        }
-
-        \Maverick\Lib\Output::getInstance()->getTplEngine();
-
-        $this->routePage();
-
-        \Maverick\Lib\Router::getInstance()->getController()
+        \Maverick\Lib\Router::route();
+        \Maverick\Lib\Router::getController()
             ->printOut();
     }
 
@@ -80,30 +45,9 @@ class Maverick {
      *
      * @return null
      */
-    public function registerAutoloader() {
+    private static function registerAutoloader() {
         require_once(MAVERICK_PATH . 'Lib' . DS . 'Autoloader.php');
         spl_autoload_register('Maverick\Lib\Autoloader::autoload');
-    }
-
-    /**
-     * Sets the error handler
-     *
-     * @return null
-     */
-    public function setErrorHandler() {
-        error_reporting(E_ALL);
-        ini_set('log_errors', 'TRUE');
-        ini_set('error_log', MAVERICK_PATH . 'Logs' . DS . 'ErrorLogs_' . date('n-j-Y') . '.txt');
-        set_error_handler('\Maverick\Lib\ErrorHandler::HandelError');
-    }
-
-    /**
-     * Routes the page
-     *
-     * @return null
-     */
-    public function routePage() {
-        \Maverick\Lib\Router::getInstance()->route();
     }
 
     /**
@@ -116,7 +60,6 @@ class Maverick {
         $config = array();
         $key    = strtolower($configName);
         $path   = ROOT_PATH . 'Config/%s/' . ucfirst($configName) . PHP_EXT;
-        $lookIn = \Maverick\Lib\Environment::getInstance()->getEnvironment();
 
         $master = sprintf($path, 'Master');
 
@@ -124,7 +67,7 @@ class Maverick {
             $config = include($master);
         }
 
-        $env        = \Maverick\Lib\Environment::getInstance()->getEnvironment();
+        $env        = \Maverick\Lib\Environment::getEnvironment();
         $currentEnv = sprintf($path, $env);
 
         if(file_exists($currentEnv)) {
