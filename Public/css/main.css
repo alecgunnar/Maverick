@@ -1,5 +1,5 @@
 body {
-    background:#CCCCCC;
+    background:#E1E1E1;
     font-family:Helvetica;
     color:#000000;
     font-size:16px;
@@ -11,11 +11,19 @@ a {
     color:#000000;
 }
 
+#wrapper {
+    width:700px;
+    margin:10px auto;
+}
+
+#wrapper h1 {
+    margin:0 0 10px;
+}
+
 #content {
     background:#FAFAFA;
-    width:700px;
     padding:10px;
-    margin:10px auto;
+    border-radius:5px;
 }
 
 h1 {

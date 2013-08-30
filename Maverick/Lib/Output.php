@@ -101,6 +101,8 @@ class Output {
      */
     public static function setPageTitle($pageTitle) {
         self::$pageTitle = $pageTitle;
+
+        Router::getController()->setVariable('pageTitle', $pageTitle);
     }
 
     /**
