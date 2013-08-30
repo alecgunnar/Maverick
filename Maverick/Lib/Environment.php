@@ -32,14 +32,12 @@ class Environment {
      * @return null
      */
     public static function initialize() {
-        error_reporting(-1);
+        error_reporting(E_ALL);
         set_error_handler(array('\Maverick\Lib\ErrorHandler', 'handleError'));
-
         set_exception_handler(array('\Maverick\Lib\ErrorHandler', 'handleException'));
+        register_shutdown_function(array('\Maverick\Lib\Environment', 'shutdown'));
 
-        if(\Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
-            ini_set('display_errors', 0);
-        }
+        ini_set('display_errors', 0);
 
         if(\Maverick\Maverick::getConfig('Environment')->get('log_errors')) {
             ini_set('log_errors', 'TRUE');
@@ -121,6 +119,19 @@ class Environment {
             }
         } else {
             throw new \Exception('Invalid environment ' . $check);
+        }
+    }
+
+    /**
+     * The shutdown function for Maverick
+     *
+     * @return null
+     */
+    public static function shutdown() {
+        $error = error_get_last();
+
+        if(is_array($error)) {
+            call_user_func_array(array('\Maverick\Lib\ErrorHandler', 'handleError'), $error);
         }
     }
 }

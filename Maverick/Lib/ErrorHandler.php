@@ -18,6 +18,10 @@ class ErrorHandler {
      * @return null
      */
     public static function handleError($number, $message, $file, $line) {
+        if(\Maverick\Maverick::getConfig('Environment')->get('email_errors')) {
+            self::sendEmail($message, $file, $line);
+        }
+
         $errorFile = MAVERICK_PATH . 'ErrorTemplates/PHPError.html';
 
         if(file_exists($errorFile) && \Maverick\Lib\Environment::lessThan('PROD') && \Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
@@ -25,10 +29,6 @@ class ErrorHandler {
         } else {
             \Maverick\Lib\Router::loadController('Errors_500')
                 ->printOut();
-        }
-
-        if(\Maverick\Maverick()->getConfig('System')->get('email_errors')) {
-            self::sendEmail($number, $message, $file, $line);
         }
 
         exit;
@@ -47,26 +47,35 @@ class ErrorHandler {
     /**
      * Sends an email to the administrator alerting them to this error
      *
-     * @param  integer $number
      * @param  string  $message
      * @param  string  $file
      * @param  integer $line
      * @return null
      */
-    private static function sendEmail($number, $message, $file, $line) {
-        $message = '<span style="font-size:16px;">
-This is an automatic email sent to detail an error which occurred on ' . date('r') . '<br />
-<br />
-The email below describes the error.<br />
-<br />
-Error Text: <b>' . $message . '</b><br />
-Error File: <b>' . $file . '</b><br />
-Error Line: <b>' . $line . '</b>
-</span>';
+    private static function sendEmail($message, $file, $line) {
+        $message = 'This is an automatic email sent to detail an error which occurred on ' . date('r') . '
 
-        mail(\Maverick\Maverick()->getConfig('System')->get('admin_email'),
-             'There was an Error',
-             $message,
-             'Content-type: text/html;' . "\r\n");
+The email below describes the error.
+
+Error Text: ' . $message . '
+Error File: ' . $file . '
+Error Line: ' . $line;
+
+        $smtpConf  = \Maverick\Maverick::getConfig('SMTP');
+        $toAndFrom = array(\Maverick\Maverick::getConfig('System')->get('admin_email') => 'Administrator');
+
+        $email = \Swift_Message::newInstance()
+            ->setSubject('An Error Occurred!')
+            ->setFrom($toAndFrom)
+            ->setTo($toAndFrom)
+            ->setBody($message);
+
+        $transport = \Swift_SMTPTransport::newInstance($smtpConf->get('server'), $smtpConf->get('port'))
+            ->setUsername($smtpConf->get('username'))
+            ->setPassword($smtpConf->get('password'));
+
+        $mailer = \Swift_Mailer::newInstance($transport);
+
+        $mailer->send($email);
     }
 }
