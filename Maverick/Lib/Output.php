@@ -44,6 +44,13 @@ class Output {
     private static $cssFiles = array();
 
     /**
+     * Holds an array of all of the Java Script files to be added to the page
+     *
+     * @var array $cssFiles
+     */
+    private static $jsFiles = array();
+
+    /**
      * The constructor
      *
      * @return null
@@ -121,7 +128,11 @@ class Output {
      * @return null
      */
     public static function addCssFile($fileName) {
-        self::$cssFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('css') . $fileName . '.css';
+        if(!preg_match('~^http~i', $fileName)) {
+            self::$cssFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('css') . $fileName . '.css';
+        } else {
+            self::$cssFiles[] = $fileName;
+        }
     }
 
     /**
@@ -134,6 +145,29 @@ class Output {
     }
 
     /**
+     * Adds a JavaScript file to the page
+     *
+     * @param  string $fileName
+     * @return null
+     */
+    public static function addJsFile($fileName) {
+        if(!preg_match('~^http~i', $fileName)) {
+            self::$jsFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('js') . $fileName . '.js';
+        } else {
+            self::$jsFiles[] = $fileName;
+        }
+    }
+
+    /**
+     * Gets all of the JavaScript files to be added
+     *
+     * @return array
+     */
+    public static function getJsFiles() {
+        return self::$jsFiles;
+    }
+
+    /**
      * Outputs the page
      *
      * @param  array $variables=array()
@@ -141,12 +175,20 @@ class Output {
      */
     public static function printOut($variables=array()) {
         $controller  = \Maverick\Lib\Router::getController(true);
-        $pageCssFile = 'pages/' . strtolower(str_replace(array('\\', '_'), array('/', '-'), $controller));
-        $checkIn     = PUBLIC_PATH . \Maverick\Maverick::getConfig('paths')->get('public')->get('css');
-        $checkPath   = $checkIn . $pageCssFile . '.css';
 
-        if(file_exists($checkIn . $pageCssFile . '.css')) {
-            self::addCssFile($pageCssFile);
+        $checkForPageFiles = array('css', 'js');
+
+        foreach($checkForPageFiles as $type) {
+            if(\Maverick\Maverick::getConfig('Output')->get('auto_add_page_' . $type)) {
+                $checkIn  = PUBLIC_PATH . \Maverick\Maverick::getConfig('paths')->get('public')->get($type);
+                $file     = 'pages' . DS . strtolower(str_replace(array('\\', '_'), array('/', '-'), $controller));
+    
+                if(file_exists($checkIn . $file . '.' . $type)) {
+                    $method = 'add' . ucfirst($type) . 'File';
+    
+                    self::$method($file);
+                }
+            }
         }
 
         self::$tplEngInst->printOut($variables);

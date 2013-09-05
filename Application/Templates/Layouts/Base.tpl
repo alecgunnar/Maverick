@@ -3,7 +3,10 @@
   <head>
     <title>{{ title }}</title>
     {% for file in cssFiles %}
-    <link rel="stylesheet" type="text/css" href="{{ file }}" />
+    <link rel="stylesheet" href="{{ file }}" />
+    {% endfor %}
+    {% for file in jsFiles %}
+    <script src="{{ file }}"></script>
     {% endfor %}
   </head>
   <body>

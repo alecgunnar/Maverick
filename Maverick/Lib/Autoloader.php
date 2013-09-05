@@ -24,49 +24,54 @@ class Autoloader {
         switch($vendor) {
             case "Maverick":
                 return self::maverick($expClassName);
-                break;
             default:
-                return self::psr0($vendor, $expClassName);
-                break;
+                return self::psr0($expClassName, $vendor);
         }
     }
 
     /**
      * Looks for classes with Maverick as the vendor
      *
-     * @param  array $cn
+     * @param  array   $className
+     * @param  boolean $checkForExtension
      * @return boolean
      */
-    private static function maverick($cn) {
-        $en = $cn;
+    private static function maverick($className) {
+        $extensionName = $className;
+    
+        array_unshift($extensionName, 'Extension');
 
-        array_unshift($en, 'Extension');
-
-        if(self::psr0('Application', $en)) {
+        if(self::psr0($extensionName, 'Application')) {
             return true;
         }
 
-        return self::psr0('Maverick', $cn);
+        return self::psr0($className, '', MAVERICK_PATH);
     }
 
     /**
      * Autoloads classes from the root directory
      *
+     * @param  array  $className
      * @param  string $vendor
-     * @param  array  $cn
+     * @param  string $path=''
      * @return boolean
      */
-    private static function psr0($vendor, $cn) {
-        $ct   = count($cn);
-        $load = ROOT_PATH . $vendor;
+    private static function psr0($className, $vendor, $path='') {
+        $count = count($className);
+        $path  = $path ?: ROOT_PATH;
+        $load  = $path . $vendor;
 
-        for($i = 0; $i < $ct; $i++) {
+        if($load[strlen($load) - 1] == DS) {
+            $load = substr($load, 0, -1);
+        }
+
+        for($i = 0; $i < $count; $i++) {
             $load .= DS;
 
-            if(($i + 1) == $ct) {
-                $load .= str_replace('_', DS, $cn[$i]);
+            if(($i + 1) == $count) {
+                $load .= str_replace('_', DS, $className[$i]);
             } else {
-                $load .= $cn[$i];
+                $load .= $className[$i];
             }
         }
 

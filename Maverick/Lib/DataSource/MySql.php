@@ -30,7 +30,7 @@ class DataSource_MySql implements DataSource {
      */
     public function __construct($name=null) {
         if(is_null(self::$connection)) {
-            $config = Maverick()->getConfig('database')->get('mysql')->get($name ?: 'default', true);
+            $config = \Maverick\Maverick::getConfig('database')->get('mysql')->get($name ?: 'default', true);
 
             self::$connection = new \mysqli($config['host'], $config['username'], $config['password'], $config['name']);
         }
@@ -42,7 +42,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function post($params=null) {
+    public function post(array $params=null) {
         
     }
 
@@ -50,10 +50,15 @@ class DataSource_MySql implements DataSource {
      * Gets a resource -- only good for basic MySql queries if you need
      * to get more advanced, use: \Maverick\Lib\DataSource_MySql::query
      *
-     * @param  array $params
-     * @return \mysqli_result
+     * @param  array  $params
+     * @param  string $useModel
+     * @return array
      */
-    public function get($params=null) {
+    public function get(array $params=null, $useModel=null) {
+        if(!array_key_exists('select', $params)) {
+            $params['select'] = '*';
+        }
+
         $query = "SELECT " . $params['select'] . " FROM " . $params['from'];
 
         if(array_key_exists('where', $params)) {
@@ -65,10 +70,26 @@ class DataSource_MySql implements DataSource {
         }
 
         if(array_key_exists('limit', $params)) {
-            $params .= " LIMIT " . $params['limit'];
+            $query .= " LIMIT " . $params['limit'];
         }
 
-        return $this->fetch($this->query($query));
+        $result = $this->query($query);
+        $return = array();
+
+        if(is_string($useModel)) {
+            $model      = '\Application\Model\\' . $useModel;
+            $doWithData = function($data) use($model) { return new $model($data); };
+        } else {
+            $doWithData = function($data) { return $data; };
+        }
+
+        while($row = $this->fetch($result)) {
+            $return[] = $doWithData($row);
+        }
+
+        $result->free();
+
+        return $return;
     }
 
     /** 
@@ -77,7 +98,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function put($params=null) {
+    public function put(array $params=null) {
         
     }
 
@@ -87,14 +108,14 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function delete($params=null) {
+    public function delete(array $params=null) {
         
     }
 
     /**
      * Runs a query
      *
-     * throws \Exception
+     * throws  \Exception
      * @param  string $query
      * @return \mysqli_result | boolean | null
      */

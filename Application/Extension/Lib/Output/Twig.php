@@ -56,7 +56,7 @@ class Output_Twig extends \Maverick\Lib\Output_Loader {
     public function printOut($variables=array()) {
         $tplExt = \Maverick\Maverick::getConfig('output')->get('templates')->get('extension');
 
-        $expClass  = explode('\\', get_class(\Maverick\Lib\Router::getController()));
+        $expClass  = explode('\\', get_class(Router::getController()));
         $view      = str_replace('_', '/', array_pop($expClass));
 
         try {
@@ -72,7 +72,8 @@ class Output_Twig extends \Maverick\Lib\Output_Loader {
         $pageTitle = Output::getPageTitle();
 
         $base->display(array('title'    => $pageTitle,
-                             'cssFiles' => \Maverick\Lib\Output::getCssFiles(),
+                             'cssFiles' => Output::getCssFiles(),
+                             'jsFiles'  => Output::getJsFiles(),
                              'body'     => $layout));
 
         exit;

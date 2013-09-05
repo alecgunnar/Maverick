@@ -59,7 +59,7 @@ class Maverick {
     public static function getConfig($configName) {
         $config = array();
         $key    = strtolower($configName);
-        $path   = ROOT_PATH . 'Config/%s/' . ucfirst($configName) . PHP_EXT;
+        $path   = ROOT_PATH . 'Config' . DS . '%s' . DS . ucfirst($configName) . PHP_EXT;
 
         $master = sprintf($path, 'Master');
 
