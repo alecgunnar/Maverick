@@ -68,7 +68,7 @@ class Maverick {
             $config = include($master);
         }
 
-        $env        = \Maverick\Lib\Environment::getEnvironment();
+        $env        = ucfirst(strtolower(\Maverick\Lib\Environment::getEnvironment()));
         $currentEnv = sprintf($path, $env);
 
         if(file_exists($currentEnv)) {

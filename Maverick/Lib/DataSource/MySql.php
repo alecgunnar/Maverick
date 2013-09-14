@@ -42,7 +42,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function post(array $params=null) {
+    public function post($params=null) {
         
     }
 
@@ -98,7 +98,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function put(array $params=null) {
+    public function put($params=null) {
         
     }
 
@@ -108,7 +108,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function delete(array $params=null) {
+    public function delete($params=null) {
         
     }
 
