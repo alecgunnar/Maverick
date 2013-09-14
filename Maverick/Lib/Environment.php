@@ -32,7 +32,7 @@ class Environment {
      * @return null
      */
     public static function initialize() {
-        error_reporting(E_ALL);
+        error_reporting(\Maverick\Maverick::getConfig('Environment')->get('report_errors'));
         set_error_handler(array('\Maverick\Lib\ErrorHandler', 'handleError'));
         set_exception_handler(array('\Maverick\Lib\ErrorHandler', 'handleException'));
         register_shutdown_function(array('\Maverick\Lib\Environment', 'shutdown'));

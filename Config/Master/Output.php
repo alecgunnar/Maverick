@@ -6,8 +6,8 @@
 
 return array('auto_add_page_css' => true,
              'auto_add_page_js'  => true,
-             'engine'            => '\Maverick\Lib\Output_Twig',
+             'engine'            => 'Twig',
              'templates'         => array('extension' => '.tpl'),
-             'twig'              => array('path_to_templates' => 'Application' . DS . 'Templates', // From the ROOT_PATH
+             'twig'              => array('path_to_templates' => 'Application' . DS . 'Templates',
                                           'environment'       => array('cache'      => ROOT_PATH . 'Application' . DS . 'Templates' . DS . 'Cache',
                                                                        'autoescape' => 'html')));

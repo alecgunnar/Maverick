@@ -9,18 +9,11 @@ namespace Maverick\Lib;
 
 class Session {
     /**
-     * The instance of Session
-     *
-     * @var \Maverick\Session | null $instance
-     */
-    private static $instance = null;
-
-    /**
      * Holds the model for the cookies
      *
      * @var \Maverick\Model_Input | null $cookies
      */
-    //private $cookies = null;
+    private static $cookies = null;
 
     /**
      * The user model -- this model should represent the current user
@@ -28,44 +21,22 @@ class Session {
      *
      * @var mixed $userModel
      */
-    //private $userModel = null;
+    private static $userModel = null;
 
     /**
      * This says whether or not the current user is logged in
      *
      * @var boolean $userStatus
      */
-    private $userStatus = false;
-
-    /**
-     * The Model for this session
-     *
-     * private \Maverick\Lib\Model_Session | null $model
-     */
-    private $model = null;
+    private static $userStatus = false;
 
     /**
      * Starts the session
      *
      * @return null
      */
-    private function __construct() {
-        $cookies = new Model_Input($_COOKIE);
-
-        $this->model = new Model_Session(array('cookies' => $cookies));
-    }
-
-    /**
-     * Gets the instance of session
-     *
-     * @return \Maverick\Session
-     */
-    public static function getInstance() {
-        if(is_null(self::$instance)) {
-            self::$instance = new self;
-        }
-
-        return self::$instance;
+    public static function initialize() {
+        self::$cookies = new Model_Input($_COOKIE);
     }
 
     /**
@@ -76,11 +47,11 @@ class Session {
      * @param  integer | null $expire
      * @return null
      */
-    public function setCookie($name, $value, $expire=null) {
+    public static function setCookie($name, $value, $expire=null) {
         setcookie($name, $value, $expire);
 
         if(is_null($expire) || $expire < time()) {
-            $this->getCookies()->set($name, $value);
+            self::$cookies->set($name, $value);
         }
     }
 
@@ -89,8 +60,8 @@ class Session {
      *
      * @return \Maverick\Model_input
      */
-    public function getCookies() {
-        return $this->model->get('cookies');
+    public static function getCookies() {
+        return self::$cookies;
     }
 
     /**
@@ -98,8 +69,8 @@ class Session {
      *
      * @return null
      */
-    public function userLoggedIn() {
-        $this->userStatus = true;
+    public static function userLoggedIn() {
+        self::$userStatus = true;
     }
 
     /**
@@ -107,8 +78,8 @@ class Session {
      *
      * @return boolean
      */
-    public function getUserStatus() {
-        return $this->userStatis;
+    public static function getUserStatus() {
+        return self::$userStatus;
     }
 
     /**
@@ -117,16 +88,16 @@ class Session {
      * @param  mixed $model
      * @return null
      */
-    public function setUserModel($model) {
-        $this->model->set('user', $model);
+    public static function setUserModel($model) {
+        self::$userModel = $model;
     }
 
     /**
      * Returns the user model to the controller
      *
-     * @return mixed (the type of $this->userModel)
+     * @return mixed
      */
-    public function getUserModel() {
-        return $this->model->get('user');
+    public static function getUserModel() {
+        return self::$userModel;
     }
 }

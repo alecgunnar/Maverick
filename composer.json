@@ -2,6 +2,7 @@
     "name": "gunnar94/maverick",
     "description": "PHP Framework",
     "license": "MIT",
+    "version": "dev-1.0",
     "authors": [
         {
             "name": "Alec Carpenter",
@@ -12,5 +13,8 @@
         "twig/twig": "1.*",
         "swiftmailer/swiftmailer": "5.*",
         "php": ">=5.4"
+    },
+    "require-div": {
+        "phpunit/phpunit": "3.7.*"
     }
 }

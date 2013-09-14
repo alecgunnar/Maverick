@@ -124,10 +124,10 @@ class Request_REST {
     /**
      * Set cUrl options
      *
-     * @param  string $opts
+     * @param  array $opts
      * @return self
      */
-    public function setOptions($opts) {
+    public function setOptions(array $opts) {
         curl_setopt_array($this->curl, $opts);
     }
 
@@ -167,6 +167,10 @@ class Request_REST {
                 return $this->get();
             case 'POST':
                 return $this->post();
+            case 'PUT':
+                return $this->put();
+            case 'DELETE':
+                return $this->delete();
             default:
                 throw new \Exception('Cannot make request, invalid or no method supplied.');
         }
@@ -220,8 +224,37 @@ class Request_REST {
      * @return boolean
      */
     private function post() {
-        $this->setOptions(array(CURLOPT_POST       => true,
+        $this->setOptions(array(CURLOPT_URL        => $url,
+                                CURLOPT_POST       => true,
                                 CURLOPT_POSTFIELDS => $this->parseParameters()));
+
+        return $this->execute();
+    }
+
+    /**
+     * Send a PUT request
+     *
+     * @param  $writeTo
+     * @param  $writeFrom
+     * @return boolean
+     */
+    private function put($writeTo, $writeFrom) {
+        $this->setOptions(array(CURLOPT_URL    => $url,
+                                CURLOPT_PUT    => true,
+                                CURLOPT_FILE   => $writeTo,
+                                CURLOPT_INFILE => $writeFrom));
+
+        return $this->execute();
+    }
+
+    /**
+     * Send a DELETE request
+     *
+     * @return boolean
+     */
+    private function delete() {
+        $this->setOptions(array(CURLOPT_URL           => $url,
+                                CURLOPT_CUSTOMREQUEST => 'DELETE'));
 
         return $this->execute();
     }

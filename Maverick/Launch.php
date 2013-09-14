@@ -12,10 +12,8 @@ if(!defined('MAVERICK_PATH'))    define('MAVERICK_PATH',    __DIR__          . D
 if(!defined('APPLICATION_PATH')) define('APPLICATION_PATH', ROOT_PATH        . 'Application' . DS);
 if(!defined('PUBLIC_PATH'))      define('PUBLIC_PATH',      ROOT_PATH        . 'Public'      . DS);
 
-ob_start();
-
 // Gets the debug functions
-include_once(MAVERICK_PATH . 'debug' . PHP_EXT);
+include_once(MAVERICK_PATH . 'Debug' . PHP_EXT);
 
 // Gets the composer autoloader, if it exists
 $composerAutoloader = ROOT_PATH . 'vendor' . DS . 'autoload' . PHP_EXT;

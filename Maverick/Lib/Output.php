@@ -67,7 +67,7 @@ class Output {
     public static function getTplEngine() {
         if(is_null(self::$tplEngInst)) {
             $engine  = \Maverick\Maverick::getConfig('output')->get('engine');
-            $handler = 'Maverick\Lib\Output_';
+            $handler = 'Maverick\Lib\Output_Loader_';
 
             if(strpos($engine, __NAMESPACE__) === false) {
                 $handler .= $engine;
@@ -118,7 +118,7 @@ class Output {
      * @return string
      */
     public static function getPageTitle() {
-        return self::$pageTitle ?: \Maverick\Maverick()->getConfig('system')->get('site')->get('site_name');
+        return self::$pageTitle ?: \Maverick\Maverick::getConfig('system')->get('site_name');
     }
 
     /**

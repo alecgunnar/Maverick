@@ -33,6 +33,7 @@ class Maverick {
         }
 
         \Maverick\Lib\Environment::initialize();
+        \Maverick\Lib\Session::initialize();
         \Maverick\Lib\Output::initialize();
 
         \Maverick\Lib\Router::route();

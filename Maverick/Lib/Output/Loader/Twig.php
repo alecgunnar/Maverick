@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Output_Twig extends \Maverick\Lib\Output_Loader {
+class Output_Loader_Twig extends \Maverick\Lib\Output_Loader {
     /**
      * The template loader
      *
