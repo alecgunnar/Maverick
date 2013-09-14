@@ -42,7 +42,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function post(array $params=null) {
+    public function post($params=null) {
         
     }
 
@@ -54,7 +54,7 @@ class DataSource_MySql implements DataSource {
      * @param  string $useModel
      * @return array
      */
-    public function get(array $params=null, $useModel=null) {
+    public function get($params=null, $useModel=null) {
         if(!array_key_exists('select', $params)) {
             $params['select'] = '*';
         }
@@ -98,7 +98,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function put(array $params=null) {
+    public function put($params=null) {
         
     }
 
@@ -108,7 +108,7 @@ class DataSource_MySql implements DataSource {
      * @param  mixed $params
      * @return mixed
      */
-    public function delete(array $params=null) {
+    public function delete($params=null) {
         
     }
 
