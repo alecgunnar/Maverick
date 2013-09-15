@@ -71,10 +71,12 @@ class Output_Loader_Twig extends \Maverick\Lib\Output_Loader {
 
         $pageTitle = Output::getPageTitle();
 
-        $base->display(array('title'    => $pageTitle,
-                             'cssFiles' => Output::getCssFiles(),
-                             'jsFiles'  => Output::getJsFiles(),
-                             'body'     => $layout));
+        $baseVariables = array_merge(Output::getGlobalVariables(), array('title'    => $pageTitle,
+                                                                         'cssFiles' => Output::getCssFiles(),
+                                                                         'jsFiles'  => Output::getJsFiles(),
+                                                                         'body'     => $layout));
+
+        $base->display($baseVariables);
 
         exit;
     }

@@ -51,6 +51,13 @@ class Output {
     private static $jsFiles = array();
 
     /**
+     * Global variables
+     *
+     * @var array $globalVariables
+     */
+    private static $globalVariables = array();
+
+    /**
      * The constructor
      *
      * @return null
@@ -119,6 +126,42 @@ class Output {
      */
     public static function getPageTitle() {
         return self::$pageTitle ?: \Maverick\Maverick::getConfig('system')->get('site_name');
+    }
+
+    /**
+     * Sets a global tpl variable
+     *
+     * @param string $name
+     * @param mixed  $value
+     */
+    public static function setGlobalVariable($name, $value) {
+        self::$globalVariables[$name] = $value;
+    }
+
+    /**
+     * Sets multiple global variables
+     *
+     * @param array $variables
+     */
+    public static function setGlobalVariables($variables) {
+        if(is_array($variables) && count($variables)) {
+            foreach($variables as $k => $l) {
+                self::setGlobalVariable($k, $l);
+            }
+        } else {
+            throw new \Exception('An empty array or a string was set to ' . __NAMESPACE__
+                               . '\Controller::setVariables(), an array with at least '
+                               . 'one index is required.');
+        }
+    }
+
+    /**
+     * Returns all of the global variables
+     *
+     * @return array
+     */
+    public static function getGlobalVariables() {
+        return self::$globalVariables;
     }
 
     /**
