@@ -53,7 +53,9 @@ class ErrorHandler {
      * @return null
      */
     private static function sendEmail($message, $file, $line) {
-        $message = 'This is an automatic email sent to detail an error which occurred on ' . date('r') . '
+        $time = new \DateTime(null, new \DateTimeZone('Europe/London'));
+
+        $message = 'This is an automatic email sent to detail an error which occurred on ' . $time->format(\DateTime::ISO8601) . '
 
 The email below describes the error.
 
@@ -61,21 +63,6 @@ Error Text: ' . $message . '
 Error File: ' . $file . '
 Error Line: ' . $line;
 
-        $smtpConf  = \Maverick\Maverick::getConfig('SMTP');
-        $toAndFrom = array(\Maverick\Maverick::getConfig('System')->get('admin_email') => 'Administrator');
-
-        $email = \Swift_Message::newInstance()
-            ->setSubject('An Error Occurred!')
-            ->setFrom($toAndFrom)
-            ->setTo($toAndFrom)
-            ->setBody($message);
-
-        $transport = \Swift_SMTPTransport::newInstance($smtpConf->get('server'), $smtpConf->get('port'))
-            ->setUsername($smtpConf->get('username'))
-            ->setPassword($smtpConf->get('password'));
-
-        $mailer = \Swift_Mailer::newInstance($transport);
-
-        $mailer->send($email);
+        error_log($message, 1, \Maverick\Maverick::getConfig('System')->get('admin_email'));
     }
 }

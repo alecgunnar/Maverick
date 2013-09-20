@@ -48,7 +48,7 @@ class Validator_IsEmail extends Validator {
 
         $explodeAt = explode('@', $this->value);
 
-        if(count($explodeAt) > 2) {
+        if(count($explodeAt) != 2) {
             return false;
         }
 

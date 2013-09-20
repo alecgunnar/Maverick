@@ -20,7 +20,7 @@ class Router {
      *
      * @var string $uri
      */
-    private static $uri = '';
+    private static $uri = false;
 
     /**
      * The controller the page has been routed to
@@ -53,32 +53,34 @@ class Router {
 
         $defaultController = 'Index';
 
-        self::setUri();
-
-        $uri        = self::getUri();
-        $pathTo     = ROOT_PATH . 'Application/Controller/';
+        $pathTo     = ROOT_PATH . 'Application' . DS . 'Controller' . DS;
         $controller = '';
         $params     = array();
 
-        if($uri) {
-            $expUri = $params = explode('/', $uri);
+        if(self::getUri()) {
+            $expUri        = $params = explode('/', self::getUri());
+            $goesAllTheWay = false;
 
             foreach($expUri as $uri) {
                 $i = implode('', array_map(function($a) {
                    return ucfirst($a); 
                 }, explode('-', $uri)));
 
-                if(is_dir($pathTo . $i) || file_exists($pathTo . $i . PHP_EXT)) {
+                if(is_dir($pathTo . $i) || ($goesAllTheWay = file_exists($pathTo . $i . PHP_EXT))) {
                     $pathTo .= $i . '/';
     
                     if($controller) $controller .= '_';
                     $controller                 .= $i;
-    
+
                     array_shift($params);
+
+                    if($goesAllTheWay) {
+                        break;
+                    }
                 } else break;
             }
 
-            if(count($expUri) == count($params)) {
+            if(count($expUri) == count($params) || !$goesAllTheWay) {
                 $controller = 'Errors_404';
             }
         } else {
@@ -144,6 +146,10 @@ class Router {
      * @return string
      */
     public static function getUri() {
+        if(!self::$uri) {
+            self::setUri();
+        }
+
         return self::$uri;
     }
 
