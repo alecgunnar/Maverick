@@ -18,7 +18,7 @@ class Validator_IsEmail extends Validator {
      *
      * @var string
      */
-    public $errorMessage = 'You must enter an email address';
+    protected $errorMessage = 'You must enter an email address';
 
     /**
      * A list of all of the ASCII characters

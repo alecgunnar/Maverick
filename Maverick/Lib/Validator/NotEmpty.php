@@ -13,7 +13,7 @@ class Validator_NotEmpty extends Validator {
      *
      * @var string
      */
-    public $errorMessage = 'You must enter a value for this field';
+    protected $errorMessage = 'You must enter a value for this field';
 
     /**
      * Validates the field

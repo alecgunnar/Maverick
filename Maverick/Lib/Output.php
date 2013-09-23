@@ -64,6 +64,9 @@ class Output {
      */
     public static function initialize() {
         self::getTplEngine();
+
+        self::$pageTitle = \Maverick\Maverick::getConfig('system')->get('site_name');
+        self::setGlobalVariable('pageTitle', self::$pageTitle);
     }
 
     /**
@@ -73,14 +76,7 @@ class Output {
      */
     public static function getTplEngine() {
         if(is_null(self::$tplEngInst)) {
-            $engine  = \Maverick\Maverick::getConfig('output')->get('engine');
-            $handler = 'Maverick\Lib\Output_Loader_';
-
-            if(strpos($engine, __NAMESPACE__) === false) {
-                $handler .= $engine;
-            } else {
-                $handler = $engine;
-            }
+            $handler = 'Maverick\Lib\Output_Loader_' . \Maverick\Maverick::getConfig('output')->get('engine');
 
             self::$tplEngInst = new $handler;
         }
@@ -116,7 +112,7 @@ class Output {
     public static function setPageTitle($pageTitle) {
         self::$pageTitle = $pageTitle;
 
-        Router::getController()->setVariable('pageTitle', $pageTitle);
+        self::setGlobalVariable('pageTitle', $pageTitle);
     }
 
     /**
@@ -125,7 +121,7 @@ class Output {
      * @return string
      */
     public static function getPageTitle() {
-        return self::$pageTitle ?: \Maverick\Maverick::getConfig('system')->get('site_name');
+        return self::$pageTitle;
     }
 
     /**

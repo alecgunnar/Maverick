@@ -52,43 +52,104 @@ class Router {
         $appRoot->main();
 
         $defaultController = 'Index';
+        $controller        = '';
+        $params            = array();
 
-        $pathTo     = ROOT_PATH . 'Application' . DS . 'Controller' . DS;
-        $controller = '';
-        $params     = array();
-
-        if(self::getUri()) {
-            $expUri        = $params = explode('/', self::getUri());
-            $goesAllTheWay = false;
-
-            foreach($expUri as $uri) {
-                $i = implode('', array_map(function($a) {
-                   return ucfirst($a); 
-                }, explode('-', $uri)));
-
-                if(is_dir($pathTo . $i) || ($goesAllTheWay = file_exists($pathTo . $i . PHP_EXT))) {
-                    $pathTo .= $i . '/';
-    
-                    if($controller) $controller .= '_';
-                    $controller                 .= $i;
-
-                    array_shift($params);
-
-                    if($goesAllTheWay) {
-                        break;
-                    }
-                } else break;
-            }
-
-            if(count($expUri) == count($params) || !$goesAllTheWay) {
-                $controller = 'Errors_404';
+        if(\Maverick\Maverick::getConfig('system')->get('auto_route')) {
+            if(self::getUri()) {
+                list($controller, $params) = self::routeAutomatically();
             }
         } else {
+            list($controller, $params) = self::routeDefined();
+        }
+
+        if(!$controller) {
             $controller = $defaultController;
-            $expUri     = array();
         }
 
         self::loadController($controller, $params);
+    }
+    
+    /**
+     * Routes the request automatically
+     *
+     * @return array
+     */
+    private static function routeAutomatically() {
+        $pathToController = APPLICATION_PATH . 'Controller' . DS;
+        $controller       = '';
+        $foundController  = false;
+        $expUri           = $params = explode('/', self::getUri());
+
+        foreach($expUri as $uri) {
+            $i = self::convertUri($uri);
+
+            if($controller) {
+                $controller .= '_';
+            }
+
+            if(is_dir($pathToController . $i)) {
+                $controller       .= $i;
+                $pathToController .= $i . DS;
+            } elseif(file_exists($pathToController . $i . PHP_EXT)) {
+                $controller     .= $i;
+                $foundController = true;
+
+                array_shift($params);
+                
+                break;
+            }
+        }
+
+        if(count($expUri) == count($params) || !$foundController) {
+            $controller = 'Errors_404';
+        }
+
+        return array($controller, $params);
+    }
+    
+    /**
+     * Routes the request if it is defined
+     *
+     * @throws \Exception
+     * @return array
+     */
+    private static function routeDefined() {
+        $routes     = \Maverick\Maverick::getConfig('routes')->getAsArray();
+        $controller = '';
+        $params     = array();
+
+        if(!count($routes)) {
+            throw new \Exception('You have not defined any routes.');
+        }
+
+        $uri = self::getUri();
+
+        foreach($routes as $match => $cntrlr) {
+            if(preg_match('~^(?:' . trim($match, '/') . ')$~', $uri, $params)) {
+                $controller = $cntrlr;
+            }
+        }
+
+        if(!$controller) {
+            $controller = 'Errors_404';
+        }
+
+        array_shift($params);
+
+        return array($controller, $params);
+    }
+    
+    /**
+     * Converts a string from the URI to the file naming standard
+     *
+     * @param  string $name
+     * @return string
+     */
+    public static function convertUri($name) {
+        return implode('', array_map(function($a) {
+            return ucfirst($a); 
+        }, explode('-', $name)));
     }
 
     /**

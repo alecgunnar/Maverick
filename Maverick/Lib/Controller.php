@@ -28,12 +28,10 @@ class Controller {
      *
      * @var boolean $autoOutput
      */
-    private $autoOutput = true;
+    private $allowPrintOut = true;
 
     /**
      * Gets some things set up for the controller
-     *
-     * @return null
      */
     public function __construct() {
         $this->tpl = \Maverick\Lib\Output::getTplEngine();
@@ -41,11 +39,9 @@ class Controller {
 
     /**
      * Disable the auto-output function for the controller
-     *
-     * @return null
      */
     public function disableAutoOutput() {
-        $this->autoOutput = false;
+        $this->allowPrintOut = false;
     }
 
     /**
@@ -53,7 +49,6 @@ class Controller {
      *
      * @throws \Exception
      * @param  array $variables
-     * @return null
      */
     public function setVariables($variables) {
         if(is_array($variables) && count($variables)) {
@@ -70,9 +65,8 @@ class Controller {
     /**
      * Sets a variable
      *
-     * @param  string $key
-     * @param  mixed  $value
-     * @return null
+     * @param string $key
+     * @param mixed  $value
      */
     public function setVariable($key, $value) {
         $this->variables[$key] = $value;
@@ -88,22 +82,15 @@ class Controller {
     }
 
     /**
-     * Let the "outputter" take over, and print the page
+     * Prints out the controller
      *
-     * @return null
+     * @throws \Exception
      */
     public function printOut() {
-        if($this->autoOutput) {
+        if($this->allowPrintOut) {
             \Maverick\Lib\Output::printOut($this->variables);
+        } else {
+            throw new \Exception('This controller cannot be printed!');
         }
-    }
-
-    /**
-     * Allows the controller output itself
-     *
-     * @return null
-     */
-    protected function printSelf() {
-        \Maverick\Lib\Output::printOut($this->variables);
     }
 }

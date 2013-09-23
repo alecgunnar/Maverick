@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input extends Builder_FormField {
+class Builder_FormField_TextField extends Builder_FormField {
     /**
      * Sets up the field
      *
@@ -15,13 +15,11 @@ class Builder_FormField_Input extends Builder_FormField {
      * @param  string $type='text'
      * @return null
      */
-    public function __construct($name, $type='text') {
+    public function __construct($name) {
         parent::__construct('input');
 
         $this->name = $name;
 
-        $this->isSelfClosing()
-            ->addAttribute('type', $type)
-            ->addAttribute('name', $name);
+        $this->addAttribute('name', $name);
     }
 }

@@ -11,7 +11,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     /**
      * The model of the form input
      *
-     * @var \Maverick\Lib\Model_Input | null $input
+     * @var \Maverick\Lib\Model_Input | null
      */
     protected $input = null;  
 
@@ -49,31 +49,35 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     /**
      * Processes the form
      *
-     * @return null
+     * @throws \Exception
      */
     private function process() {
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
                 $input = $this->getModel();
-    
-                foreach($this->fields as $name => $builder) {
-                    if(count($builder->validateFor)) {
-                        foreach($builder->validateFor as $type => $validator) {
-                            $validator->value = $input->get($name);
-    
+
+                if($this->submissionTokenEnabled() && $input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
+                    throw new \Exception('Possible CSRF attempt');
+                }
+
+                foreach($this->getFields() as $name => $builder) {
+                    if(count(($validateFor = $builder->getValidateFor()))) {
+                        foreach($validateFor as $type => $validator) {
+                            $validator->setValue($input->get($name));
+
                             if(!$validator->isValid()) {
-                                $this->setFieldError($name, $validator->errorMessage);
-    
+                                $this->setFieldError($name, $validator->getErrorMessage());
+
                                 $this->isValid = false;
                             }
                         }
                     }
                 }
-    
+
                 if(!$this->validate()) {
                     $this->isValid = false;
                 }
-    
+
                 if(is_null($this->isValid)) {
                     $this->isValid = true;
                 }
@@ -95,10 +99,10 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      */
     public function getStatus() {
         if(is_null($this->status)) {
-            if(strtolower($_SERVER['REQUEST_METHOD']) == strtolower($this->method)) {
+            if(strtolower($_SERVER['REQUEST_METHOD']) == strtolower($this->getMethod())) {
                 $input = $this->getModel();
     
-                foreach($this->fields as $name => $builder) {
+                foreach($this->getFields() as $name => $builder) {
                     if(is_null($input->get($name))) {
                         $this->status = false;
                     }
@@ -138,8 +142,12 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
             return $this->input;
         }
 
-        $raw   = strtolower($this->method) == 'post' ? $_POST : $_GET;
+        $raw   = strtolower($this->getMethod()) == 'post' ? $_POST : $_GET;
         $input = new \Maverick\Lib\Model_Input($raw);
+
+        if($this->getName()) {
+            $input = $input->get($this->getName()) ?: $input;
+        }
 
         $this->input = $input;
 

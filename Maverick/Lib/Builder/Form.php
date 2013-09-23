@@ -13,28 +13,28 @@ class Builder_Form {
      *
      * @var string $name
      */
-    public $name = '';
+    private $name = '';
 
     /**
      * The method of the form
      *
      * @var string $method
      */
-    public $method = 'post';
+    private $method = 'post';
 
     /**
      * The action of the form
      *
      * @var string $action
      */
-    public $action = '';
+    private $action = '';
 
     /**
      * The encoding type of the form
      *
      * @var string | null
      */
-    public $encType = null;
+    private $encType = null;
 
     /**
      * The container for the fields
@@ -62,7 +62,14 @@ class Builder_Form {
      *
      * @var array $fields
      */
-    protected $fields = array();
+    private $fields = array();
+
+    /**
+     * Whether or not to have a submission token
+     *
+     * @var boolean $submissionToken
+     */
+    private $submissionToken = true;
 
     /**
      * Sets up the form
@@ -75,6 +82,60 @@ class Builder_Form {
         $this->name   = $name;
         $this->method = $method ?: 'post';
         $this->action = $action ?: Router::getUri();
+    }
+
+    /**
+     * Sets the name of the form
+     *
+     * @param string $name
+     */
+    public function setName($name) {
+        $this->name = $name;
+    }
+
+    /**
+     * Get the name of the field
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Sets the method of the form
+     *
+     * @param string $method
+     */
+    public function setMethod($name) {
+        $this->method = $method;
+    }
+
+    /**
+     * Get the method of the field
+     *
+     * @return string
+     */
+    public function getMethod() {
+        return $this->method;
+    }
+
+    /**
+     * Sets the action of the form
+     *
+     * @param string $action
+     */
+    public function setAction($name) {
+        $this->action = $action;
+    }
+
+    /**
+     * Get the action of the field
+     *
+     * @return string
+     */
+    public function getAction() {
+        return $this->action;
     }
 
     /**
@@ -97,22 +158,22 @@ class Builder_Form {
     }
 
     /**
-     * Changes the required field identifier
+     * Changes the required field marker
      *
      * @param  string $requiredId
      * @return null
      */
-    public function setRequiredIdentifier($requiredId) {
+    public function setRequiredMarker($requiredId) {
         $this->requiredId = $requiredId;
     }
 
     /**
-     * Gets the required field identifier if needed
+     * Gets the required field marker if needed
      *
      * @param  boolean $isRequired=true
      * @return string
      */
-    public function getRequiredIdentifier($isRequired=true) {
+    public function getRequiredMarker($isRequired=true) {
         if($isRequired) {
             return $this->requiredId;
         }
@@ -134,7 +195,8 @@ class Builder_Form {
         }
 
         $fieldBuilder = new $class($name);
-        $fieldBuilder->value($this->getModel()->get($name));
+        $fieldBuilder->value($this->getModel()->get($name))
+            ->setNamespace($this->name);
 
         $this->fields[$name] = $fieldBuilder;
 
@@ -158,28 +220,40 @@ class Builder_Form {
      */
     public function render() {
         if(!count($this->fields)) {
-            throw new \Exception('You didn\'t add any fields to the form!');
+            throw new \Exception('You didn\'t add any fields to the form');
         }
 
-        $formContent = '';
+        if($this->name) {
+            $this->addAntiCSRFToken();
+        }
+
+        $formContent  = '';
+        $hiddenFields = '';
 
         foreach($this->fields as $name => $f) {
-            $tpl = $f->tpl ?: $this->defaultFieldTpl;
-
-            $placeholders = array('{LABEL}'       => $f->label,
-                                  '{REQUIRED}'    => $this->getRequiredIdentifier($f->required),
-                                  '{ERROR}'       => $this->getFieldError($name),
-                                  '{FIELD}'       => $f->render(),
-                                  '{DESCRIPTION}' => $f->description);
-
-            $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);
+            if(!$f->isHidden()) {
+                $tpl = $f->getTpl() ?: $this->defaultFieldTpl;
+    
+                $placeholders = array('{LABEL}'       => $f->getLabel(),
+                                      '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
+                                      '{ERROR}'       => $this->getFieldError($name),
+                                      '{FIELD}'       => $f->render($this->name),
+                                      '{DESCRIPTION}' => $f->getDescription());
+    
+                $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);
+            } else {
+                $hiddenFields .= $f->render($this->name);
+            }
         }
 
         $form = new Builder_Tag('form');
         $form->addAttributes(array('name'     => $this->name,
                                    'method'   => $this->method,
-                                   'action'   => $this->action,
-                                   'enc-type' => $this->encType));
+                                   'action'   => $this->action));
+
+        if($this->encType) {
+            $form->addAttribute('enc-type', $this->encType);
+        }
 
         $container = $this->formContainer;
 
@@ -190,8 +264,38 @@ class Builder_Form {
 
         $container->addContent($formContent);
 
-        $form->addContent($container->render());
+        $form->addContent($container->render() . $hiddenFields);
 
         return $form->render();
+    }
+
+    /**
+     * Adds an ID field to help prevent CSRF
+     */
+    private function addAntiCSRFToken() {
+        if(!$this->submissionToken) {
+            return false;
+        }
+
+        $token = $this->input->get('formSubmissionToken') ?: \Maverick\Lib\Utility::generateToken(25);
+
+        $_SESSION[$this->name . '_submission_token'] = $token;
+
+        $this->addField('Input_Hidden', 'formSubmissionToken')
+            ->value($token);
+    }
+
+    /**
+     * Toggle the submission token feature
+     */
+    public function toggleSubmissionToken() {
+        $this->submissionToken = $this->submissionToken ? false : true;
+    }
+
+    /**
+     * Says whether or not the submission token feature is enabled
+     */
+    public function submissionTokenEnabled() {
+        return $this->submissionToken;
     }
 }

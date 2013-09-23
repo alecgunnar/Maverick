@@ -85,12 +85,14 @@ class Model {
     /**
      * Get the original value, not an object of this class
      *
-     * @param  string $key
+     * @param  string $key=''
      * @return string \ array
      */
-    public function getAsArray($key) {
-        if(array_key_exists($key, $this->data_orig)) {
+    public function getAsArray($key='') {
+        if($key && array_key_exists($key, $this->data_orig)) {
             return $this->data_orig[$key];
+        } else {
+            return $this->data_orig;
         }
 
         return null;

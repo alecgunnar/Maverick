@@ -13,7 +13,7 @@ class Validator_IsNumber extends Validator {
      *
      * @var string
      */
-    public $errorMessage = 'You must enter a number';
+    protected $errorMessage = 'You must enter a number';
 
     /**
      * Validates the field

@@ -28,7 +28,6 @@ abstract class Output_Loader {
      * Outputs the page
      *
      * @param  array $variables=array()
-     * @return null
      */
     public abstract function printOut($variables=array());
 

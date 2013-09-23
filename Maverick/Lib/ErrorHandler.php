@@ -11,13 +11,13 @@ class ErrorHandler {
     /**
      * The error handler method
      *
-     * @param  intenger $number
-     * @param  string   $message
-     * @param  string   $file
-     * @param  integer  $line
-     * @return null
+     * @param intenger $number
+     * @param string   $message
+     * @param string   $file
+     * @param integer  $line
+     * @param boolean  $isException
      */
-    public static function handleError($number, $message, $file, $line) {
+    public static function handleError($number, $message, $file, $line, $isException=false) {
         if(\Maverick\Maverick::getConfig('Environment')->get('email_errors')) {
             self::sendEmail($message, $file, $line);
         }
@@ -38,10 +38,9 @@ class ErrorHandler {
      * Handles exceptions
      *
      * @param  Exception $e
-     * @return null
      */
     public static function handleException($e) {
-        self::handleError($e->getCode(), 'There was an uncaught exception:<br /><br />' . $e->getMessage(), $e->getFile(), $e->getLine());
+        self::handleError($e->getCode(), 'There was an uncaught exception:<br /><br />' . $e->getMessage(), $e->getFile(), $e->getLine(), true);
     }
 
     /**
@@ -50,7 +49,6 @@ class ErrorHandler {
      * @param  string  $message
      * @param  string  $file
      * @param  integer $line
-     * @return null
      */
     private static function sendEmail($message, $file, $line) {
         $time = new \DateTime(null, new \DateTimeZone('Europe/London'));

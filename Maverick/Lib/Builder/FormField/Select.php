@@ -22,7 +22,7 @@ class Builder_FormField_Select extends Builder_FormField {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct('select', true);
+        parent::__construct('select');
     }
 
     /**

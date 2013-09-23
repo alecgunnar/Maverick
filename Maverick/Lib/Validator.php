@@ -15,32 +15,65 @@ abstract class Validator {
      *
      * @var string
      */
-    public $errorMessage = 'The input for this field was invalid.';
+    protected $errorMessage = 'The input for this field was invalid.';
 
     /**
      * The value which needs to be validated
      *
      * @var string | integer | null
      */
-    public $value = null;
-
-    /**
-     * Setup values for the field
-     *
-     * @var array
-     */
-    protected $vars = array();
+    protected $value = null;
 
     /**
      * Gets the setup variables for the validator
      *
-     * @param  array $vars
-     * @return null
+     * @param string $message
      */
-    public function __construct(array $vars=null) {
-        if(is_array($vars)) {
-            $this->vars = array_merge($this->vars, $vars);
-        }
+    public function __construct($message='') {
+         if($message) {
+             $this->errorMessage = $message;
+         }
+    }
+
+    /**
+     * Sets the error message
+     *
+     * @param string $errorMessage
+     */
+    public function setErrorMessage($errorMessage) {
+        $this->errorMessage = $errorMessage;
+    }
+
+    /**
+     * Gets the error message
+     *
+     * @return string
+     */
+    public function getErrorMessage() {
+        return $this->errorMessage;
+    }
+    
+    /**
+     * Sets the value to be checked
+     *
+     * @param string $value
+     */
+    public function setValue($value) {
+        $this->value = $value;
+    }
+
+    /**
+     * Tests a sting to see if it is a match for the given validator
+     *
+     * @param $validator
+     * @param $value
+     * @return boolean
+     */
+    public static function test($validator, $value) {
+        $class = __NAMESPACE__ . '\Validator_' . $validator;
+        $inst  = new $class;
+
+        return $inst->setValue($value)->isValid();
     }
 
     /**

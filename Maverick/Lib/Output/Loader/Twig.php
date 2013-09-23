@@ -24,8 +24,6 @@ class Output_Loader_Twig extends \Maverick\Lib\Output_Loader {
 
     /**
      * Sets up the engine
-     *
-     * @return null
      */
     public function __construct() {
         $config = \Maverick\Maverick::getConfig('output')->get('twig');
@@ -44,39 +42,28 @@ class Output_Loader_Twig extends \Maverick\Lib\Output_Loader {
     public function getTemplate($tplName, $variables=array()) {
         $tpl = $this->twig->loadTemplate($tplName . \Maverick\Maverick::getConfig('output')->get('templates')->get('extension'));
 
-        return $tpl->render($variables);
+        return $tpl->render(array_merge(Output::getGlobalVariables(), $variables));
     }
 
     /**
      * Outputs the page
      *
      * @param  array $variables=array()
-     * @return null
      */
     public function printOut($variables=array()) {
-        $tplExt = \Maverick\Maverick::getConfig('output')->get('templates')->get('extension');
-
         $expClass  = explode('\\', get_class(Router::getController()));
         $view      = str_replace('_', '/', array_pop($expClass));
 
         try {
-            $viewTpl               = $this->twig->loadTemplate('Views/' . $view . $tplExt);
-            $variables['content']  = $viewTpl->render($variables);
+            $variables['content'] = $this->getTemplate('Views/' . $view, $variables);
         } catch(\Twig_Error_Loader $e) {
             // If there isn't a view specific for this page, just send everything to the layout
         }
 
-        $layout = $this->getLayout($variables);
-        $base   = $this->twig->loadTemplate('Layouts/Base' . $tplExt);
-
-        $pageTitle = Output::getPageTitle();
-
-        $baseVariables = array_merge(Output::getGlobalVariables(), array('title'    => $pageTitle,
-                                                                         'cssFiles' => Output::getCssFiles(),
-                                                                         'jsFiles'  => Output::getJsFiles(),
-                                                                         'body'     => $layout));
-
-        $base->display($baseVariables);
+        print $this->getTemplate('Layouts/Base', array('title'    => Output::getPageTitle(),
+                                                       'cssFiles' => Output::getCssFiles(),
+                                                       'jsFiles'  => Output::getJsFiles(),
+                                                       'body'     => $this->getLayout($variables)));
 
         exit;
     }
