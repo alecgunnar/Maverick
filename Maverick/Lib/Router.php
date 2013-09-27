@@ -78,34 +78,36 @@ class Router {
     private static function routeAutomatically() {
         $pathToController = APPLICATION_PATH . 'Controller' . DS;
         $controller       = '';
-        $foundController  = false;
         $expUri           = $params = explode('/', self::getUri());
+        $controllers      = array();
 
         foreach($expUri as $uri) {
-            $i = self::convertUri($uri);
+            $i       = self::convertUri($uri);
+            $shifted = false;
 
-            if($controller) {
-                $controller .= '_';
-            }
-
-            if(is_dir($pathToController . $i)) {
-                $controller       .= $i;
-                $pathToController .= $i . DS;
-            } elseif(file_exists($pathToController . $i . PHP_EXT)) {
-                $controller     .= $i;
-                $foundController = true;
+            if(file_exists($pathToController . $i . PHP_EXT)) {
+                $controllers[] = $controller . $i;
 
                 array_shift($params);
-                
-                break;
+
+                $shifted = true;
+            }
+            
+            if(is_dir($pathToController . $i)) {
+                $controller       .= $i . '_';
+                $pathToController .= $i . DS;
+
+                if(!$shifted) {
+                    array_shift($params);
+                }
             }
         }
 
-        if(count($expUri) == count($params) || !$foundController) {
+        if(count($expUri) == count($params) || !count($controllers)) {
             $controller = 'Errors_404';
         }
 
-        return array($controller, $params);
+        return array($controllers[count($controllers) - 1], $params);
     }
     
     /**
@@ -187,9 +189,11 @@ class Router {
 
             if(count($expScript) > 1) {
                 foreach($expScript as $n => $f) {
-                    if($expUri[$n] == $f) {
-                        unset($expUri[$n]);
-                    } else break;
+                    if(array_key_exists($n, $expUri)) {
+                        if($expUri[$n] == $f) {
+                            unset($expUri[$n]);
+                        } else break;
+                    }
                 }
             }
     

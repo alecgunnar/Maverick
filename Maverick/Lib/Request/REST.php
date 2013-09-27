@@ -224,7 +224,7 @@ class Request_REST {
      * @return boolean
      */
     private function post() {
-        $this->setOptions(array(CURLOPT_URL        => $url,
+        $this->setOptions(array(CURLOPT_URL        => $this->url,
                                 CURLOPT_POST       => true,
                                 CURLOPT_POSTFIELDS => $this->parseParameters()));
 
@@ -239,7 +239,7 @@ class Request_REST {
      * @return boolean
      */
     private function put($writeTo, $writeFrom) {
-        $this->setOptions(array(CURLOPT_URL    => $url,
+        $this->setOptions(array(CURLOPT_URL    => $this->url,
                                 CURLOPT_PUT    => true,
                                 CURLOPT_FILE   => $writeTo,
                                 CURLOPT_INFILE => $writeFrom));
@@ -253,7 +253,7 @@ class Request_REST {
      * @return boolean
      */
     private function delete() {
-        $this->setOptions(array(CURLOPT_URL           => $url,
+        $this->setOptions(array(CURLOPT_URL           => $this->url,
                                 CURLOPT_CUSTOMREQUEST => 'DELETE'));
 
         return $this->execute();
