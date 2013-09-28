@@ -13,8 +13,7 @@ class Test extends \Maverick\Lib\Form {
             ->validate('IsEmail', 'That was not a valid email address!');
         $this->addField('TextArea', 'test_textarea')
             ->label('Text Area')
-            ->required('This cannot be left empty')
-            ->value('123');
+            ->required('This cannot be left empty');
         $this->addField('Input_Submit', 'submit')
             ->value('Submit');
     }

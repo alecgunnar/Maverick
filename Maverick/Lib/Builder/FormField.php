@@ -182,6 +182,8 @@ class Builder_FormField extends Builder_Tag {
      * @return self
      */
     public function required($errorMessage='') {
+        $this->required = true;
+
         $this->validate('NotEmpty', $errorMessage);
 
         return $this;
