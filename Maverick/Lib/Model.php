@@ -16,14 +16,6 @@ class Model {
     protected $data = array();
 
     /**
-     * Holds all of the original data for the model
-     *
-     *
-     * @var array $data_orig
-     */
-    protected $data_orig = array();
-
-    /**
      * Sets the data for the model
      *
      * @param array $data=array()
@@ -48,18 +40,18 @@ class Model {
                     $value = $v;
                 }
 
-                $this->data[$k] = $value;
+                $this->{$k} = $value;
             }
 
-            $this->data_orig = $name;
+            $this->data = $name;
         } elseif(!is_array($name)) {
-            $this->data_orig[$name] = $value;
+            $this->data[$name] = $value;
 
             if(is_array($value)) {
                 $value = new self($value);
             }
 
-            $this->data[$name] = $value;
+            $this->{$name} = $value;
         }
     }
 
@@ -75,8 +67,8 @@ class Model {
             return $this->getAsArray($key);
         }
 
-        if(array_key_exists($key, $this->data)) {
-            return $this->data[$key];
+        if(isset($this->{$key})) {
+            return $this->{$key};
         }
 
         return null;
@@ -89,10 +81,10 @@ class Model {
      * @return string \ array
      */
     public function getAsArray($key='') {
-        if($key && array_key_exists($key, $this->data_orig)) {
-            return $this->data_orig[$key];
+        if($key && array_key_exists($key, $this->data)) {
+            return $this->data[$key];
         } else {
-            return $this->data_orig;
+            return $this->data;
         }
 
         return null;

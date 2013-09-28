@@ -195,8 +195,7 @@ class Builder_Form {
         }
 
         $fieldBuilder = new $class($name);
-        $fieldBuilder->value($this->getModel()->get($name))
-            ->setNamespace($this->name);
+        $fieldBuilder->setNamespace($this->name);
 
         $this->fields[$name] = $fieldBuilder;
 
@@ -231,6 +230,10 @@ class Builder_Form {
         $hiddenFields = '';
 
         foreach($this->fields as $name => $f) {
+            if($value = $this->input->get($name)) {
+                $f->value($value);
+            }
+
             if(!$f->isHidden()) {
                 $tpl = $f->getTpl() ?: $this->defaultFieldTpl;
     
@@ -274,7 +277,7 @@ class Builder_Form {
      */
     private function addAntiCSRFToken() {
         if(!$this->submissionToken) {
-            return false;
+            return;
         }
 
         $token = $this->input->get('formSubmissionToken') ?: \Maverick\Lib\Utility::generateToken(25);

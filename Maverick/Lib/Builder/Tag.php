@@ -112,6 +112,18 @@ class Builder_Tag {
     }
 
     /**
+     * Sets the content of the tag, overrides any that exists
+     *
+     * @param  string $content
+     * @return self
+     */
+    public function setContent($content) {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
      * Adds content to the tag
      *
      * @param  string $content

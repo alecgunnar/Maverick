@@ -178,15 +178,11 @@ class Builder_FormField extends Builder_Tag {
     /**
      * Sets whether the field is required or not
      *
-     * @param  booelan $isRequired=true
+     * @param  string $errorMessage
      * @return self
      */
-    public function required($isRequired=true) {
-        $this->required = $isRequired ?: true;
-
-        try {
-            $this->validate('NotEmpty');
-        } catch(\Exception $e) { }
+    public function required($errorMessage='') {
+        $this->validate('NotEmpty', $errorMessage);
 
         return $this;
     }

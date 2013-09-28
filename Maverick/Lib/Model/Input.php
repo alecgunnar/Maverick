@@ -41,9 +41,9 @@ class Model_Input extends Model {
      */
     public function set($name, $value='') {
         if(is_object($value)) {
-            $this->data[$name] = $value;
+            parent::set($name, $value);
         } else {
-            $this->data[$name] = htmlentities(strip_tags($value));
+            parent::set($name, htmlentities(strip_tags($value)));
         }
     }
 }
