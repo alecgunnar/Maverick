@@ -44,6 +44,13 @@ class Builder_Form {
     private $formContainer = null;
 
     /**
+     * The tpl for the form
+     *
+     * @var string
+     */
+    private $tpl = null;
+
+    /**
      * The default field template
      *
      * @var string
@@ -89,7 +96,7 @@ class Builder_Form {
      *
      * @param string $name
      */
-    public function setName($name) {
+    protected function setName($name) {
         $this->name = $name;
     }
 
@@ -107,7 +114,7 @@ class Builder_Form {
      *
      * @param string $method
      */
-    public function setMethod($name) {
+    protected function setMethod($name) {
         $this->method = $method;
     }
 
@@ -125,7 +132,7 @@ class Builder_Form {
      *
      * @param string $action
      */
-    public function setAction($name) {
+    protected function setAction($name) {
         $this->action = $action;
     }
 
@@ -140,30 +147,44 @@ class Builder_Form {
 
     /**
      * Enables file uploads
-     *
-     * @return null
      */
-    public function allowFileUploads() {
+    protected function allowFileUploads() {
         $this->encType = 'multipart/form-data';
     }
 
     /**
      * Sets the form container
      *
-     * @param  mixed $container
-     * @return null
+     * @param mixed $container
      */
-    public function setContainer($container) {
+    protected function setContainer($container) {
         $this->formContainer = $container;
+    }
+
+    /**
+     * Sets the template for the form
+     *
+     * @param string $tpl
+     */
+    protected function setTpl($tpl) {
+        $this->tpl = $tpl;
+    }
+
+    /**
+     * Gets the tpl of the form
+     *
+     * @return string
+     */
+    public function getTpl() {
+        return $this->tpl;
     }
 
     /**
      * Changes the required field marker
      *
-     * @param  string $requiredId
-     * @return null
+     * @param string $requiredId
      */
-    public function setRequiredMarker($requiredId) {
+    protected function setRequiredMarker($requiredId) {
         $this->requiredId = $requiredId;
     }
 
@@ -185,6 +206,7 @@ class Builder_Form {
      * Adds a field to the form
      *
      * @param  string  $type
+     * @param  string  $name
      * @return mixed
      */
     public function addField($type, $name) {
@@ -226,6 +248,7 @@ class Builder_Form {
             $this->addAntiCSRFToken();
         }
 
+        $formFields   = array();
         $formContent  = '';
         $hiddenFields = '';
 
@@ -235,15 +258,19 @@ class Builder_Form {
             }
 
             if(!$f->isHidden()) {
-                $tpl = $f->getTpl() ?: $this->defaultFieldTpl;
-    
-                $placeholders = array('{LABEL}'       => $f->getLabel(),
-                                      '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
-                                      '{ERROR}'       => $this->getFieldError($name),
-                                      '{FIELD}'       => $f->render($this->name),
-                                      '{DESCRIPTION}' => $f->getDescription());
-    
-                $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);
+                if(!is_null($this->tpl)) {
+                    $formFields[$name] = $f;
+                } else {
+                    $tpl = $f->getTpl() ?: $this->defaultFieldTpl;
+        
+                    $placeholders = array('{LABEL}'       => $f->getLabel(),
+                                          '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
+                                          '{ERROR}'       => $this->getFieldError($name),
+                                          '{FIELD}'       => $f->render($this->name),
+                                          '{DESCRIPTION}' => $f->getDescription());
+        
+                    $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);
+                }
             } else {
                 $hiddenFields .= $f->render($this->name);
             }
@@ -258,16 +285,20 @@ class Builder_Form {
             $form->addAttribute('enc-type', $this->encType);
         }
 
-        $container = $this->formContainer;
+        if(!is_null($this->tpl)) {
+            $renderedForm = \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, array('fields' => $formFields));
+        } else {
+            $container = $this->formContainer;
 
-        if(is_null($this->formContainer)) {
-            $container = new Builder_Tag('table');
-            $container->addAttribute('width', '100%');
+            if(is_null($container)) {
+                $container = new Builder_Tag('table');
+                $container->addAttribute('width', '100%');
+            }
+
+            $renderedForm = $container->addContent($formContent)->render();
         }
 
-        $container->addContent($formContent);
-
-        $form->addContent($container->render() . $hiddenFields);
+        $form->addContent($renderedForm . $hiddenFields);
 
         return $form->render();
     }

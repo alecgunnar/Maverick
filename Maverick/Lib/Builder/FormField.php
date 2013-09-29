@@ -176,6 +176,18 @@ class Builder_FormField extends Builder_Tag {
     }
 
     /**
+     * Sets the maximum length for the field
+     *
+     * @param  integer $maxLength
+     * @return self
+     */
+    public function maxLength($maxLength) {
+        $this->addAttribute('maxlength', $maxLength);
+
+        return $this;
+    }
+
+    /**
      * Sets whether the field is required or not
      *
      * @param  string $errorMessage

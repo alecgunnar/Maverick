@@ -104,7 +104,7 @@ class Router {
         }
 
         if(count($expUri) == count($params) || !count($controllers)) {
-            $controller = 'Errors_404';
+            $controllers[0] = 'Errors_404';
         }
 
         return array($controllers[count($controllers) - 1], $params);
