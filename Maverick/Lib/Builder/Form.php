@@ -265,8 +265,8 @@ class Builder_Form {
         
                     $placeholders = array('{LABEL}'       => $f->getLabel(),
                                           '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
-                                          '{ERROR}'       => $this->getFieldError($name),
-                                          '{FIELD}'       => $f->render($this->name),
+                                          '{ERROR}'       => $f->getError(),
+                                          '{FIELD}'       => $f->render(),
                                           '{DESCRIPTION}' => $f->getDescription());
         
                     $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);

@@ -65,6 +65,13 @@ class Builder_FormField extends Builder_Tag {
     protected $validateFor = array();
 
     /**
+     * The errors for this field
+     *
+     * @var array
+     */
+    private $errors = array();
+
+    /**
      * Sets the namespace for the field
      *
      * @param string $namespace
@@ -247,5 +254,36 @@ class Builder_FormField extends Builder_Tag {
         }
 
         return parent::render();
+    }
+
+    /**
+     * Adds an error to this field
+     *
+     * @param string $error
+     */
+    public function setError($error) {
+        $this->errors[] = $error;
+    }
+
+    /**
+     * Gets the first error for this field
+     *
+     * @return string
+     */
+    public function getError() {
+        if(count($this->errors)) {
+            return $this->errors[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets all of the errors for this field
+     *
+     * @return array
+     */
+    public function getErrors() {
+        return $this->errors;
     }
 }

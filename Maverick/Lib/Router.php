@@ -23,6 +23,13 @@ class Router {
     private static $uri = false;
 
     /**
+     * A controller which will be forced to load
+     *
+     * @var string $forceLoad
+     */
+    private static $forceLoad = null;
+
+    /**
      * The controller the page has been routed to
      *
      * @var mixed $controllerObject
@@ -37,9 +44,16 @@ class Router {
     private static $controllerClass = '';
 
     /**
-     * Do the routing
+     * Set a controller to be forcibly loaded
      *
-     * @return null
+     * @param string $controller
+     */
+    public static function forceLoadController($controller) {
+        self::$forceLoad = $controller;
+    }
+
+    /**
+     * Do the routing
      */
     public static function route() {
         if(self::$routed) {
@@ -51,20 +65,25 @@ class Router {
         $appRoot = new \Application\Controller\AppRoot;
         $appRoot->main();
 
-        $defaultController = 'Index';
-        $controller        = '';
-        $params            = array();
+        $controller = '';
+        $params     = array();
 
-        if(\Maverick\Maverick::getConfig('system')->get('auto_route')) {
-            if(self::getUri()) {
-                list($controller, $params) = self::routeAutomatically();
-            }
+        if(self::$forceLoad) {
+            $controller = self::$forceLoad;
         } else {
-            list($controller, $params) = self::routeDefined();
-        }
-
-        if(!$controller) {
-            $controller = $defaultController;
+            $defaultController = 'Index';
+    
+            if(\Maverick\Maverick::getConfig('system')->get('auto_route')) {
+                if(self::getUri()) {
+                    list($controller, $params) = self::routeAutomatically();
+                }
+            } else {
+                list($controller, $params) = self::routeDefined();
+            }
+    
+            if(!$controller) {
+                $controller = $defaultController;
+            }
         }
 
         self::loadController($controller, $params);

@@ -157,12 +157,21 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     /**
      * Sets an error for a field
      *
+     * @throws \Exceptions
      * @param  string $fieldName
      * @param  string $error
      * @return null
      */
     public function setFieldError($fieldName, $error) {
+        $fields = $this->getFields();
+
+        if(!array_key_exists($fieldName, $fields)) {
+            throw new \Exception($fieldName . ' is not a valid field');
+        }
+
         $this->errors[$fieldName][] = $error;
+
+        $fields[$fieldName]->setError($error);
     }
 
     /**

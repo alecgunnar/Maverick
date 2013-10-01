@@ -39,22 +39,70 @@ class DataSource_MySql implements DataSource {
     /** 
      * Posts to a resource
      *
-     * @param  mixed $params
-     * @return mixed
+     * @throws Exception
+     * @param  array  $params=null
+     * @param  array | null  $where=null
+     * @param  string $table=null
      */
-    public function post($params=null) {
-        
+    public function post($params=null, $where=null, $table=null) {
+        if(!is_array($params)) {
+            throw new \Exception('Function post expects parameter 1 to be an array');
+        }
+
+        if(!is_string($table)) {
+            throw new \Exception('Function post expects parameter 3 to be a string');
+        }
+
+        if(!is_null($where)) {
+            if(!is_array($where)) {
+                throw new \Exception('Function post expects parameter 2 to be an array');
+            } else {
+                $whereQuery = ' WHERE ';
+                $i          = 0;
+
+                foreach($where as $c => $v) {
+                    if($i) {
+                        $whereQuery .= ' && '; 
+                    }
+
+                    $whereQuery .= '`' . $c . '` = "' . $v . '"';
+
+                    $i++;
+                }
+            }
+        }
+
+        $set = '';
+
+        foreach($params as $c => $v) {
+            if($set) {
+                $set .= ', '; 
+            }
+
+            $set .= '`' . $c . '` = "' . $v . '"';
+        }
+
+        $this->query('UPDATE `' . $table . '` SET ' . $set . $whereQuery);
     }
 
     /** 
      * Gets a resource -- only good for basic MySql queries if you need
      * to get more advanced, use: \Maverick\Lib\DataSource_MySql::query
      *
-     * @param  array  $params
-     * @param  string $useModel
+     * @throws \Exception
+     * @param  array  $params=null
+     * @param  string $useModel=null
      * @return array
      */
     public function get($params=null, $useModel=null) {
+        if(!is_array($params)) {
+            throw new \Exception('Function get expects parameter 1 to be an array');
+        }
+
+        if(!is_null($useModel) && !is_string($useModel)) {
+            throw new \Exception('Function get expects parameter 2 to be a string');
+        }
+
         if(!array_key_exists('select', $params)) {
             $params['select'] = '*';
         }
@@ -62,6 +110,20 @@ class DataSource_MySql implements DataSource {
         $query = "SELECT " . $params['select'] . " FROM " . $params['from'];
 
         if(array_key_exists('where', $params)) {
+            if(is_array($params['where'])) {
+                $where = '';
+
+                foreach($params['where'] as $c => $v) {
+                    if($where) {
+                        $where .= ' && '; 
+                    }
+
+                    $where .= '`' . $c . '` = "' . $v . '"';
+                }
+
+                $params['where'] = $where;
+            }
+
             $query .= " WHERE " . $params['where'];
         }
 
@@ -95,21 +157,69 @@ class DataSource_MySql implements DataSource {
     /** 
      * Updates a resource
      *
-     * @param  mixed $params
-     * @return mixed
+     * @throws \Exception
+     * @param  mixed  $params=null
+     * @param  string $table
+     * @return boolean | integer
      */
-    public function put($params=null) {
-        
+    public function put($params=null, $table=null) {
+        if(!is_array($params)) {
+            throw new \Exception('Function put expects parameter 1 to be an array');
+        }
+
+        if(!is_string($table)) {
+            throw new \Exception('Function put expects parameter 2 to be a string');
+        }
+
+        $columns = '';
+        $values  = '';
+
+        foreach($params as $col => $val) {
+            if($columns && $values) {
+                $columns .= ',';
+                $values  .= ',';
+            }
+
+            $columns .= '`' . $col . '`';
+            $values  .= '"' . $val . '"';
+        }
+
+        $this->query('INSERT INTO `' . $table . '` (' . $columns . ') VALUES (' . $values . ')');
+
+        if(self::$connection->insert_id) {
+            return self::$connection->insert_id;
+        }
+
+        return false;
     }
 
     /** 
      * Deletes a resource
      *
-     * @param  mixed $params
-     * @return mixed
+     * @throws \Exception
+     * @param  array  $params=null
+     * @param  string $table=null
      */
-    public function delete($params=null) {
-        
+    public function delete($params=null, $table=null) {
+        if(!is_array($params)) {
+            throw new \Exception('Function delete expects parameter 1 to be an array');
+        }
+
+        if(!is_string($table)) {
+            throw new \Exception('Function delete expects parameter 2 to be a string');
+        }
+
+        $where = '';
+
+        foreach($params as $c => $v) {
+            if($where) {
+                $where .= ' && '; 
+            }
+
+            $where .= '`' . $c . '` = "' . $v . '"';
+        }
+
+        $this->query('DELETE FROM `' . $table . '` WHERE ' . $where);
     }
 
     /**
