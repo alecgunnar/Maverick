@@ -21,12 +21,15 @@ class Test extends \Maverick\Lib\Form {
         $this->addField('Input', 'test_text')
             ->label('Text')
             ->maxLength(25);
+
         $this->addField('Input_Email', 'test_email')
             ->label('Email Address')
             ->validate('IsEmail', 'That was not a valid email address!');
+
         $this->addField('TextArea', 'test_textarea')
             ->label('Text Area')
             ->required('This cannot be left empty');
+
         $this->addField('Input_Submit', 'submit')
             ->value('Submit');
     }

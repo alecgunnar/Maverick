@@ -56,8 +56,10 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
 
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
-                if($this->submissionTokenEnabled() && $input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
-                    throw new \Exception('Possible CSRF attempt');
+                if($this->submissionTokenEnabled()) {
+                    if($input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
+                        throw new \Exception('Possible CSRF attempt');
+                    }
                 }
 
                 foreach($this->getFields() as $name => $builder) {

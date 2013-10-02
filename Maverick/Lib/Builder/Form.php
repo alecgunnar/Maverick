@@ -76,7 +76,7 @@ class Builder_Form {
      *
      * @var boolean $submissionToken
      */
-    private $submissionToken = true;
+    private $submissionToken = null;
 
     /**
      * Sets up the form
@@ -98,6 +98,10 @@ class Builder_Form {
      */
     protected function setName($name) {
         $this->name = $name;
+
+        if(is_null($this->submissionToken)) {
+            $this->toggleSubmissionToken();
+        }
     }
 
     /**
@@ -114,7 +118,7 @@ class Builder_Form {
      *
      * @param string $method
      */
-    protected function setMethod($name) {
+    protected function setMethod($method) {
         $this->method = $method;
     }
 
@@ -132,7 +136,7 @@ class Builder_Form {
      *
      * @param string $action
      */
-    protected function setAction($name) {
+    protected function setAction($action) {
         $this->action = $action;
     }
 
@@ -244,7 +248,7 @@ class Builder_Form {
             throw new \Exception('You didn\'t add any fields to the form');
         }
 
-        if($this->name) {
+        if($this->submissionTokenEnabled()) {
             $this->addAntiCSRFToken();
         }
 
@@ -307,10 +311,6 @@ class Builder_Form {
      * Adds an ID field to help prevent CSRF
      */
     private function addAntiCSRFToken() {
-        if(!$this->submissionToken) {
-            return;
-        }
-
         $token = $this->input->get('formSubmissionToken') ?: \Maverick\Lib\Utility::generateToken(25);
 
         $_SESSION[$this->name . '_submission_token'] = $token;
@@ -323,13 +323,17 @@ class Builder_Form {
      * Toggle the submission token feature
      */
     public function toggleSubmissionToken() {
-        $this->submissionToken = $this->submissionToken ? false : true;
+        $this->submissionToken = (is_null($this->submissionToken) || !$this->submissionToken) ? true : false;
     }
 
     /**
      * Says whether or not the submission token feature is enabled
      */
     public function submissionTokenEnabled() {
-        return $this->submissionToken;
+        if($this->name) {
+            return $this->submissionToken;
+        }
+
+        return false;
     }
 }
