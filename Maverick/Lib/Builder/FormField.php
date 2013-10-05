@@ -30,6 +30,13 @@ class Builder_FormField extends Builder_Tag {
     protected $hidden = false;
 
     /**
+     * Auto-fill this field
+     *
+     * @var boolean
+     */
+    protected $autoFill = true;
+
+    /**
      * Is the field required
      *
      * @var boolean
@@ -87,6 +94,26 @@ class Builder_FormField extends Builder_Tag {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * Toggles the auto-fill setting
+     *
+     * @return self
+     */
+    public function toggleAutoFile() {
+        $this->autoFill = $this->autoFill ? false  : true;
+
+        return $this;
+    }
+
+    /**
+     * Gets whether or not the field has auto-fill enabled
+     *
+     * @return boolean
+     */
+    public function isAutoFill() {
+        return $this->autoFill;
     }
 
     /**

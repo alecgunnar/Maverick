@@ -16,5 +16,7 @@ class Builder_FormField_Input_Password extends Builder_FormField_Input {
      */
     public function __construct($name) {
         parent::__construct($name, 'password');
+
+        $this->autoFill = false;
     }
 }

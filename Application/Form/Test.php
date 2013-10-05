@@ -26,6 +26,9 @@ class Test extends \Maverick\Lib\Form {
             ->label('Email Address')
             ->validate('IsEmail', 'That was not a valid email address!');
 
+        $this->addField('Input_Password', 'test_password')
+            ->label('Password');
+
         $this->addField('TextArea', 'test_textarea')
             ->label('Text Area')
             ->required('This cannot be left empty');

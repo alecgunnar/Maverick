@@ -258,7 +258,9 @@ class Builder_Form {
 
         foreach($this->fields as $name => $f) {
             if($value = $this->input->get($name)) {
-                $f->value($value);
+                if($f->isAutoFill()) {
+                    $f->value($value);
+                }
             }
 
             if(!$f->isHidden()) {
