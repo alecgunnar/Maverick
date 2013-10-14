@@ -95,7 +95,7 @@ class Router {
      * @return array
      */
     private static function routeAutomatically() {
-        $pathToController = APPLICATION_PATH . 'Controller' . DS;
+        /*$pathToController = APPLICATION_PATH . 'Controller' . DS;
         $controller       = '';
         $expUri           = $params = explode('/', self::getUri());
         $controllers      = array();
@@ -126,7 +126,40 @@ class Router {
             $controllers[0] = 'Errors_404';
         }
 
-        return array($controllers[count($controllers) - 1], $params);
+        return array($controllers[count($controllers) - 1], $params);*/
+
+        $pathToController = APPLICATION_PATH . 'Controller' . DS;
+        $expUri           = $params = explode('/', self::getUri());
+        $controller       = 'Index';
+        $namespace        = '';
+
+        foreach($expUri as $u) {
+            $uri = ucfirst($u);
+
+            if(is_dir($pathToController . $uri . DS)) {
+                $pathToController .= $uri . DS;
+                $namespace         = $uri . '_';
+                
+                array_shift($params);
+                
+                continue;
+            } else {
+                if(file_exists($pathToController . $uri . PHP_EXT)) {
+                    $controller = $uri;
+
+                    array_shift($params);
+                }
+            }
+            
+            break;
+        }
+
+        if(count($expUri) == count($params)) {
+            $namespace  = 'Errors_';
+            $controller = '404';
+        }
+
+        return array($namespace . $controller, $params);
     }
     
     /**
