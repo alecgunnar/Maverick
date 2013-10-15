@@ -73,7 +73,7 @@ class Router {
         } else {
             $defaultController = 'Index';
     
-            if(\Maverick\Maverick::getConfig('system')->get('auto_route')) {
+            if(\Maverick\Maverick::getConfig('System')->get('auto_route')) {
                 if(self::getUri()) {
                     list($controller, $params) = self::routeAutomatically();
                 }
@@ -95,71 +95,36 @@ class Router {
      * @return array
      */
     private static function routeAutomatically() {
-        /*$pathToController = APPLICATION_PATH . 'Controller' . DS;
-        $controller       = '';
-        $expUri           = $params = explode('/', self::getUri());
-        $controllers      = array();
-
-        foreach($expUri as $uri) {
-            $i       = self::convertUri($uri);
-            $shifted = false;
-
-            if(file_exists($pathToController . $i . PHP_EXT)) {
-                $controllers[] = $controller . $i;
-
-                array_shift($params);
-
-                $shifted = true;
-            }
-            
-            if(is_dir($pathToController . $i)) {
-                $controller       .= $i . '_';
-                $pathToController .= $i . DS;
-
-                if(!$shifted) {
-                    array_shift($params);
-                }
-            }
-        }
-
-        if(count($expUri) == count($params) || !count($controllers)) {
-            $controllers[0] = 'Errors_404';
-        }
-
-        return array($controllers[count($controllers) - 1], $params);*/
-
         $pathToController = APPLICATION_PATH . 'Controller' . DS;
         $expUri           = $params = explode('/', self::getUri());
-        $controller       = 'Index';
         $namespace        = '';
+        $controller       = '';
 
         foreach($expUri as $u) {
-            $uri = ucfirst($u);
+            $uri   = self::convertUri($u);
+            $shift = false;
 
-            if(is_dir($pathToController . $uri . DS)) {
-                $pathToController .= $uri . DS;
-                $namespace         = $uri . '_';
-                
-                array_shift($params);
-                
-                continue;
-            } else {
-                if(file_exists($pathToController . $uri . PHP_EXT)) {
-                    $controller = $uri;
-
-                    array_shift($params);
-                }
+            if(file_exists($pathToController . $uri . PHP_EXT)) {
+                $controller = $namespace . $uri;
+                $shift      = true;
             }
             
-            break;
+            if(is_dir($pathToController . $uri)) {
+                $namespace        .= $uri . '_';
+                $pathToController .= $uri . DS;
+                $shift             = true;
+            }
+
+            if($shift) {
+                array_shift($params);
+            }
         }
 
         if(count($expUri) == count($params)) {
-            $namespace  = 'Errors_';
-            $controller = '404';
+            $controller = 'Errors_404';
         }
 
-        return array($namespace . $controller, $params);
+        return array($controller, $params);
     }
     
     /**
@@ -169,7 +134,7 @@ class Router {
      * @return array
      */
     private static function routeDefined() {
-        $routes     = \Maverick\Maverick::getConfig('routes')->getAsArray();
+        $routes     = \Maverick\Maverick::getConfig('Routes')->getAsArray();
         $controller = '';
         $params     = array();
 
@@ -186,6 +151,10 @@ class Router {
         }
 
         if(!$controller) {
+            if(\Maverick\Maverick::getConfig('System')->get('default_auto_route')) {
+                return self::routeAutomatically();
+            }
+
             $controller = 'Errors_404';
         }
 
