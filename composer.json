@@ -13,7 +13,7 @@
         "twig/twig": "1.*",
         "php": ">=5.4"
     },
-    "require-div": {
+    "require-dev": {
         "phpunit/phpunit": "3.7.*"
     }
 }
