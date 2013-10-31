@@ -9,11 +9,11 @@ namespace Maverick\Lib;
 
 class Builder_FormField extends Builder_Tag {
     /**
-     * Then namespace for this field
+     * The form this field is a part of
      *
-     * @var string
+     * @var \Maverick\Lib\Form | null
      */
-    private $ns = '';
+    protected $form = null;
 
     /**
      * The name of the field
@@ -93,24 +93,24 @@ class Builder_FormField extends Builder_Tag {
     private $errors = array();
 
     /**
-     * Sets the namespace for the field
+     * Sets the form for this field
      *
-     * @param  string $namespace
+     * @param  string $form
      * @return self
      */
-    public function setNamespace($namespace) {
-        $this->ns = $namespace;
+    public function setForm($form) {
+        $this->form = $form;
 
         return $this;
     }
 
     /**
-     * Gets the namespace for this field
+     * Gets the form this field is a part of
      *
      * @return string
      */
-    public function getNamespace() {
-        return $this->ns;
+    public function getForm() {
+        return $this->form;
     }
 
     /**
@@ -119,8 +119,8 @@ class Builder_FormField extends Builder_Tag {
      * @return string
      */
     public function getFullName() {
-        if($this->ns) {
-            return $this->ns . '[' . $this->name . ']';
+        if($this->form->getName()) {
+            return $this->form->getName() . '[' . $this->name . ']';
         }
 
         return $this->name;
@@ -335,19 +335,6 @@ class Builder_FormField extends Builder_Tag {
     }
 
     /**
-     * Renders the field
-     *
-     * @return string
-     */
-    public function render() {
-        if($this->ns) {
-            $this->addAttribute('name', $this->getFullName());
-        }
-
-        return parent::render();
-    }
-
-    /**
      * Adds an error to this field
      *
      * @param string $error
@@ -376,5 +363,28 @@ class Builder_FormField extends Builder_Tag {
      */
     public function getErrors() {
         return $this->errors;
+    }
+
+    /**
+     * Renders the field
+     *
+     * @return string
+     */
+    public function render() {
+        if($this->form->getName()) {
+            $this->addAttribute('name', $this->getFullName());
+        }
+
+        if($this->tpl) {
+            $fieldVariables = array('label'       => $this->getLabel(),
+                                    'required'    => $this->form->getRequiredMarker($this->isRequired()),
+                                    'error'       => $this->getError(),
+                                    'field'       => parent::render(),
+                                    'description' => $this->getDescription());
+
+            return \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, array_merge($this->getTplVars(), $fieldVariables));
+        }
+
+        return parent::render();
     }
 }

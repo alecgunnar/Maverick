@@ -113,7 +113,7 @@ class Builder_FormField_Input_Radio extends Builder_FormField_Input {
 
             $field = new Builder_FormField_Input($this->name, 'radio');
             $field->value($value)
-                ->setNamespace($this->getNamespace())
+                ->setForm($this->form)
                 ->addAttribute('id', $id);
 
             if($this->value == $value) {

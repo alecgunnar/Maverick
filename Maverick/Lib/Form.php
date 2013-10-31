@@ -37,11 +37,11 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     protected $errors = array(); 
 
     /**
-     * Sets up the form and checks it
-     *
-     * @return null
+     * Sets up the form
      */
     public function __construct() {
+        parent::__construct();
+
         $this->build();
         $this->process();
     }

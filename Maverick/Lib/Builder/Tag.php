@@ -192,11 +192,7 @@ class Builder_Tag {
 
         if(count($this->attributes)) {
             foreach($this->attributes as $l => $v) {
-                $return .= ' ' . $l;
-
-                if($v) {
-                    $return .= '="' . addslashes($v) . '"';
-                }
+                $return .= ' ' . $l . '="' . addslashes($v) . '"';
             }
         }
 
