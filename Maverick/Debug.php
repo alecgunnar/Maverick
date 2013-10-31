@@ -15,7 +15,7 @@ function dump() {
             var_dump($a);
             $dumped = ob_get_clean();
 
-            $output .= '<pre style="background:#CCCCCC; border:1px solid #333333; padding:10px; margin:10px;">' . $dumped . '</pre>';
+            $output .= '<pre style="background:#CCCCCC; border:1px solid #333333; padding:10px; margin:10px;">' . htmlentities($dumped, ENT_QUOTES) . '</pre>';
         }
     }
 

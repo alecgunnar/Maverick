@@ -91,7 +91,7 @@ class Output {
      * @return null
      */
     public static function setPageLayout($layout) {
-        $this->pageLayout = $layout;
+        self::$pageLayout = $layout;
     }
 
     /**
@@ -145,10 +145,24 @@ class Output {
                 self::setGlobalVariable($k, $l);
             }
         } else {
-            throw new \Exception('An empty array or a string was set to ' . __NAMESPACE__
+            throw new \Exception('An empty array or a string was sent to ' . __NAMESPACE__
                                . '\Controller::setVariables(), an array with at least '
                                . 'one index is required.');
         }
+    }
+
+    /**
+     * Returns a specific global variable
+     *
+     * @param  string $key
+     * @return mixed
+     */
+    public static function getGlobalVariable($name) {
+        if(array_key_exists($name, self::$globalVariables)) {
+            return self::$globalVariables[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -168,9 +182,9 @@ class Output {
      */
     public static function addCssFile($fileName) {
         if(!preg_match('~^http~i', $fileName)) {
-            self::$cssFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('css') . $fileName . '.css';
+            self::$cssFiles[] = \Maverick\Maverick::getConfig('System')->get('url') . \Maverick\Maverick::getConfig('paths')->get('public')->get('css') . $fileName . '.css';
         } else {
-            self::$cssFiles[] = $fileName;
+            self::$cssFiles[] = str_replace('http://', 'https://', $fileName);
         }
     }
 
@@ -191,9 +205,9 @@ class Output {
      */
     public static function addJsFile($fileName) {
         if(!preg_match('~^http~i', $fileName)) {
-            self::$jsFiles[] = '/' . \Maverick\Maverick::getConfig('paths')->get('public')->get('js') . $fileName . '.js';
+            self::$jsFiles[] = \Maverick\Maverick::getConfig('System')->get('url') . \Maverick\Maverick::getConfig('paths')->get('public')->get('js') . $fileName . '.js';
         } else {
-            self::$jsFiles[] = $fileName;
+            self::$jsFiles[] = str_replace('http://', 'https://', $fileName);
         }
     }
 

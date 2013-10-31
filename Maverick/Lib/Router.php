@@ -20,7 +20,7 @@ class Router {
      *
      * @var string $uri
      */
-    private static $uri = false;
+    private static $uri = '';
 
     /**
      * A controller which will be forced to load

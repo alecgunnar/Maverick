@@ -20,7 +20,11 @@ class Test extends \Maverick\Lib\Form {
 
         $this->addField('Input', 'test_text')
             ->label('Text')
-            ->maxLength(25);
+            ->maxLength(25)
+            ->tpl('field');
+
+        $this->addField('Input_File', 'test_file')
+            ->label('File');
 
         $this->addField('Input_Email', 'test_email')
             ->label('Email Address')
@@ -30,13 +34,42 @@ class Test extends \Maverick\Lib\Form {
             ->label('Password');
 
         $this->addField('TextArea', 'test_textarea')
-            ->label('Text Area')
-            ->required('This cannot be left empty');
+            ->label('Text Area');
+
+        $this->addField('Input_CheckBox', 'test_checkbox')
+            ->label('Check Box')
+            ->addLabel('Check this box')
+            ->value('1');
+
+        $this->addField('Input_Radio', 'test_radio')
+            ->label('Radio Buttons')
+            ->addOptions(array('a' => '1',
+                               'b' => '2',
+                               'c' => '3'))
+            ->addOption('d', '4');
+
+        $this->addField('Select', 'test_select')
+            ->label('Select')
+            ->value('e')
+            ->addOptions(array('a' => '1',
+                               'b' => '2',
+                               'c' => '3'))
+            ->addGroup('Option Group', array('d' => '4', 'e' => '5', 'f' => '6'));
+
+        $this->addField('Select', 'test_select_multiple')
+            ->label('Select Multiple')
+            ->multiple()
+            ->value('e')
+            ->addOptions(array('a' => '1',
+                               'b' => '2',
+                               'c' => '3'));
 
         $this->addField('Input_Submit', 'submit')
             ->value('Submit');
     }
     
     public function validate() { }
-    public function submit() { }
+    public function submit() {
+        dump('Submission successful!');
+    }
 }

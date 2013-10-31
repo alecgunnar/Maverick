@@ -48,24 +48,18 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
 
     /**
      * Processes the form
-     *
-     * @throws \Exception
      */
     private function process() {
         $input = $this->getModel();
 
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
-                if($this->submissionTokenEnabled()) {
-                    if($input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
-                        throw new \Exception('Possible CSRF attempt');
-                    }
-                }
+                foreach($this->getFields() as $name => $field) {
+                    $field->setValue($input->get($name));
 
-                foreach($this->getFields() as $name => $builder) {
-                    if(count(($validateFor = $builder->getValidateFor()))) {
+                    if(count(($validateFor = $field->getValidateFor()))) {
                         foreach($validateFor as $type => $validator) {
-                            $validator->setValue($input->get($name));
+                            $validator->setValue($field->getValue());
 
                             if(!$validator->isValid()) {
                                 $this->setFieldError($name, $validator->getErrorMessage());
@@ -78,9 +72,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
 
                 if($this->validate() === false) {
                     $this->isValid = false;
-                }
-
-                if(is_null($this->isValid)) {
+                } elseif(is_null($this->isValid)) {
                     $this->isValid = true;
                 }
             } else {
@@ -100,22 +92,18 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      * @return boolean
      */
     public function getStatus() {
-        if(is_null($this->status)) {
-            if(strtolower($_SERVER['REQUEST_METHOD']) == strtolower($this->getMethod())) {
-                $input = $this->getModel();
-    
-                foreach($this->getFields() as $name => $builder) {
-                    if(is_null($input->get($name))) {
-                        $this->status = false;
-                    }
-                }
+        $input = $this->getModel();
 
-                if(is_null($this->status)) {
-                    $this->status = true;
+        if($input->get($this->getName() . '_submit') == 'submitted') {
+            $this->status = true;
+
+            if($this->submissionTokenEnabled()) {
+                if($input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
+                    $this->status = false;
                 }
-            } else {
-                $this->status = false;
             }
+        } else {
+            $this->status = false;
         }
 
         return $this->status;
@@ -200,7 +188,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      *
      * @return null
      */
-    abstract public function build();
+    abstract protected function build();
 
     /**
      * Validates the form

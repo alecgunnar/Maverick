@@ -65,11 +65,25 @@ class Builder_FormField extends Builder_Tag {
     protected $tpl = '';
 
     /**
+     * Variables to be sent to the tpl for this field
+     *
+     * @var array
+     */
+    private $tplVars = array();
+
+    /**
      * What should be validated for
      *
      * @var array
      */
     protected $validateFor = array();
+
+    /**
+     * The value of this field
+     *
+     * @var $value
+     */
+    protected $value = '';
 
     /**
      * The errors for this field
@@ -81,10 +95,35 @@ class Builder_FormField extends Builder_Tag {
     /**
      * Sets the namespace for the field
      *
-     * @param string $namespace
+     * @param  string $namespace
+     * @return self
      */
     public function setNamespace($namespace) {
         $this->ns = $namespace;
+
+        return $this;
+    }
+
+    /**
+     * Gets the namespace for this field
+     *
+     * @return string
+     */
+    public function getNamespace() {
+        return $this->ns;
+    }
+
+    /**
+     * Gets the full name of the field, with the namespace if there is one
+     *
+     * @return string
+     */
+    public function getFullName() {
+        if($this->ns) {
+            return $this->ns . '[' . $this->name . ']';
+        }
+
+        return $this->name;
     }
 
     /**
@@ -101,7 +140,7 @@ class Builder_FormField extends Builder_Tag {
      *
      * @return self
      */
-    public function toggleAutoFile() {
+    public function toggleAutoFill() {
         $this->autoFill = $this->autoFill ? false  : true;
 
         return $this;
@@ -171,10 +210,15 @@ class Builder_FormField extends Builder_Tag {
      * Sets the field tpl
      *
      * @param  string $tpl
+     * @param  array  $vars
      * @return self
      */
-    public function tpl($tpl) {
+    public function tpl($tpl, array $vars=null) {
         $this->tpl = $tpl;
+
+        if(count($vars)) {
+            $this->tplVars = $vars;
+        }
 
         return $this;
     }
@@ -189,6 +233,15 @@ class Builder_FormField extends Builder_Tag {
     }
 
     /**
+     * Gets the tpl variables
+     *
+     * @return array
+     */
+    public function getTplVars() {
+        return $this->tplVars;
+    }
+
+    /**
      * Sets the value for the field
      *
      * @param  string $value
@@ -198,6 +251,17 @@ class Builder_FormField extends Builder_Tag {
         $this->addAttribute('value', $value);
 
         return $this;
+    }
+
+    /**
+     * Sets the value of the field to an attribute of the class
+     * this will not make the value show up in the HTML form field
+     * use value() for that.
+     *
+     * @param string $value
+     */
+    public function setValue($value) {
+        $this->value = $value;
     }
 
     /**
@@ -277,7 +341,7 @@ class Builder_FormField extends Builder_Tag {
      */
     public function render() {
         if($this->ns) {
-            $this->addAttribute('name', $this->ns . '[' . $this->name . ']');
+            $this->addAttribute('name', $this->getFullName());
         }
 
         return parent::render();

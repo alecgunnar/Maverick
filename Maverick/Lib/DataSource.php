@@ -9,34 +9,22 @@ namespace Maverick\Lib;
 
 interface DataSource {
     /** 
-     * Posts to a resource
-     *
-     * @param  mixed $params
-     * @return mixed
+     * Posts a resource
      */
-    public function post($params=null);
+    public function post();
 
     /** 
      * Gets a resource
-     *
-     * @param  mixed $params
-     * @return mixed
      */
-    public function get($params=null);
+    public function get();
 
     /** 
      * Updates a resource
-     *
-     * @param  mixed $params
-     * @return mixed
      */
-    public function put($params=null);
+    public function put();
 
     /** 
      * Deletes a resource
-     *
-     * @param  mixed $params
-     * @return mixed
      */
-    public function delete($params=null);
+    public function delete();
 }

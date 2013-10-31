@@ -9,80 +9,170 @@ namespace Maverick\Lib;
 
 class Builder_FormField_Select extends Builder_FormField {
     /**
-     * Options for this field
+     * The options provided with these radio buttons
      *
      * @var array
      */
     private $options = array();
 
     /**
+     * Is a multiple select field
+     *
+     * @var boolean
+     */
+    private $multiple = false;
+
+    /**
      * Sets up the field
      *
-     * @param  string $name
-     * @return null
+     * @param string $name
      */
     public function __construct($name) {
-        parent::__construct('select');
+        $this->name = $name;
     }
 
     /**
-     * Adds options to the field
+     * Determines if this checkbox is checked
      *
-     * @param  string | array $value
-     * @param  string         $label
+     * @param  string $value
      * @return self
      */
-    public function addOption($value, $label='') {
-        if(is_array($value)) {
-            $this->options = array_merge($this->options, $options);
-        } else {
-            $this->options[$value] = $label;
+    public function value($value) {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Adds options to this field
+     *
+     * @param  array $options
+     * @return self
+     */
+    public function addOptions($options) {
+        if(count($options)) {
+            foreach($options as $value => $label) {
+                $this->addOption($value, $label);
+            }
         }
 
         return $this;
     }
 
     /**
-     * Renders the select field
+     * Adds options to this field
      *
+     * @param  string        $value
+     * @param  string| array $label
+     * @return self
+     */
+    public function addOption($value, $label='') {
+        $this->options[$value] = $label;
+
+        return $this;
+    }
+    
+
+    /**
+     * Add option group
+     *
+     * @param  string $label
+     * @param  array  $options
+     * @return self
+     */
+    public function addGroup($label, $options) {
+        $this->addOption($label, $options);
+    }
+
+    /**
+     * Sets this as a multiple select field
+     *
+     * @return self
+     */
+    public function multiple() {
+        $this->multiple = true;
+
+        return $this;
+    }
+
+    /**
+     * Renders this field
+     *
+     * @throws \Exception
      * @return string
      */
     public function render() {
+        if(!count($this->options)) {
+            throw new \Exception('No options were added to field: "' . $this->name . '"');
+        }
+
         $options = $this->renderOptions($this->options);
 
-        parent::addContent($options);
+        $multi = '';
 
-        return parent::render();
+        if($this->multiple) {
+            $multi = '[]';
+        }
+
+        $select = new Builder_Tag('select');
+        $select->addAttribute('name', $this->getFullName() . $multi)
+            ->setContent($options);
+
+        if($this->multiple) {
+            $select->addAttribute('multiple', '');
+        }
+
+        return $select->render();
     }
 
     /**
-     * Renders the options
+     * Renders a group of options
      *
-     * @param  array $opts
+     * @param  array $options
      * @return string
      */
-    public function renderOptions($opts) {
-        $returnOptions = '';
+    private function renderOptions($options) {
+        $opts = '';
 
-        if(count($opts)) {
-            foreach($opts as $v => $l) {
-                if(is_array($l)) {
-                    $returnOptions .= '<optgroup label="' . $v . '">' . $this->renderOptions($l) . '</optgroup>';
-                } else {
-                    $returnOptions .= '<option value="' . $v . '">' . $l . '</option>';
-                }
+        foreach($options as $value => $label) {
+            $opt = new Builder_Tag('option');
+            $opt->addAttribute('value', $value)
+                ->setContent($label);
+
+            if($this->isSelected($value)) {
+                $opt->addAttribute('selected', '');
+            }
+
+            if(is_array($label)) {
+                $optGroup = new Builder_Tag('optgroup');
+                $optGroup->addAttribute('label', $value)
+                    ->setContent($this->renderOptions($label));
+
+                $opts .= $optGroup->render() . '\n';
+            } else {
+                $opts .= $opt->render() . '\n';
             }
         }
 
-        return $returnOptions;
+        return $opts;
     }
 
     /**
-     * Makes this a multi-select field
+     * Checks if a value is selected
      *
-     * @return null
+     * @param string $value
      */
-    public function multiple() {
-        $this->addAttribute('multiple', 'multiple');
+    private function isSelected($value) {
+        if($this->value instanceof \Maverick\Lib\Model_Input) {
+            if(array_key_exists($value, array_flip($this->value->getAsArray()))) {
+                return true;
+            }
+        } else {
+            if($value == $this->value) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

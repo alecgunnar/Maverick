@@ -2,8 +2,6 @@
 
 namespace Maverick;
 
-session_start();
-
 if(!defined('DS'))               define('DS',               DIRECTORY_SEPARATOR);
 if(!defined('PHP_EXT'))          define('PHP_EXT',          '.php');
 

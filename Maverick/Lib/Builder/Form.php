@@ -89,6 +89,10 @@ class Builder_Form {
         $this->name   = $name;
         $this->method = $method ?: 'post';
         $this->action = $action ?: Router::getUri();
+
+        if(!isset($_SESSION)) {
+            $this->submissionToken = false;
+        }
     }
 
     /**
@@ -245,19 +249,25 @@ class Builder_Form {
      */
     public function render() {
         if(!count($this->fields)) {
-            throw new \Exception('You didn\'t add any fields to the form');
+            throw new \Exception('No fields have been added to the form');
+        }
+
+        if(!$this->name) {
+            throw new \Exception('No name was set for the form');
         }
 
         if($this->submissionTokenEnabled()) {
             $this->addAntiCSRFToken();
         }
 
+        $this->addCheckField();
+
         $formFields   = array();
         $formContent  = '';
         $hiddenFields = '';
 
         foreach($this->fields as $name => $f) {
-            if($value = $this->input->get($name)) {
+            if($value = $f->getValue()) {
                 if($f->isAutoFill()) {
                     $f->value($value);
                 }
@@ -267,15 +277,25 @@ class Builder_Form {
                 if(!is_null($this->tpl)) {
                     $formFields[$name] = $f;
                 } else {
-                    $tpl = $f->getTpl() ?: $this->defaultFieldTpl;
-        
-                    $placeholders = array('{LABEL}'       => $f->getLabel(),
-                                          '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
-                                          '{ERROR}'       => $f->getError(),
-                                          '{FIELD}'       => $f->render(),
-                                          '{DESCRIPTION}' => $f->getDescription());
-        
-                    $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $tpl);
+                    $fieldVariables = array('label'       => $f->getLabel(),
+                                            'required'    => $this->getRequiredMarker($f->isRequired()),
+                                            'error'       => $f->getError(),
+                                            'field'       => $f->render(),
+                                            'description' => $f->getDescription());
+
+                    if($tpl = $f->getTpl()) {
+                        $variables = array_merge($f->getTplVars(), $fieldVariables);
+
+                        $formContent .= \Maverick\Lib\Output::getTplEngine()->getTemplate($tpl, $variables);
+                    } else {
+                        $placeholders = array();
+
+                        array_walk($fieldVariables, function($value, $key) use(&$placeholders) {
+                            $placeholders['{' . strtoupper($key) . '}'] = $value;
+                        });
+
+                        $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $this->defaultFieldTpl);
+                    }
                 }
             } else {
                 $hiddenFields .= $f->render($this->name);
@@ -283,22 +303,21 @@ class Builder_Form {
         }
 
         $form = new Builder_Tag('form');
-        $form->addAttributes(array('name'     => $this->name,
-                                   'method'   => $this->method,
-                                   'action'   => $this->action));
+        $form->addAttributes(array('name'   => $this->name,
+                                   'method' => $this->method,
+                                   'action' => $this->action));
 
         if($this->encType) {
             $form->addAttribute('enc-type', $this->encType);
         }
 
         if(!is_null($this->tpl)) {
-            $renderedForm = \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, array('fields' => $formFields));
+            $renderedForm = \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, array('form' => $this, 'fields' => $formFields));
         } else {
             $container = $this->formContainer;
 
             if(is_null($container)) {
                 $container = new Builder_Tag('table');
-                $container->addAttribute('width', '100%');
             }
 
             $renderedForm = $container->addContent($formContent)->render();
@@ -325,7 +344,9 @@ class Builder_Form {
      * Toggle the submission token feature
      */
     public function toggleSubmissionToken() {
-        $this->submissionToken = (is_null($this->submissionToken) || !$this->submissionToken) ? true : false;
+        if(isset($_SESSION)) {
+            $this->submissionToken = (is_null($this->submissionToken) || !$this->submissionToken) ? true : false;
+        }
     }
 
     /**
@@ -337,5 +358,13 @@ class Builder_Form {
         }
 
         return false;
+    }
+
+    /**
+     * Adds a hidden check field to the form
+     */
+    private function addCheckField() {
+        $this->addField('Input_Hidden', $this->name . '_submit')
+            ->value('submitted');
     }
 }

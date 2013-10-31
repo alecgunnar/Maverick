@@ -99,6 +99,29 @@ class Builder_Tag {
     }
 
     /**
+     * Gets all attributes
+     *
+     * @return array
+     */
+    public function getAttributes($name) {
+        return $this->attributes;
+    }
+
+    /**
+     * Gets the value of an attribute
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function getAttribute($name) {
+        if(array_key_exists($name, $this->attributes)) {
+            return $this->attributes[$name];
+        }
+
+        return null;
+    }
+
+    /**
      * An alias for addAttribute
      *
      * @param  string $name
@@ -169,7 +192,11 @@ class Builder_Tag {
 
         if(count($this->attributes)) {
             foreach($this->attributes as $l => $v) {
-                $return .= ' ' . $l . '="' . addslashes($v) . '"';
+                $return .= ' ' . $l;
+
+                if($v) {
+                    $return .= '="' . addslashes($v) . '"';
+                }
             }
         }
 

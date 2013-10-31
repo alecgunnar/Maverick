@@ -72,14 +72,21 @@ class DataSource_MySql implements DataSource {
             }
         }
 
-        $set = '';
+        $set   = '';
+        $setTo = '';
 
         foreach($params as $c => $v) {
             if($set) {
                 $set .= ', '; 
             }
 
-            $set .= '`' . $c . '` = "' . $v . '"';
+            if(is_null($v)) {
+                $setTo = 'null';
+            } else {
+                $setTo = '"' . $v . '"';
+            }
+
+            $set .= '`' . $c . '` = ' . $setTo;
         }
 
         $this->query('UPDATE `' . $table . '` SET ' . $set . $whereQuery);
@@ -173,6 +180,7 @@ class DataSource_MySql implements DataSource {
 
         $columns = '';
         $values  = '';
+        $giveVal = '';
 
         foreach($params as $col => $val) {
             if($columns && $values) {
@@ -180,8 +188,14 @@ class DataSource_MySql implements DataSource {
                 $values  .= ',';
             }
 
+            if(is_null($val)) {
+                $giveVal = 'null';
+            } else {
+                $giveVal = '"' . $val . '"';
+            }
+
             $columns .= '`' . $col . '`';
-            $values  .= '"' . $val . '"';
+            $values  .= $giveVal;
         }
 
         $this->query('INSERT INTO `' . $table . '` (' . $columns . ') VALUES (' . $values . ')');
