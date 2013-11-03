@@ -4,8 +4,10 @@ namespace Application\Controller;
 
 use Maverick\Lib\Output;
 
-class AppRoot extends \Maverick\Lib\Controller {
-    public function main() {
+class AppRoot {
+    public function preload() {
         Output::addCssFile('main');
     }
+
+    public function postload() { }
 }

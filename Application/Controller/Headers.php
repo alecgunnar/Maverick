@@ -8,6 +8,8 @@ class Headers extends \Maverick\Lib\Controller {
     public function main() {
         Output::setPageTitle('Headers');
 
-        \Maverick\Lib\Http::location('/', '123');
+        $db = new \Maverick\Lib\DataSource_MySql;
+
+//        \Maverick\Lib\Http::location('/', '123');
     }
 }

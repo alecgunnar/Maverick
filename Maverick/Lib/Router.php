@@ -63,7 +63,7 @@ class Router {
         self::$routed = true;
 
         $appRoot = new \Application\Controller\AppRoot;
-        $appRoot->main();
+        $appRoot->preload();
 
         $controller = '';
         $params     = array();
@@ -87,6 +87,8 @@ class Router {
         }
 
         self::loadController($controller, $params);
+
+        $appRoot->postload();
     }
     
     /**
