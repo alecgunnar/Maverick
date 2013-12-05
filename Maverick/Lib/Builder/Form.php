@@ -89,7 +89,7 @@ class Builder_Form {
      * Sets up the form
      */
     public function __construct() {
-        $this->action = '/' . Router::getUri();
+        $this->action = Router::getUri()->getUri();
 
         if(!isset($_SESSION)) {
             $this->submissionToken = false;

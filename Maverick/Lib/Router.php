@@ -18,9 +18,16 @@ class Router {
     /**
      * The URI for the current page
      *
-     * @var string $uri
+     * @var \Maverick\Lib\Model_Uri $uri
      */
     private static $uri = '';
+
+    /**
+     * The URN
+     *
+     * @var string $urn
+     */
+    private static $urn = '';
 
     /**
      * A controller which will be forced to load
@@ -98,7 +105,7 @@ class Router {
      */
     private static function routeAutomatically() {
         $pathToController = APPLICATION_PATH . 'Controller' . DS;
-        $expUri           = $params = explode('/', self::getUri());
+        $expUri           = $params = explode('/', self::$uri->getResourcePath());
         $namespace        = '';
         $controller       = '';
 
@@ -144,10 +151,8 @@ class Router {
             throw new \Exception('You have not defined any routes.');
         }
 
-        $uri = self::getUri();
-
         foreach($routes as $match => $cntrlr) {
-            if(preg_match('~^(?:' . trim($match, '/') . ')$~', $uri, $params)) {
+            if(preg_match('~^(?:' . trim($match, '/') . ')$~', self::$uri->getResourcePath(), $params)) {
                 $controller = $cntrlr;
             }
         }
@@ -225,7 +230,7 @@ class Router {
             $uri = $_SERVER['ORIG_PATH_INFO'];
         }
 
-        self::$uri = trim(str_replace('index.php', '', $uri), '/');
+        self::$uri = Builder_Uri::deconstructUri((array_key_exists('HTTPS', $_SERVER) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     }
 
     /**

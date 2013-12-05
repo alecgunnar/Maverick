@@ -51,7 +51,8 @@ class Test extends \Maverick\Lib\Form {
         $this->addField('Select', 'test_select')
             ->label('Select')
             ->value('e')
-            ->addOptions(array('a' => '1',
+            ->addOptions(array('0' => 'This option is zero',
+                               'a' => '1',
                                'b' => '2',
                                'c' => '3'))
             ->addGroup('Option Group', array('d' => '4', 'e' => '5', 'f' => '6'));

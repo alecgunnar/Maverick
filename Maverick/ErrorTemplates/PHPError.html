@@ -2,11 +2,87 @@
 <html>
   <head>
     <title>There was an error!</title>
+    
+    <style type="text/css">
+    body {
+        font-family: Helvetica;
+        margin: 0 auto;
+        padding: 0;
+        width: 900px;
+    }
+    
+    #branding {
+        float: right;
+        margin: 20px 0 0;
+    }
+    
+    h1 {
+        padding: 10px 0px;
+        margin: 0;
+    }
+    
+    #content {
+        padding: 20px 0;
+    }
+    
+    #message {
+        background: #F08080;
+        padding: 10px;
+        border: 3px dashed #B22222;
+    }
+    
+    #trace table {
+        width: 900px;
+        margin-top: 20px;
+    }
+    
+    #trace table tr {
+        background: #EEE8AA;
+    }
+    
+    #trace table tr td,
+    #trace table tr th {
+        padding: 10px;
+        border: 1px solid #000;
+    }
+    
+    #trace table tr th {
+        background: #800000;
+        color: #FFF;
+    }
+    
+    #trace table tr th:first-child {
+        width: 100px;
+    }
+    
+    #trace table tr th:nth-child(2) {
+        width: 200px;
+    }
+    
+    #trace table tr th:last-child {
+        width: 600px;
+    }
+    </style>
   </head>
   <body>
+    <div id="branding">Maverick - PHP Framework</div>
     <h1>There was an error!</h1>
-    [#%d] %s<br />
-    <br />
-    File: <strong>%s</strong> at line: <strong>%d</strong>
+    <div id="content">
+      <div id="message">
+        [#%d] %s<br />
+        <br />
+        File: <strong>%s</strong> at line: <strong>%d</strong>
+      </div>
+      <div id="trace">
+        <table>
+          <tr>
+            <th>Line:</th>
+            <th>Function:</th>
+            <th>File:</th>
+          </tr>
+          %s
+        </table>
+      </div>
+    </div>
   </body>
 </html>

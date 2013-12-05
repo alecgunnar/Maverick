@@ -66,7 +66,7 @@ class Validator_IsEmail extends Validator {
      * @return boolean
      */
     private function checkLocal($localName) {
-        if($this->checkName($localName, $this->allowedLocal)) {
+        if($this->checkName($localName, $this->allowedLocal) && $localName) {
             return true;
         }
 
@@ -83,7 +83,7 @@ class Validator_IsEmail extends Validator {
         $chars = str_split($hostName);
         $last  = count($chars) - 1;
 
-        if($chars[0] == '-' || $chars[0] == '.' || $chars[$last] == '-' || $chars[$last] == '.') {
+        if($chars[0] == '-' || $chars[0] == '.' || $chars[$last] == '-' || $chars[$last] == '.' || !$hostName) {
             return false;
         }
 
@@ -103,8 +103,10 @@ class Validator_IsEmail extends Validator {
         $chars = str_split($name);
 
         foreach($chars as $c) {
-            if(!ctype_alnum($c) && strpos($acceptedCharacters, $c) === false) {
-                return false;
+            if($c) {
+                if(!ctype_alnum($c) && strpos($acceptedCharacters, $c) === false) {
+                    return false;
+                }
             }
         }
 

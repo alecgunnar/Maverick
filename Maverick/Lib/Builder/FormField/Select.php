@@ -148,9 +148,9 @@ class Builder_FormField_Select extends Builder_FormField {
                 $optGroup->addAttribute('label', $value)
                     ->setContent($this->renderOptions($label));
 
-                $opts .= $optGroup->render() . '\n';
+                $opts .= $optGroup->render();
             } else {
-                $opts .= $opt->render() . '\n';
+                $opts .= $opt->render();
             }
         }
 
