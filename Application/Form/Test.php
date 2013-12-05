@@ -71,6 +71,6 @@ class Test extends \Maverick\Lib\Form {
     
     public function validate() { }
     public function submit() {
-        dump('Submission successful!');
+        \Maverick\Lib\Http::location('/', 'Submission successful!');
     }
 }

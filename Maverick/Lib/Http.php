@@ -16,6 +16,13 @@ class Http {
     private static $headers = array();
 
     /**
+     * The redirect message for the current request
+     *
+     * @var string|null
+     */
+    private static $redirectMessage = null;
+
+    /**
      * Redirects the user
      *
      * @param $url
@@ -29,6 +36,25 @@ class Http {
         header('Location: ' . $url);
 
         exit;
+    }
+
+    /**
+     * Gets the redirect message
+     *
+     * @return string
+     */
+    public static function getRedirectMessage() {
+        if(is_null(self::$redirectMessage)) {
+            if(isset($_SESSION) && array_key_exists('http_redirect_message', $_SESSION)) {
+                self::$redirectMessage = $_SESSION['http_redirect_message'];
+
+                unset($_SESSION['http_redirect_message']);
+            } else {
+                self::$redirectMessage = '';
+            }
+        }
+
+        return self::$redirectMessage;
     }
 
     /**

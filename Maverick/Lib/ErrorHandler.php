@@ -28,8 +28,6 @@ class ErrorHandler {
             $stackTrace = $stackTrace ?: debug_backtrace();
             $trace      = '';
 
-            //_dump($stackTrace);
-
             foreach($stackTrace as $n => $data) {
                 $line     = '';
                 $function = '';

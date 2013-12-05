@@ -20,7 +20,7 @@ class Router {
      *
      * @var \Maverick\Lib\Model_Uri $uri
      */
-    private static $uri = '';
+    private static $uri = null;
 
     /**
      * The URN
