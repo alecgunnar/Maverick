@@ -1,4 +1,4 @@
 <div>
   {{ label|raw }}<br />
-  {{ field|raw }}123
+  {{ field|raw }}
 </div>

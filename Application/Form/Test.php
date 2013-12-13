@@ -14,15 +14,9 @@ class Test extends \Maverick\Lib\Form {
     public function build() {
         $this->setName('testForm');
 
-        if($this->withTpl) {
-            $this->setTpl('testForm');
-            $this->setDefaultFieldTpl('Field');
-        }
-
         $this->addField('Input', 'test_text')
             ->setLabel('Text')
-            ->setMaxLength(25)
-            ->setTpl('Text');
+            ->setMaxLength(25);
 
         $this->addField('Input_File', 'test_file')
             ->setLabel('File');
@@ -32,8 +26,7 @@ class Test extends \Maverick\Lib\Form {
             ->validate('IsEmail', 'That was not a valid email address!');
 
         $group = $this->addFieldGroup('group1')
-            ->setLabel('This is a Fieldset')
-            ->setDefaultFieldTpl('Field');
+            ->setLabel('This is a Fieldset');
 
         $group->addField('Input_Password', 'test_password')
             ->setLabel('Password');

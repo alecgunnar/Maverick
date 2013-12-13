@@ -17,6 +17,8 @@ class Builder_Form_Field_Input_Hidden extends Builder_Form_Field_Input {
     public function __construct($name) {
         parent::__construct($name, 'hidden');
 
+        $this->setTpl('Hidden');
+
         $this->hidden = true;
     }
 }
