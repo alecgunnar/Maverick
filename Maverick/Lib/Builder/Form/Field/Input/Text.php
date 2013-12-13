@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input_Submit extends Builder_FormField_Input {
+class Builder_Form_Field_Input_Text extends Builder_Form_Field_Input {
     /**
      * Sets up the field
      *
@@ -15,8 +15,6 @@ class Builder_FormField_Input_Submit extends Builder_FormField_Input {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct($name, 'submit');
-
-        $this->value('Submit');
+        parent::__construct($name);
     }
 }

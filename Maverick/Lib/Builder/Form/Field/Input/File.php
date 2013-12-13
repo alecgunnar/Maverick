@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input_Email extends Builder_FormField_Input {
+class Builder_Form_Field_Input_File extends Builder_Form_Field_Input {
     /**
      * Sets up the field
      *
@@ -15,8 +15,6 @@ class Builder_FormField_Input_Email extends Builder_FormField_Input {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct($name, 'email');
-
-        $this->validate('IsEmail');
+        parent::__construct($name, 'file');
     }
 }

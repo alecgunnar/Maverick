@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input_Radio extends Builder_FormField_Input {
+class Builder_Form_Field_Input_Radio extends Builder_Form_Field_Input {
     /**
      * The options provided with these radio buttons
      *
@@ -111,8 +111,8 @@ class Builder_FormField_Input_Radio extends Builder_FormField_Input {
         foreach($this->options as $value => $label) {
             $id = $this->name . '_opt_' . $i;
 
-            $field = new Builder_FormField_Input($this->name, 'radio');
-            $field->value($value)
+            $field = new Builder_Form_Field_Input($this->name, 'radio');
+            $field->setValue($value)
                 ->setForm($this->form)
                 ->addAttribute('id', $id);
 

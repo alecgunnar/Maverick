@@ -7,21 +7,14 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField extends Builder_Tag {
+class Builder_Form_Field extends Builder_Form_Component {
     /**
-     * The form this field is a part of
-     *
-     * @var \Maverick\Lib\Form | null
-     */
-    protected $form = null;
-
-    /**
-     * The name of the field
+     * The template
      *
      * @var string
      */
-    protected $name = '';
-
+    protected $tpl = '';
+    
     /**
      * Is this field hidden
      *
@@ -58,20 +51,6 @@ class Builder_FormField extends Builder_Tag {
     protected $description = '';
 
     /**
-     * The template for the field
-     *
-     * @var string
-     */
-    protected $tpl = '';
-
-    /**
-     * Variables to be sent to the tpl for this field
-     *
-     * @var array
-     */
-    private $tplVars = array();
-
-    /**
      * What should be validated for
      *
      * @var array
@@ -93,27 +72,6 @@ class Builder_FormField extends Builder_Tag {
     private $errors = array();
 
     /**
-     * Sets the form for this field
-     *
-     * @param  string $form
-     * @return self
-     */
-    public function setForm($form) {
-        $this->form = $form;
-
-        return $this;
-    }
-
-    /**
-     * Gets the form this field is a part of
-     *
-     * @return string
-     */
-    public function getForm() {
-        return $this->form;
-    }
-
-    /**
      * Gets the full name of the field, with the namespace if there is one
      *
      * @return string
@@ -123,15 +81,6 @@ class Builder_FormField extends Builder_Tag {
             return $this->form->getName() . '[' . $this->name . ']';
         }
 
-        return $this->name;
-    }
-
-    /**
-     * Gets the name of the field
-     *
-     * @return string
-     */
-    public function getName() {
         return $this->name;
     }
 
@@ -170,7 +119,7 @@ class Builder_FormField extends Builder_Tag {
      * @param  string $label
      * @return self
      */
-    public function label($label) {
+    public function setLabel($label) {
         $this->label = $label;
 
         return $this;
@@ -191,7 +140,7 @@ class Builder_FormField extends Builder_Tag {
      * @param  string $description
      * @return self
      */
-    public function description($description) {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -204,32 +153,6 @@ class Builder_FormField extends Builder_Tag {
      */
     public function getDescription() {
         return $this->description;
-    }
-
-    /**
-     * Sets the field tpl
-     *
-     * @param  string $tpl
-     * @param  array  $vars
-     * @return self
-     */
-    public function tpl($tpl, array $vars=null) {
-        $this->tpl = $tpl;
-
-        if(count($vars)) {
-            $this->tplVars = $vars;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Gets the tpl
-     *
-     * @return string
-     */
-    public function getTpl() {
-        return $this->tpl;
     }
 
     /**
@@ -247,7 +170,7 @@ class Builder_FormField extends Builder_Tag {
      * @param  string $value
      * @return self
      */
-    public function value($value) {
+    public function setValue($value) {
         $this->addAttribute('value', $value);
 
         return $this;
@@ -260,7 +183,7 @@ class Builder_FormField extends Builder_Tag {
      *
      * @param string $value
      */
-    public function setValue($value) {
+    public function setSubmittedValue($value) {
         $this->value = $value;
     }
 
@@ -279,7 +202,7 @@ class Builder_FormField extends Builder_Tag {
      * @param  integer $maxLength
      * @return self
      */
-    public function maxLength($maxLength) {
+    public function setMaxLength($maxLength) {
         $this->addAttribute('maxlength', $maxLength);
 
         return $this;
@@ -373,16 +296,6 @@ class Builder_FormField extends Builder_Tag {
     public function render() {
         if($this->form->getName()) {
             $this->addAttribute('name', $this->getFullName());
-        }
-
-        if($this->tpl) {
-            $fieldVariables = array('label'       => $this->getLabel(),
-                                    'required'    => $this->form->getRequiredMarker($this->isRequired()),
-                                    'error'       => $this->getError(),
-                                    'field'       => parent::render(),
-                                    'description' => $this->getDescription());
-
-            return \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, array_merge($this->getTplVars(), $fieldVariables));
         }
 
         return parent::render();

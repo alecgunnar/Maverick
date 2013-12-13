@@ -13,7 +13,7 @@ class Builder_Tag {
      *
      * @var string $tag
      */
-    private $tag = '';
+    private $type = '';
 
     /**
      * Is the tag self closing?
@@ -42,10 +42,8 @@ class Builder_Tag {
      * @param  string $tagType=''
      * @return null
      */
-    public function __construct($tagType='') {
-        if($tagType) {
-            $this->setTagType($tagType);
-        }
+    public function __construct($type='') {
+        $this->type = $type;
     }
 
     /**
@@ -54,10 +52,19 @@ class Builder_Tag {
      * @param  string $tagType
      * @return self
      */
-    public function setTagType($tagType) {
+    public function setType($tagType) {
         $this->type = $tagType;
 
         return $this;
+    }
+
+    /**
+     * Gets the type of the tag
+     *
+     * @return string
+     */
+    public function getType() {
+        return $this->type;
     }
 
     /**

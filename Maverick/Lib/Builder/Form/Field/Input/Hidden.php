@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input_Password extends Builder_FormField_Input {
+class Builder_Form_Field_Input_Hidden extends Builder_Form_Field_Input {
     /**
      * Sets up the field
      *
@@ -15,8 +15,8 @@ class Builder_FormField_Input_Password extends Builder_FormField_Input {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct($name, 'password');
+        parent::__construct($name, 'hidden');
 
-        $this->autoFill = false;
+        $this->hidden = true;
     }
 }

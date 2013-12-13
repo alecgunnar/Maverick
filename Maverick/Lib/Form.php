@@ -55,7 +55,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
                 foreach($this->getFields() as $name => $field) {
-                    $field->setValue($input->get($name));
+                    $field->setSubmittedValue($input->get($name));
 
                     if(count(($validateFor = $field->getValidateFor()))) {
                         foreach($validateFor as $type => $validator) {
@@ -70,7 +70,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
                     }
                 }
 
-                if($this->validate() === false) {
+                if($this->validate() === false || count($this->errors)) {
                     $this->isValid = false;
                 } elseif(is_null($this->isValid)) {
                     $this->isValid = true;

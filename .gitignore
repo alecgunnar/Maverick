@@ -1,6 +1,7 @@
 /Application/Templates/Cache
-/Logs/*/*.txt
+/Logs
 /vendor
 composer.phar
 composer.lock
 /bin
+/Config/Dev

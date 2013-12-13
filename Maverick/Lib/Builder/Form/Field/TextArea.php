@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_TextArea extends Builder_FormField {
+class Builder_Form_Field_TextArea extends Builder_Form_Field {
     /**
      * Sets up the field
      *
@@ -16,7 +16,7 @@ class Builder_FormField_TextArea extends Builder_FormField {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct('textarea');
+        $this->setType('textarea');
 
         $this->name = $name;
 

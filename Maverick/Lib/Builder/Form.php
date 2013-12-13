@@ -7,14 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_Form {
-    /**
-     * The name of the form
-     *
-     * @var string $name
-     */
-    private $name = '';
-
+class Builder_Form extends Builder_Form_Container {
     /**
      * The method of the form
      *
@@ -44,41 +37,6 @@ class Builder_Form {
     private $formContainer = null;
 
     /**
-     * The tpl for the form
-     *
-     * @var string | null
-     */
-    private $tpl = null;
-
-    /**
-     * The variables for the tpl for this form
-     *
-     * @var array
-     */
-    private $tplVars = array();
-
-    /**
-     * The default field template
-     *
-     * @var string
-     */
-    private $defaultFieldTpl = '<div>{LABEL}{REQUIRED} {ERROR}<br />{FIELD}<br />{DESCRIPTION}</div>';
-
-    /**
-     * Required field identifier
-     *
-     * @var string
-     */
-    private $requiredId = '<span style="color:#AA0000;">*</span>';
-
-    /**
-     * The fields
-     *
-     * @var array $fields
-     */
-    private $fields = array();
-
-    /**
      * Whether or not to have a submission token
      *
      * @var boolean $submissionToken
@@ -90,8 +48,9 @@ class Builder_Form {
      */
     public function __construct() {
         $this->action = Router::getUri()->getUri();
+        $this->form   = $this;
 
-        if(!isset($_SESSION)) {
+        if(!session_id()) {
             $this->submissionToken = false;
         }
     }
@@ -107,15 +66,6 @@ class Builder_Form {
         if(is_null($this->submissionToken)) {
             $this->toggleSubmissionToken();
         }
-    }
-
-    /**
-     * Get the name of the field
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
     }
 
     /**
@@ -171,43 +121,6 @@ class Builder_Form {
     }
 
     /**
-     * Sets the template for the form
-     *
-     * @param string $tpl
-     */
-    protected function setTpl($tpl) {
-        $this->tpl = $tpl;
-    }
-
-    /**
-     * Gets the tpl of the form
-     *
-     * @return string
-     */
-    public function getTpl() {
-        return $this->tpl;
-    }
-
-    /**
-     * Sets a tpl variable for this form's tpl
-     *
-     * @param string $name
-     * @param mixed  $value
-     */
-    public function setTplVariable($name, $value) {
-        $this->tplVars[$name] = $value;
-    }
-
-    /**
-     * Sets multiple tpl variables for this form's tpl
-     *
-     * @param array $vars
-     */
-    public function setTplVariables(array $vars) {
-        $this->tplVars = array_merge($this->tplVars, $vars);
-    }
-
-    /**
      * Changes the required field marker
      *
      * @param string $requiredId
@@ -231,37 +144,6 @@ class Builder_Form {
     }
 
     /**
-     * Adds a field to the form
-     *
-     * @param  string  $type
-     * @param  string  $name
-     * @return mixed
-     */
-    public function addField($type, $name) {
-        $class = '\Maverick\Lib\Builder_FormField_' . $type;
-
-        if(array_key_exists($name, $this->fields)) {
-            throw new \Exception('You cannot add multiple fields with the same name to the same form.');
-        }
-
-        $fieldBuilder = new $class($name);
-        $fieldBuilder->setForm($this);
-
-        $this->fields[$name] = $fieldBuilder;
-
-        return $fieldBuilder;
-    }
-
-    /**
-     * Gets the fields
-     *
-     * @return string
-     */
-    public function getFields() {
-        return $this->fields;
-    }
-
-    /**
      * Adds an ID field to help prevent CSRF
      */
     private function addAntiCSRFToken() {
@@ -270,14 +152,14 @@ class Builder_Form {
         $_SESSION[$this->name . '_submission_token'] = $token;
 
         $this->addField('Input_Hidden', 'formSubmissionToken')
-            ->value($token);
+            ->setValue($token);
     }
 
     /**
      * Toggle the submission token feature
      */
     public function toggleSubmissionToken() {
-        if(isset($_SESSION)) {
+        if(session_id()) {
             $this->submissionToken = (is_null($this->submissionToken) || !$this->submissionToken) ? true : false;
         }
     }
@@ -298,7 +180,16 @@ class Builder_Form {
      */
     private function addCheckField() {
         $this->addField('Input_Hidden', $this->name . '_submit')
-            ->value('submitted');
+            ->setValue('submitted');
+    }
+
+    /**
+     * Adds rendered hidden fields to the form
+     *
+     * @param string $hiddenFields
+     */
+    public function addHiddenFields($hiddenFields) {
+        $this->hiddenFields .= $hiddenFields;
     }
 
     /**
@@ -322,64 +213,17 @@ class Builder_Form {
 
         $this->addCheckField();
 
-        $formFields   = array();
-        $formContent  = '';
-        $hiddenFields = '';
-
-        foreach($this->fields as $name => $f) {
-            if($value = $f->getValue()) {
-                if($f->isAutoFill()) {
-                    $f->value($value);
-                }
-            }
-
-            if(!$f->isHidden()) {
-                if(!is_null($this->tpl)) {
-                    $formFields[$name] = $f;
-                } else {
-                    if($tpl = $f->getTpl()) {
-                        $formContent .= $f->render();
-                    } else {
-                        $placeholders = array('{LABEL}'       => $f->getLabel(),
-                                              '{REQUIRED}'    => $this->getRequiredMarker($f->isRequired()),
-                                              '{ERROR}'       => $f->getError(),
-                                              '{FIELD}'       => $f->render(),
-                                              '{DESCRIPTION}' => $f->getDescription());
-
-                        $formContent .= str_replace(array_keys($placeholders), array_values($placeholders), $this->defaultFieldTpl);
-                    }
-                }
-            } else {
-                $hiddenFields .= $f->render($this->name);
-            }
-        }
-
-        $form = new Builder_Tag('form');
-        $form->addAttributes(array('name'   => $this->name,
+        $this->setType('form');
+        $this->addAttributes(array('name'   => $this->name,
                                    'method' => $this->method,
                                    'action' => $this->action));
 
         if($this->encType) {
-            $form->addAttribute('enc-type', $this->encType);
+            $this->addAttribute('enc-type', $this->encType);
         }
 
-        if(!is_null($this->tpl)) {
-            $vars = array_merge($this->tplVars, array('form'   => $this,
-                                                      'fields' => $formFields));
+        $this->addContent($this->renderFields() . $this->hiddenFields);
 
-            $renderedForm = \Maverick\Lib\Output::getTplEngine()->getTemplate($this->tpl, $vars);
-        } else {
-            $container = $this->formContainer;
-
-            if(is_null($container)) {
-                $container = new Builder_Tag('div');
-            }
-
-            $renderedForm = $container->addContent($formContent)->render();
-        }
-
-        $form->addContent($renderedForm . $hiddenFields);
-
-        return $form->render();
+        return parent::renderContainer(array('form' => parent::render()));
     }
 }

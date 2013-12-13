@@ -29,7 +29,7 @@ class Http {
      * @param $msg=''
      */
     public static function location($url, $msg='') {
-        if($msg && isset($_SESSION)) {
+        if($msg && session_id()) {
             $_SESSION['http_redirect_message'] = $msg;
         }
 

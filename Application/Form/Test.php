@@ -16,41 +16,46 @@ class Test extends \Maverick\Lib\Form {
 
         if($this->withTpl) {
             $this->setTpl('testForm');
+            $this->setDefaultFieldTpl('Field');
         }
 
         $this->addField('Input', 'test_text')
-            ->label('Text')
-            ->maxLength(25)
-            ->tpl('field');
+            ->setLabel('Text')
+            ->setMaxLength(25)
+            ->setTpl('Text');
 
         $this->addField('Input_File', 'test_file')
-            ->label('File');
+            ->setLabel('File');
 
         $this->addField('Input_Email', 'test_email')
-            ->label('Email Address')
+            ->setLabel('Email Address')
             ->validate('IsEmail', 'That was not a valid email address!');
 
-        $this->addField('Input_Password', 'test_password')
-            ->label('Password');
+        $group = $this->addFieldGroup('group1')
+            ->setLabel('This is a Fieldset')
+            ->setDefaultFieldTpl('Field');
 
-        $this->addField('TextArea', 'test_textarea')
-            ->label('Text Area');
+        $group->addField('Input_Password', 'test_password')
+            ->setLabel('Password');
 
-        $this->addField('Input_CheckBox', 'test_checkbox')
-            ->label('Check Box')
+        $group->addField('TextArea', 'test_textarea')
+            ->setLabel('Text Area');
+
+        $group->addField('Input_CheckBox', 'test_checkbox')
+            ->setLabel('Check Box')
             ->addLabel('Check this box')
-            ->value('1');
+            ->setValue('1');
 
         $this->addField('Input_Radio', 'test_radio')
-            ->label('Radio Buttons')
+            ->setLabel('Radio Buttons')
             ->addOptions(array('a' => '1',
                                'b' => '2',
                                'c' => '3'))
             ->addOption('d', '4');
 
         $this->addField('Select', 'test_select')
-            ->label('Select')
-            ->value('e')
+            ->setLabel('Select')
+            ->setValue('e')
             ->addOptions(array('0' => 'This option is zero',
                                'a' => '1',
                                'b' => '2',
@@ -58,15 +63,15 @@ class Test extends \Maverick\Lib\Form {
             ->addGroup('Option Group', array('d' => '4', 'e' => '5', 'f' => '6'));
 
         $this->addField('Select', 'test_select_multiple')
-            ->label('Select Multiple')
+            ->setLabel('Select Multiple')
             ->multiple()
-            ->value('e')
+            ->setValue('e')
             ->addOptions(array('a' => '1',
                                'b' => '2',
                                'c' => '3'));
 
         $this->addField('Input_Submit', 'submit')
-            ->value('Submit');
+            ->setValue('Submit');
     }
     
     public function validate() { }

@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Select extends Builder_FormField {
+class Builder_Form_Field_Select extends Builder_Form_Field {
     /**
      * The options provided with these radio buttons
      *

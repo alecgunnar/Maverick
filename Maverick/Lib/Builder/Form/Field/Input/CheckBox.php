@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_FormField_Input_CheckBox extends Builder_FormField_Input {
+class Builder_Form_Field_Input_CheckBox extends Builder_Form_Field_Input {
     /**
      * Sets up the field
      *
@@ -53,8 +53,6 @@ class Builder_FormField_Input_CheckBox extends Builder_FormField_Input {
      * @return self
      */
     public function addLabel($label) {
-        
-
         return $this;
     }
 }
