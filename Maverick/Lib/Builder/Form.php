@@ -44,6 +44,13 @@ class Builder_Form extends Builder_Form_Container {
     private $submissionToken = null;
 
     /**
+     * The required field identifier
+     *
+     * @var string
+     */
+    private $requiredId = '<span style="color:#A00;">*</span>';
+
+    /**
      * Sets up the form
      */
     public function __construct() {
