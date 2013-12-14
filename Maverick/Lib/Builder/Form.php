@@ -236,13 +236,13 @@ class Builder_Form extends Builder_Form_Container {
 
         foreach($container->fields as $name => $field) {
             if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
-                $fields[] = array('label'  => $field->getLabel(),
-                                  'fields' => $this->getFieldsAsArray($field));
+                $fields[$name] = array('label'  => $field->getLabel(),
+                                       'fields' => $this->getFieldsAsArray($field));
             } else {
                 if($field->isHidden()) {
                     $this->hiddenFields .= $field->render();
                 } else {
-                    $fields[] = $field;
+                    $fields[$name] = $field;
                 }
             }
         }
