@@ -239,7 +239,11 @@ class Builder_Form extends Builder_Form_Container {
                 $fields[] = array('label'  => $field->getLabel(),
                                   'fields' => $this->getFieldsAsArray($field));
             } else {
-                $fields[] = $field;
+                if($field->isHidden()) {
+                    $this->hiddenFields .= $field->render();
+                } else {
+                    $fields[] = $field;
+                }
             }
         }
 
