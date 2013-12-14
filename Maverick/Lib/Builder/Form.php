@@ -51,6 +51,13 @@ class Builder_Form extends Builder_Form_Container {
     private $requiredId = '<span style="color:#A00;">*</span>';
 
     /**
+     * Should all of the fields be sent to the form template to be rendered?
+     *
+     * @var boolean
+     */
+    private $renderWithFormTpl = false;
+
+    /**
      * Sets up the form
      */
     public function __construct() {
@@ -200,6 +207,46 @@ class Builder_Form extends Builder_Form_Container {
     }
 
     /**
+     * Toggles whether or not the form fields are rendered with the form's tpl or not
+     */
+    public function renderFieldsWithFormTpl() {
+        $this->renderWithFormTpl = $this->renderWithFormTpl ? false : true;
+    }
+
+    /**
+     * Gets whether or not to render with the form's tpl
+     *
+     * @return boolean
+     */
+    public function renderWithFormTpl() {
+        return $this->renderWithFormTpl;
+    }
+
+    /**
+     * Gets all of the fields as an array so that they
+     * can be rendered with the form's template
+     *
+     * @param  \Maverick\Lib\Builder_Container $container=null
+     * @return array
+     */
+    private function getFieldsAsArray($container=null) {
+        $fields = array();
+
+        $container = $container ?: $this;
+
+        foreach($container->fields as $name => $field) {
+            if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
+                $fields[] = array('label'  => $field->getLabel(),
+                                  'fields' => $this->getFieldsAsArray($field));
+            } else {
+                $fields[] = $field;
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
      * Renders the form for the controller
      *
      * @throws \Exception
@@ -229,8 +276,16 @@ class Builder_Form extends Builder_Form_Container {
             $this->addAttribute('enc-type', $this->encType);
         }
 
-        $this->addContent($this->renderFields() . $this->hiddenFields);
+        if($this->renderWithFormTpl) {
+            $renderedForm = \Maverick\Lib\Output::getTplEngine()->getTemplate('Forms/' . $this->tpl, array('fields' => $this->getFieldsAsArray()));
 
-        return parent::renderContainer(array('form' => parent::render()));
+            $this->addContent($renderedForm . $this->hiddenFields);
+
+            return parent::render();
+        } else {
+            $this->addContent($this->renderFields() . $this->hiddenFields);
+
+            return parent::renderContainer(array('form' => parent::render()));
+        }
     }
 }

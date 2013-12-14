@@ -13,6 +13,9 @@ class Test extends \Maverick\Lib\Form {
 
     public function build() {
         $this->setName('testForm');
+        $this->setTpl('testForm');
+
+        //$this->renderFieldsWithFormTpl();
 
         $this->addField('Input', 'test_text')
             ->setLabel('Text')
