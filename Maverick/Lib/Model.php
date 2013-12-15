@@ -78,7 +78,7 @@ class Model {
      * Get the original value, not an object of this class
      *
      * @param  string $key=''
-     * @return string \ array
+     * @return string | array
      */
     public function getAsArray($key='') {
         if($key && array_key_exists($key, $this->data)) {

@@ -34,14 +34,20 @@ class Builder_Form_Field_Input_CheckBox extends Builder_Form_Field_Input {
      * @param  string $value
      * @return self
      */
-    public function value($value) {
-        if($value == $this->getAttribute('value')) {
+    public function checkedValue($value) {
+        if($value == $this->value) {
             $this->checked();
-
-            return;
         }
+    }
 
-        parent::value($value);
+    /**
+     * Determines if this was submitted checked
+     *
+     * @param  string $value
+     * @return self
+     */
+    public function setSubmittedValue($value) {
+        $this->checkedValue($value);
 
         return $this;
     }

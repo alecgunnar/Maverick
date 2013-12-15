@@ -19,7 +19,8 @@ class Test extends \Maverick\Lib\Form {
 
         $this->addField('Input', 'test_text')
             ->setLabel('Text')
-            ->setMaxLength(25);
+            ->setMaxLength(25)
+            ->setValue('This is the value!');
 
         $this->addField('Input_File', 'test_file')
             ->setLabel('File');
@@ -41,14 +42,16 @@ class Test extends \Maverick\Lib\Form {
         $group->addField('Input_CheckBox', 'test_checkbox')
             ->setLabel('Check Box')
             ->addLabel('Check this box')
-            ->setValue('1');
+            ->setValue('1')
+            ->checkedValue(0);
 
         $this->addField('Input_Radio', 'test_radio')
             ->setLabel('Radio Buttons')
             ->addOptions(array('a' => '1',
                                'b' => '2',
                                'c' => '3'))
-            ->addOption('d', '4');
+            ->addOption('d', '4')
+            ->setValue('b');
 
         $this->addField('Select', 'test_select')
             ->setLabel('Select')
@@ -62,7 +65,7 @@ class Test extends \Maverick\Lib\Form {
         $this->addField('Select', 'test_select_multiple')
             ->setLabel('Select Multiple')
             ->multiple()
-            ->setValue('e')
+            ->setValue('c')
             ->addOptions(array('a' => '1',
                                'b' => '2',
                                'c' => '3'));

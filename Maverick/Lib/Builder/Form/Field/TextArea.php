@@ -22,16 +22,15 @@ class Builder_Form_Field_TextArea extends Builder_Form_Field {
 
         $this->addAttribute('name', $name);
     }
-    
-    /**
-     * Sets the value for this field
-     *
-     * @param  string $value
-     * @return self
-     */
-    public function value($value) {
-        $this->setContent($value);
 
-        return $this;
+    /**
+     * Renders this textarea
+     *
+     * @return string
+     */
+    public function render() {
+        $this->setContent($this->getActualValue());
+
+        return parent::render();
     }
 }

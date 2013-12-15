@@ -62,7 +62,14 @@ class Builder_Form_Field extends Builder_Form_Component {
      *
      * @var $value
      */
-    protected $value = '';
+    protected $value = null;
+
+    /**
+     * The submitted value of the field
+     *
+     * @var string
+     */
+    protected $submittedValue = null;
 
     /**
      * The errors for this field
@@ -171,9 +178,18 @@ class Builder_Form_Field extends Builder_Form_Component {
      * @return self
      */
     public function setValue($value) {
-        $this->addAttribute('value', $value);
+        $this->value = $value;
 
         return $this;
+    }
+
+    /**
+     * Gets the value of the field
+     *
+     * @return string
+     */
+    public function getValue() {
+        return $this->value;
     }
 
     /**
@@ -184,16 +200,16 @@ class Builder_Form_Field extends Builder_Form_Component {
      * @param string $value
      */
     public function setSubmittedValue($value) {
-        $this->value = $value;
+        $this->submittedValue = $value;
     }
 
     /**
-     * Get the value of the field
+     * Gets the submitted value of the field
      *
      * @return string
      */
-    public function getValue() {
-        return $this->value;
+    public function getSubmittedValue() {
+        return $this->submittedValue;
     }
 
     /**
@@ -204,6 +220,18 @@ class Builder_Form_Field extends Builder_Form_Component {
      */
     public function setMaxLength($maxLength) {
         $this->addAttribute('maxlength', $maxLength);
+
+        return $this;
+    }
+
+    /**
+     * Adds a placeholder to the field
+     *
+     * @param  string $placeholder
+     * @return self
+     */
+    public function setPlaceholder($placeholder) {
+        $this->addAttribute('placeholder', $placeholder);
 
         return $this;
     }
@@ -289,6 +317,19 @@ class Builder_Form_Field extends Builder_Form_Component {
     }
 
     /**
+     * Gets the value of the field based on wheter or not something was submitted for it
+     *
+     * @return string
+     */
+    public function getActualValue() {
+        if(!is_null($this->submittedValue)) {
+            return $this->submittedValue;
+        }
+
+        return $this->value;
+    }
+
+    /**
      * Renders the field
      *
      * @return string
@@ -296,6 +337,12 @@ class Builder_Form_Field extends Builder_Form_Component {
     public function render() {
         if($this->form->getName()) {
             $this->addAttribute('name', $this->getFullName());
+        }
+
+        $value = $this->getActualValue();
+
+        if($value) {
+            $this->addAttribute('value', $value);
         }
 
         return parent::render();

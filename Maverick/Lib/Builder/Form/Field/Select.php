@@ -82,6 +82,8 @@ class Builder_Form_Field_Select extends Builder_Form_Field {
      */
     public function addGroup($label, $options) {
         $this->addOption($label, $options);
+
+        return $this;
     }
 
     /**
@@ -163,12 +165,12 @@ class Builder_Form_Field_Select extends Builder_Form_Field {
      * @param string $value
      */
     private function isSelected($value) {
-        if($this->value instanceof \Maverick\Lib\Model_Input) {
-            if(array_key_exists($value, array_flip($this->value->getAsArray()))) {
+        if($this->getActualValue() instanceof \Maverick\Lib\Model_Input) {
+            if(array_key_exists($value, array_flip($this->getActualValue()->getAsArray()))) {
                 return true;
             }
         } else {
-            if($value == $this->value) {
+            if($value == $this->getActualValue()) {
                 return true;
             }
         }

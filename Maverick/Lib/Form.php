@@ -85,7 +85,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
 
                 if(count(($validateFor = $field->getValidateFor()))) {
                     foreach($validateFor as $type => $validator) {
-                        $validator->setValue($field->getValue());
+                        $validator->setValue($field->getSubmittedValue());
 
                         if(!$validator->isValid()) {
                             $this->setFieldError($name, $validator->getErrorMessage());
