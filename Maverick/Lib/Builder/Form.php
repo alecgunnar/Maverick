@@ -277,7 +277,7 @@ class Builder_Form extends Builder_Form_Container {
                                    'action' => $this->action));
 
         if($this->encType) {
-            $this->addAttribute('enc-type', $this->encType);
+            $this->addAttribute('enctype', $this->encType);
         }
 
         if($this->renderWithFormTpl) {
