@@ -61,12 +61,12 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
     public function addField($type, $name) {
         $class = '\Maverick\Lib\Builder_Form_Field_' . $type;
 
-        if(array_key_exists($name, $this->fields)) {
+        if(array_key_exists($name, $this->form->fields)) {
             throw new \Exception('You cannot add multiple fields/groups with the same name to the same form.');
         }
 
         $fieldBuilder = new $class($name);
-        $fieldBuilder->setForm($this);
+        $fieldBuilder->setForm($this->form);
 
         $this->fields[$name] = $fieldBuilder;
 

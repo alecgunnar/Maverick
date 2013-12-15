@@ -50,25 +50,9 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      * Processes the form
      */
     private function process() {
-        $input = $this->getModel();
-
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
-                foreach($this->getFields() as $name => $field) {
-                    $field->setSubmittedValue($input->get($name));
-
-                    if(count(($validateFor = $field->getValidateFor()))) {
-                        foreach($validateFor as $type => $validator) {
-                            $validator->setValue($field->getValue());
-
-                            if(!$validator->isValid()) {
-                                $this->setFieldError($name, $validator->getErrorMessage());
-
-                                $this->isValid = false;
-                            }
-                        }
-                    }
-                }
+                $isValid = $this->checkFields($this);
 
                 if($this->validate() === false || count($this->errors)) {
                     $this->isValid = false;
@@ -81,6 +65,39 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
         }
 
         return $this->isValid;
+    }
+
+    /**
+     * Processes all of the fields in a container
+     *
+     * @param  \Maverick\Lib\Builder_Form_Container $container
+     * @return boolean;
+     */
+    private function checkFields($container) {
+        $input   = $this->getModel();
+        $isValid = true;
+
+        foreach($container->getFields() as $name => $field) {
+            if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
+                $isValid = $this->checkFields($field);
+            } else {
+                $field->setSubmittedValue($input->get($name));
+
+                if(count(($validateFor = $field->getValidateFor()))) {
+                    foreach($validateFor as $type => $validator) {
+                        $validator->setValue($field->getValue());
+
+                        if(!$validator->isValid()) {
+                            $this->setFieldError($name, $validator->getErrorMessage());
+
+                            $isValid = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $isValid;
     }
 
     /**
@@ -147,7 +164,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     /**
      * Sets an error for a field
      *
-     * @throws \Exceptions
+     * @throws \Exception
      * @param  string $fieldName
      * @param  string $error
      * @return null
@@ -155,13 +172,38 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     public function setFieldError($fieldName, $error) {
         $fields = $this->getFields();
 
-        if(!array_key_exists($fieldName, $fields)) {
-            throw new \Exception($fieldName . ' is not a valid field');
-        }
-
         $this->errors[$fieldName][] = $error;
 
-        $fields[$fieldName]->setError($error);
+        if(($field = $this->findField($fieldName, $this))) {
+            $field->setError($error);
+
+            return;
+        } else {
+            throw new \Exception($fieldName . ' does not exist');
+        }
+    }
+
+    /**
+     * Finds the object of a field to set the error to
+     *
+     * @param  string $fieldName
+     * @param  \Maverick\Lib\Builder_Form_Container $container
+     * @return \Maverick\Lib\Builder_Form_Field | boolean
+     */
+    private function findField($fieldName, $container) {
+        foreach($container->fields as $name => $field) {
+            if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
+                if(($field = $this->findField($fieldName, $field))) {
+                    return $field;
+                }
+            } else {
+                if($name == $fieldName) {
+                    return $field;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -32,7 +32,8 @@ class Test extends \Maverick\Lib\Form {
             ->setLabel('This is a Fieldset');
 
         $group->addField('Input_Password', 'test_password')
-            ->setLabel('Password');
+            ->setLabel('Password')
+            ->required();
 
         $group->addField('TextArea', 'test_textarea')
             ->setLabel('Text Area');

@@ -5,13 +5,13 @@
       <legend>{{ f.label }}</legend>
       {% for f in f.fields %}
         <div>
-          {{ f.getLabel() }}<br />
+          {{ f.getLabel() }} {{ f.getError() }}<br />
           {{ f.render()|raw }}
         </div>
       {% endfor %}
     </fieldset>
     {% else %}
-    {{ f.getLabel() }}<br />
+    {{ f.getLabel() }} {{ f.getError() }}<br />
     {{ f.render()|raw }}
     {% endif %}
   </div>
