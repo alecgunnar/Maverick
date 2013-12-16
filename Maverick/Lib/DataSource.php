@@ -27,4 +27,12 @@ interface DataSource {
      * Deletes a resource
      */
     public function delete();
+
+    /**
+     * Escapes data for the resource
+     *
+     * @param  mixed $obj
+     * @return mixed
+     */
+    public function escape($obj);
 }

@@ -36,6 +36,15 @@ class DataSource_MySql implements DataSource {
         }
     }
 
+    /**
+     * Gets the MySQLi connection
+     *
+     * @return \MySqli
+     */
+    public static function getConnection() {
+        return self::$connection;
+    }
+
     /** 
      * Posts to a resource
      *
@@ -269,5 +278,27 @@ class DataSource_MySql implements DataSource {
         }
 
         return $fetch->fetch_assoc();
+    }
+
+    /**
+     * Escapes data for the resource
+     *
+     * @param  string | array $str
+     * @return string | array
+     */
+    public function escape($str) {
+        if(is_array($str)) {
+            $escaped = $str;
+
+            if(count($str)) {
+                foreach($str as $key => $value) {
+                    $escaped[$key] = $this->escape($value);
+                }
+            }
+
+            return $escaped;
+        }
+
+        return $this->connection->real_escape_string($str);
     }
 }
