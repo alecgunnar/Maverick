@@ -299,6 +299,6 @@ class DataSource_MySql implements DataSource {
             return $escaped;
         }
 
-        return $this->connection->real_escape_string($str);
+        return self::$connection->real_escape_string($str);
     }
 }
