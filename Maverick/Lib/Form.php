@@ -30,11 +30,18 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     private $isValid = null;
 
     /**
+     * The file upload data
+     *
+     * @var \Maverick\Model\Input | null
+     */
+    private $fileUploadData = null;
+
+    /**
      * The errors for this form
      *
      * @var array
      */
-    protected $errors = array(); 
+    protected $errors = array();
 
     /**
      * Sets up the form
@@ -152,13 +159,35 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
         $raw   = strtolower($this->getMethod()) == 'post' ? $_POST : $_GET;
         $input = new \Maverick\Lib\Model_Input($raw);
 
-        if($this->getName()) {
-            $input = $input->get($this->getName()) ?: $input;
+        if($this->name) {
+            $input = $input->get($this->name) ?: $input;
         }
 
         $this->input = $input;
 
         return $input;
+    }
+
+    /**
+     * Gets the uploaded files data
+     *
+     * @return \Maverick\Lib\Model_Input
+     */
+    public function getFilesModel() {
+        $files = $_FILES[$this->name];
+        $data  = array();
+
+        if(count($files['name'])) {
+            foreach($files['name'] as $field => $name) {
+                $data[$field] = array('name'     => $name,
+                                      'type'     => $files['type'][$field],
+                                      'tmp_name' => $files['tmp_name'][$field],
+                                      'error'    => $files['error'][$field],
+                                      'size'     => $files['size'][$field]);
+            }
+        }
+
+        return new \Maverick\Lib\Model_Input($data);
     }
 
     /**

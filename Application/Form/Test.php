@@ -14,13 +14,15 @@ class Test extends \Maverick\Lib\Form {
     public function build() {
         $this->setName('testForm');
         $this->setTpl('testForm');
+        $this->allowFileUploads();
 
         $this->renderFieldsWithFormTpl();
 
         $this->addField('Input', 'test_text')
             ->setLabel('Text')
             ->setMaxLength(25)
-            ->setValue('This is the value!');
+            ->setValue('This is the value!')
+            ->required();
 
         $this->addField('Input_File', 'test_file')
             ->setLabel('File');
@@ -75,7 +77,7 @@ class Test extends \Maverick\Lib\Form {
     }
     
     public function validate() { }
-    public function submit() {
+    public function submit() {_dump($this->getFilesModel());
         \Maverick\Lib\Http::location('/', 'Submission successful!');
     }
 }

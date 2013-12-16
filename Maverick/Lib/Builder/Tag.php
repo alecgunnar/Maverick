@@ -199,7 +199,7 @@ class Builder_Tag {
 
         if(count($this->attributes)) {
             foreach($this->attributes as $l => $v) {
-                $return .= ' ' . $l . '="' . addslashes($v) . '"';
+                $return .= ' ' . $l . '="' . str_replace('"', '\"', $v) . '"';
             }
         }
 

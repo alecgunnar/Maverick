@@ -322,7 +322,7 @@ class Builder_Form_Field extends Builder_Form_Component {
      * @return string
      */
     public function getActualValue() {
-        if(!is_null($this->submittedValue)) {
+        if(!is_null($this->submittedValue) && $this->autoFill) {
             return $this->submittedValue;
         }
 
