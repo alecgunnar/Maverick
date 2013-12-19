@@ -114,7 +114,8 @@ class Builder_Form_Field_Input_Radio extends Builder_Form_Field_Input {
             $field = new Builder_Form_Field_Input($this->name, 'radio');
             $field->setValue($value)
                 ->setForm($this->form)
-                ->addAttribute('id', $id);
+                ->addAttribute('id', $id)
+                ->setContainer($this->container);
 
             if($this->getActualValue() == $value) {
                 $field->addAttribute('checked', '');

@@ -59,7 +59,7 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     private function process() {
         if(is_null($this->isValid)) {
             if($this->getStatus()) {
-                $isValid = $this->checkFields($this);
+                $isValid = $this->checkFields($this, $this->getModel());
 
                 if($this->validate() === false || count($this->errors)) {
                     $this->isValid = false;
@@ -78,15 +78,15 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      * Processes all of the fields in a container
      *
      * @param  \Maverick\Lib\Builder_Form_Container $container
+     * @param  \Maverick\Lib\Model_Input $input
      * @return boolean;
      */
-    private function checkFields($container) {
-        $input   = $this->getModel();
+    private function checkFields($container, $input) {
         $isValid = true;
 
         foreach($container->getFields() as $name => $field) {
             if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
-                $isValid = $this->checkFields($field);
+                $isValid = $this->checkFields($field, $input->get($name));
             } else {
                 $field->setSubmittedValue($input->get($name));
 
@@ -118,11 +118,11 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
     public function getStatus() {
         $input = $this->getModel();
 
-        if($input->get($this->getName() . '_submit') == 'submitted') {
+        if($input->get($this->name . '_submit') == 'submitted') {
             $this->status = true;
 
             if($this->submissionTokenEnabled()) {
-                if($input->get('formSubmissionToken') != $_SESSION[$this->getName() . '_submission_token']) {
+                if($input->get('formSubmissionToken') != $_SESSION[$this->name . '_submission_token']) {
                     $this->status = false;
                 }
             }
@@ -152,20 +152,18 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
      * @return \Maverick\Lib\Model_Input
      */
     public function getModel() {
-        if(!is_null($this->input)) {
-            return $this->input;
+        if(is_null($this->input)) {
+            if(!$this->name) {
+                throw new \Exception('You must give this form a name before you can get its input.');
+            }
+
+            $raw   = strtolower($this->getMethod()) == 'post' ? $_POST : $_GET;
+            $input = new \Maverick\Lib\Model_Input($raw);
+
+            $this->input = $input->get($this->name) ?: $input;
         }
 
-        $raw   = strtolower($this->getMethod()) == 'post' ? $_POST : $_GET;
-        $input = new \Maverick\Lib\Model_Input($raw);
-
-        if($this->name) {
-            $input = $input->get($this->name) ?: $input;
-        }
-
-        $this->input = $input;
-
-        return $input;
+        return $this->input;
     }
 
     /**

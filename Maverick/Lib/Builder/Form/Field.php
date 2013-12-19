@@ -79,16 +79,25 @@ class Builder_Form_Field extends Builder_Form_Component {
     private $errors = array();
 
     /**
-     * Gets the full name of the field, with the namespace if there is one
+     * Gets the full name of the field
      *
      * @return string
      */
     public function getFullName() {
-        if($this->form->getName()) {
-            return $this->form->getName() . '[' . $this->name . ']';
+        $parent    = $this->container;
+        $namespace = '';
+        $last      = '';
+
+        while($parent != null) {
+            if($last) {
+                $namespace = '[' . $last . ']' . $namespace;
+            }
+
+            $last      = $parent->getName();
+            $parent    = $parent->getContainer();
         }
 
-        return $this->name;
+        return $last . $namespace . '[' . $this->name . ']';
     }
 
     /**

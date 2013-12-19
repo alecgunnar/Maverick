@@ -16,6 +16,13 @@ class Builder_Form_Component extends Builder_Tag {
     protected $form = null;
 
     /**
+     * The container for this field
+     *
+     * @var \Maverick\Lib\Container | null
+     */
+    protected $container = null;
+
+    /**
      * The name
      *
      * @var string
@@ -37,24 +44,45 @@ class Builder_Form_Component extends Builder_Tag {
     protected $tplVars = array();
 
     /**
-     * Sets the form for this field
+     * Sets the form for this component
      *
-     * @param  string $form
+     * @param  \Maverick\Lib\Form $form
      * @return self
      */
-    public function setForm($form) {
+    protected function setForm($form) {
         $this->form = $form;
 
         return $this;
     }
 
     /**
-     * Gets the form this field is a part of
+     * Gets the form this component is a part of
      *
-     * @return string
+     * @return \Maverick\Lib\Form
      */
     public function getForm() {
         return $this->form;
+    }
+
+    /**
+     * Sets the container for this component
+     *
+     * @param  \Maverick\Lib\Builder_Form_Container $container
+     * @return self
+     */
+    protected function setContainer($container) {
+        $this->container = $container;
+
+        return $this;
+    }
+
+    /**
+     * Gets the container which holds this component
+     *
+     * @return \Maverick\Lib\Builder_Form_Container
+     */
+    public function getContainer() {
+        return $this->container;
     }
 
     /**

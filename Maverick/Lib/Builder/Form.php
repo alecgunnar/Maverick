@@ -126,15 +126,6 @@ class Builder_Form extends Builder_Form_Container {
     }
 
     /**
-     * Sets the form container
-     *
-     * @param mixed $container
-     */
-    protected function setContainer($container) {
-        $this->formContainer = $container;
-    }
-
-    /**
      * Changes the required field marker
      *
      * @param string $requiredId

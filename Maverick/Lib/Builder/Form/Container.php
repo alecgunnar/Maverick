@@ -66,7 +66,8 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
         }
 
         $fieldBuilder = new $class($name);
-        $fieldBuilder->setForm($this->form);
+        $fieldBuilder->setForm($this->form)
+            ->setContainer($this);
 
         $this->fields[$name] = $fieldBuilder;
 
@@ -85,8 +86,9 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
         }
 
         $groupBuilder = new \Maverick\Lib\Builder_Form_Field_Group();
-        $groupBuilder->setForm($this->form);
-        $groupBuilder->setName($name);
+        $groupBuilder->setForm($this->form)
+            ->setContainer($this)
+            ->setName($name);
 
         $this->fields[$name] = $groupBuilder;
 
