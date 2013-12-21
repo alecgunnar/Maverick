@@ -11,9 +11,9 @@ class DataSource_MySql implements DataSource {
     /**
      * The current connection to the database
      *
-     * @var \mysqli | null $connection
+     * @var \mysqli | null
      */
-    private static $connection = null;
+    private $connection = null;
 
     /**
      * The current query being worked with
@@ -29,20 +29,20 @@ class DataSource_MySql implements DataSource {
      * @return null
      */
     public function __construct($name=null) {
-        if(is_null(self::$connection)) {
-            $config = \Maverick\Maverick::getConfig('database')->get('mysql')->get($name ?: 'default', true);
+        if(is_null($this->connection)) {
+            $config = \Maverick\Maverick::getConfig('database')->get('mysql')->get($name ?: 'default');
 
-            self::$connection = new \mysqli($config['host'], $config['username'], $config['password'], $config['name']);
+            $this->connection = new \mysqli($config->get('host'), $config->get('username'), $config->get('password'), $config->get('name'));
         }
     }
 
     /**
      * Gets the MySQLi connection
      *
-     * @return \MySqli
+     * @return \mysqli
      */
-    public static function getConnection() {
-        return self::$connection;
+    public function getConnection() {
+        return $this->connection;
     }
 
     /** 
@@ -209,8 +209,8 @@ class DataSource_MySql implements DataSource {
 
         $this->query('INSERT INTO `' . $table . '` (' . $columns . ') VALUES (' . $values . ')');
 
-        if(self::$connection->insert_id) {
-            return self::$connection->insert_id;
+        if($this->connection->insert_id) {
+            return $this->connection->insert_id;
         }
 
         return false;
@@ -253,10 +253,10 @@ class DataSource_MySql implements DataSource {
      * @return \mysqli_result | boolean | null
      */
     public function query($query) {
-        $query = self::$connection->query($query);
+        $query = $this->connection->query($query);
 
         if(!$query) {
-            throw new \Exception('There was an error running your query. MySql Said: ' . self::$connection->error);
+            throw new \Exception('There was an error running your query. MySql Said: ' . $this->connection->error);
         }
 
         $this->currentQuery = $query;
@@ -299,6 +299,6 @@ class DataSource_MySql implements DataSource {
             return $escaped;
         }
 
-        return self::$connection->real_escape_string($str);
+        return $this->connection->real_escape_string($str);
     }
 }
