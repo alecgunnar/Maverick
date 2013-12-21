@@ -37,7 +37,11 @@ class Builder_Form_Field_Input_CheckBox extends Builder_Form_Field_Input {
     public function checkedValue($value) {
         if($value == $this->value) {
             $this->checked();
+        } elseif($this->autoFill) {
+            $this->removeAttribute('checked');
         }
+
+        return $this;
     }
 
     /**

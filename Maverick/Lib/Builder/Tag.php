@@ -106,6 +106,20 @@ class Builder_Tag {
     }
 
     /**
+     * Removes an attribute from a tag
+     *
+     * @param  string $name
+     * @return self
+     */
+    public function removeAttribute($name) {
+        if(array_key_exists($name, $this->attributes)) {
+            unset($this->attributes[$name]);
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets all attributes
      *
      * @return array

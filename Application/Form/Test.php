@@ -45,7 +45,8 @@ class Test extends \Maverick\Lib\Form {
             ->setLabel('Check Box')
             ->addLabel('Check this box')
             ->setValue('1')
-            ->checkedValue(0);
+            ->checkedValue(0)
+            ->checked();
 
         $this->addField('Input_Radio', 'test_radio')
             ->setLabel('Radio Buttons')
