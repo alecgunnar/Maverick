@@ -53,7 +53,7 @@ class Model_Uri {
      */
     public function __construct($uri='', $https=false, $hostName='', $path='', $queryData=array()) {
         if(!is_bool($https)) {
-            throw new \Maverick\Exception\InvalidParameterException('"\Maverick\Lib\Builder_Url::__construct" expects parameter #1 to be a boolean.');
+            throw new \Maverick\Exception\InvalidParameterException('"\Maverick\Lib\Builder_Url::__construct" expects parameter #2 to be a boolean value.');
         }
 
         $this->uri      = $uri;
