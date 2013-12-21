@@ -41,8 +41,18 @@ class Test extends \Maverick\Lib\Form {
         $group->addField('TextArea', 'test_textarea')
             ->setLabel('Text Area');
 
-        $group->addField('Input_CheckBox', 'test_checkbox')
+        $groupChecks = $this->addFieldGroup('checkboxGroup')
+            ->setLabel('Check Boxes');
+
+        $groupChecks->addField('Input_CheckBox', 'test_checkbox')
             ->setLabel('Check Box')
+            ->addLabel('Check this box')
+            ->setValue('1')
+            ->checkedValue(0)
+            ->checked();
+
+        $groupChecks->addField('Input_CheckBox', 'test_checkbox_2')
+            ->setLabel('Check Box #2')
             ->addLabel('Check this box')
             ->setValue('1')
             ->checkedValue(0)

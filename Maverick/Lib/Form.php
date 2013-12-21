@@ -160,10 +160,31 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
             $raw   = strtolower($this->getMethod()) == 'post' ? $_POST : $_GET;
             $input = new \Maverick\Lib\Model_Input($raw);
 
-            $this->input = $input->get($this->name) ?: $input;
+            $this->input = $input->get($this->name) ? $this->buildContainerModel($this, $input->get($this->name)) : $input;
         }
 
         return $this->input;
+    }
+
+    /**
+     * Builds a model for the container
+     *
+     * @param  \Maverick\Lib\Builder_Form_Container $container
+     * @parma  \Maverick\Lib\Model_Input $input
+     * @return \Maverick\Lib\Model_Input
+     */
+    private function buildContainerModel($container, $input) {
+        foreach($container->getFields() as $name => $field) {
+            if($field instanceof \Maverick\Lib\Builder_Form_Field_Group) {
+                if(is_null($input->get($name))) {
+                    $input->set($name, new \Maverick\Lib\Model_Input(array()));
+                }
+
+                $input->set($name, $input->get($name));
+            }
+        }
+
+        return $input;
     }
 
     /**
