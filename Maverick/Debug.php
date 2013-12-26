@@ -30,6 +30,8 @@ function dump() {
 function _dump() {
     $args = func_get_args();
 
+    ob_get_clean();
+
     if(count($args)) {
         foreach($args as $a) {
             dump($a);

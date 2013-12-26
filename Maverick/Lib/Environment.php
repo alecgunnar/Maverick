@@ -32,6 +32,9 @@ class Environment {
      * @return null
      */
     public static function initialize() {
+        self::$environments = \Maverick\Maverick::getConfig('Environments')->getAsArray() ?: self::$environments;
+        self::$environment  = array_values(self::$environments)[0];
+
         error_reporting(\Maverick\Maverick::getConfig('Environment')->get('report_errors'));
         set_error_handler(array('\Maverick\Lib\ErrorHandler', 'handleError'));
         set_exception_handler(array('\Maverick\Lib\ErrorHandler', 'handleException'));

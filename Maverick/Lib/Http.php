@@ -69,4 +69,15 @@ class Http {
 
         return self::$headers;
     }
+
+    /**
+     * Sets the response code for the request
+     * NOTE: This is just a "mask" for PHP's built in function: http_response_code()
+     *
+     * @param  integer $code=''
+     * @return integer
+     */
+    public static function setResponseCode($code='') {
+        return http_response_code($code);
+    }
 }

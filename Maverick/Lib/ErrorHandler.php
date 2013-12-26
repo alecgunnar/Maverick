@@ -22,33 +22,12 @@ class ErrorHandler {
             self::sendEmail($message, $file, $line);
         }
 
+        Http::setResponseCode(500);
+
         $errorFile = MAVERICK_PATH . 'ErrorTemplates/PHPError.html';
 
-        if(file_exists($errorFile) && \Maverick\Lib\Environment::lessThan('PROD') && \Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
-            $stackTrace = $stackTrace ?: debug_backtrace();
-            $trace      = '';
-
-            foreach($stackTrace as $n => $data) {
-                $line     = '';
-                $function = '';
-                $file     = '';
-
-                if(array_key_exists('line', $data)) {
-                    $line = $data['line'];
-                }
-
-                if(array_key_exists('function', $data)) {
-                    $function = $data['function'];
-                }
-
-                if(array_key_exists('file', $data)) {
-                    $file = $data['file'];
-                }
-
-                $trace .= '<tr><td>' . $line . '</td><td>' . $function . '</td><td>' . $file . '</td></tr>';
-            }
-
-            printf(file_get_contents($errorFile), $number, $message, $file, $line, $trace);
+        if(file_exists($errorFile) && \Maverick\Maverick::getConfig('Environment')->get('display_errors')) {
+            printf(file_get_contents($errorFile), $number, $message, $file, $line);
         } else {
             \Maverick\Lib\Router::loadController('Errors_500')
                 ->printOut();

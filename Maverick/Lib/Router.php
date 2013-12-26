@@ -130,7 +130,7 @@ class Router {
         }
 
         if(count($expUri) == count($params)) {
-            $controller = 'Errors_404';
+            self::throw404();
         }
 
         return array($controller, $params);
@@ -162,7 +162,7 @@ class Router {
                 return self::routeAutomatically();
             }
 
-            $controller = 'Errors_404';
+            self::throw404();
         }
 
         array_shift($params);
@@ -258,5 +258,17 @@ class Router {
         }
 
         return self::$controllerObject;
+    }
+
+    /**
+     * Shows the 404 - Page not Found error page
+     */
+    public static function throw404() {
+        Http::setResponseCode(404);
+
+        self::loadController('Errors_404');
+        self::getController()->printOut();
+
+        exit;
     }
 }
