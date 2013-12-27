@@ -51,6 +51,13 @@ class Router {
     private static $controllerClass = '';
 
     /**
+     * The root controller
+     *
+     * @var \Application\Controller\AppRoot | null
+     */
+    private static $appRoot = null;
+
+    /**
      * Set a controller to be forcibly loaded
      *
      * @param string $controller
@@ -69,8 +76,8 @@ class Router {
 
         self::$routed = true;
 
-        $appRoot = new \Application\Controller\AppRoot;
-        $appRoot->preload();
+        self::$appRoot = new \Application\Controller\AppRoot;
+        self::$appRoot->preload();
 
         $controller = '';
         $params     = array();
@@ -95,7 +102,7 @@ class Router {
 
         self::loadController($controller, $params);
 
-        $appRoot->postload();
+        self::$appRoot->postload();
     }
     
     /**
@@ -267,6 +274,9 @@ class Router {
         Http::setResponseCode(404);
 
         self::loadController('Errors_404');
+
+        self::$appRoot->postLoad();
+
         self::getController()->printOut();
 
         exit;
