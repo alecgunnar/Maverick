@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_Form_Field_Input_File extends Builder_Form_Field_Input_Text {
+class Builder_Form_Field_Input_Number extends Builder_Form_Field_Input_Text {
     /**
      * Sets up the field
      *
@@ -15,6 +15,8 @@ class Builder_Form_Field_Input_File extends Builder_Form_Field_Input_Text {
      * @return null
      */
     public function __construct($name) {
-        parent::__construct($name, 'file');
+        parent::__construct($name, 'number');
+
+        $this->validate('IsNumber');
     }
 }

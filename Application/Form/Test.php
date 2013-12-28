@@ -18,11 +18,17 @@ class Test extends \Maverick\Lib\Form {
 
         $this->renderFieldsWithFormTpl();
 
-        $this->addField('Input', 'test_text')
+        $this->addField('Input_Text', 'test_text')
             ->setLabel('Text')
             ->setMaxLength(25)
             ->setValue('This is the value!')
             ->required();
+
+        $this->addField('Input_Number', 'test_number')
+            ->setLabel('Number')
+            ->prepend('$')
+            ->append('.00')
+            ->setSize(5);
 
         $this->addField('Input_File', 'test_file')
             ->setLabel('File');

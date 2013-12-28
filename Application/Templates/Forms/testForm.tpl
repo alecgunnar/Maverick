@@ -6,13 +6,13 @@
       {% for f in f.fields %}
         <div>
           {{ f.getLabel() }} {{ f.getError() }}<br />
-          {{ f.render()|raw }}
+          {{ f.getPrepended() }}{{ f.render()|raw }}{{ f.getAppended() }}
         </div>
       {% endfor %}
     </fieldset>
     {% else %}
     {{ f.getLabel() }} {{ f.getError() }}<br />
-    {{ f.render()|raw }}
+    {{ f.getPrepended() }}{{ f.render()|raw }}{{ f.getAppended() }}
     {% endif %}
   </div>
 {% else %}

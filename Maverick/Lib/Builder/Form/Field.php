@@ -79,6 +79,20 @@ class Builder_Form_Field extends Builder_Form_Component {
     private $errors = array();
 
     /**
+     * "Junk" that will come before the field
+     *
+     * @var string
+     */
+    private $prepend = '';
+
+    /**
+     * "Junk" that will come after the field
+     *
+     * @var string
+     */
+    private $append = '';
+
+    /**
      * Gets the full name of the field
      *
      * @return string
@@ -292,6 +306,48 @@ class Builder_Form_Field extends Builder_Form_Component {
      */
     public function getValidateFor() {
         return $this->validateFor;
+    }
+
+    /**
+     * Adds "junk" to be prepended
+     *
+     * @param  string $str
+     * @return self
+     */
+    public function prepend($str) {
+        $this->prepend .= $str;
+
+        return $this;
+    }
+
+    /**
+     * Gets the prepended "junk"
+     *
+     * @return string
+     */
+    public function getPrepended() {
+        return $this->prepend;
+    }
+
+    /**
+     * Adds "junk" to be appended
+     *
+     * @param  string $str
+     * @return self
+     */
+    public function append($str) {
+        $this->append .= $str;
+
+        return $this;
+    }
+
+    /**
+     * Gets the prepended "junk"
+     *
+     * @return string
+     */
+    public function getAppended() {
+        return $this->append;
     }
 
     /**

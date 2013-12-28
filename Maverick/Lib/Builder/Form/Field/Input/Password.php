@@ -7,7 +7,7 @@
 
 namespace Maverick\Lib;
 
-class Builder_Form_Field_Input_Password extends Builder_Form_Field_Input {
+class Builder_Form_Field_Input_Password extends Builder_Form_Field_Input_Text {
     /**
      * Sets up the field
      *
