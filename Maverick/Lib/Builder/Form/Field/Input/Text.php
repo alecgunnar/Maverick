@@ -27,5 +27,7 @@ class Builder_Form_Field_Input_Text extends Builder_Form_Field_Input {
      */
     public function setSize($size) {
         $this->addAttribute('size', $size);
+
+        return $this;
     }
 }
