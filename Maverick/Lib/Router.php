@@ -101,8 +101,6 @@ class Router {
         }
 
         self::loadController($controller, $params);
-
-        self::$appRoot->postload();
     }
     
     /**
@@ -268,14 +266,19 @@ class Router {
     }
 
     /**
-     * Shows the 404 - Page not Found error page
+     * Calls the post load method of the controller
+     */
+    public static function doPostLoad() {
+        self::$appRoot->postLoad();
+    }
+
+    /**
+     * Shows the "404 - Page not Found" error page
      */
     public static function throw404() {
         Http::setResponseCode(404);
 
         self::loadController('Errors_404');
-
-        self::$appRoot->postLoad();
 
         self::getController()->printOut();
 

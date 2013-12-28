@@ -229,6 +229,8 @@ class Output {
     public static function printOut($variables=array()) {
         $controller  = \Maverick\Lib\Router::getController(true);
 
+        \Maverick\Lib\Router::doPostLoad();
+
         $checkForPageFiles = array('css', 'js');
 
         foreach($checkForPageFiles as $type) {
