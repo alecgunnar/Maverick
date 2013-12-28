@@ -101,11 +101,46 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
                         }
                     }
                 }
+
+                if(!$this->checkAttachedFields($field, $input)) {
+                    $isValid = false;
+                }
             }
         }
 
         return $isValid;
     }
+
+    /**
+     * Checks the fields which are attached to another
+     *
+     * @param  \Maverick\Lib\Builder_Form_Field $field
+     * @return boolean
+     */
+    private function checkAttachedFields($formField, $input) {
+        $isValid = true;
+
+        if(count($formField->getAttachedFields())) {
+            foreach($formField->getAttachedFields() as $name => $field) {
+                $field->setSubmittedValue($input->get($name));
+
+                if(count(($validateFor = $field->getValidateFor()))) {
+                    foreach($validateFor as $type => $validator) {
+                        $validator->setValue($field->getSubmittedValue());
+
+                        if(!$validator->isValid()) {
+                            $this->setFieldError($name, $validator->getErrorMessage());
+
+                            $isValid = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $isValid;
+    }
+     
 
     /**
      * Gets the status of the form submission
@@ -247,6 +282,14 @@ abstract class Form extends \Maverick\Lib\Builder_Form {
             } else {
                 if($name == $fieldName) {
                     return $field;
+                }
+
+                if(count($field->getAttachedFields())) {
+                    foreach($field->getAttachedFields() as $name => $attached) {
+                        if($name == $fieldName) {
+                            return $field;
+                        }
+                    }
                 }
             }
         }

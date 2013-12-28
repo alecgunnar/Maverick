@@ -14,7 +14,14 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
      * @var array $fields
      */
     protected $fields = array();
-    
+
+    /**
+     * A list of the names of all of the fields in this container
+     *
+     * @var array
+     */
+    private $fieldRegister = array();
+
     /**
      * The default field template
      *
@@ -50,20 +57,18 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
     public function getDefaultFieldTpl() {
         return $this->defaultFieldTpl;
     }
-    
+
     /**
      * Adds a field to the form
      *
      * @param  string  $type
      * @param  string  $name
-     * @return mixed
+     * @return \Maverick\Lib\Builder_Form_Field
      */
     public function addField($type, $name) {
-        $class = '\Maverick\Lib\Builder_Form_Field_' . $type;
+        $this->form->registerField($name);
 
-        if(array_key_exists($name, $this->form->fields)) {
-            throw new \Exception('You cannot add multiple fields/groups with the same name to the same form.');
-        }
+        $class = '\Maverick\Lib\Builder_Form_Field_' . $type;
 
         $fieldBuilder = new $class($name);
         $fieldBuilder->setForm($this->form)
@@ -81,9 +86,7 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
      * @return \Maverick\Lib\Builder_Form_Field_Group
      */
     public function addFieldGroup($name) {
-        if(array_key_exists($name, $this->fields)) {
-            throw new \Exception('You cannot add multiple fields/groups with the same name to the same form.');
-        }
+        $this->form->registerField($name);
 
         $groupBuilder = new \Maverick\Lib\Builder_Form_Field_Group();
         $groupBuilder->setForm($this->form)
@@ -102,6 +105,23 @@ abstract class Builder_Form_Container extends Builder_Form_Component {
      */
     public function getFields() {
         return $this->fields;
+    }
+
+    /**
+     * Registers a field to this form
+     *
+     * @throws \Exception
+     * @param  string $name
+     * @return boolean
+     */
+    public function registerField($name) {
+        if(!array_key_exists($name, array_flip($this->fieldRegister))) {
+            $this->fieldRegister[] = $name;
+
+            return true;
+        }
+
+        throw new \Exception('You cannot add multiple fields/groups with the same name to the same form. A field named: "' . $name . '" already exists.');
     }
 
     /**

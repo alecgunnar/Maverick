@@ -9,6 +9,13 @@ namespace Maverick\Lib;
 
 class Builder_Form_Field extends Builder_Form_Component {
     /**
+     * The field this field is attached to, if it is attached to any field
+     *
+     * @var \Maverick\Lib\Builder_Form_Field | null
+     */
+    private $parentField = null;
+
+    /**
      * The template
      *
      * @var string
@@ -91,6 +98,13 @@ class Builder_Form_Field extends Builder_Form_Component {
      * @var string
      */
     private $append = '';
+
+    /**
+     * Fields which are attached to this one
+     *
+     * @var array
+     */
+    private $attachedFields = array();
 
     /**
      * Gets the full name of the field
@@ -348,6 +362,73 @@ class Builder_Form_Field extends Builder_Form_Component {
      */
     public function getAppended() {
         return $this->append;
+    }
+
+    /**
+     * Attaches a field to this field
+     *
+     * @throws \Exception
+     * @param  string $type
+     * @param  string $name
+     * @return \Maverick\Lib\Builer_Form_Field
+     */
+    public function attach($type, $name) {
+        $this->form->registerField($name);
+
+        $class = '\Maverick\Lib\Builder_Form_Field_' . $type;
+
+        $parent = $this;
+
+        if(!is_null($this->parentField)) {
+            $parent = $this->parentField;
+        }
+
+        $fieldBuilder = new $class($name);
+        $fieldBuilder->setForm($parent->getForm())
+            ->setContainer($parent->getContainer())
+            ->setParentField($parent);
+
+        $parent->addAttachedField($name, $fieldBuilder);
+
+        return $fieldBuilder;
+    }
+
+    /**
+     * Adds an attached field to this field
+     *
+     * @param string $name
+     * @param \Maverick\Lib\Builder_Form_Field $builder
+     */
+    protected function addAttachedField($name, $builder) {
+        $this->attachedFields[$name] = $builder;
+    }
+
+    /**
+     * Gets the attached fields for this field
+     *
+     * @return array
+     */
+    public function getAttachedFields() {
+        return $this->attachedFields;
+    }
+
+    /**
+     * Sets the parent field
+     *
+     * @param  \Maverick\Lib\Builder_Form_Field $parent
+     * @return self
+     */
+    protected function setParentField($parent) {
+        $this->parentField = $parent;
+    }
+
+    /**
+     * Gets the parent field
+     *
+     * @return \Maverick\Lib\Builder_Form_Field | null
+     */
+    public function getParentField() {
+        return $this->parentField;
     }
 
     /**

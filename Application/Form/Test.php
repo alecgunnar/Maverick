@@ -33,12 +33,17 @@ class Test extends \Maverick\Lib\Form {
         $this->addField('Input_File', 'test_file')
             ->setLabel('File');
 
-        $this->addField('Input_Email', 'test_email')
+        $group = $this->addFieldGroup('group1')
+            ->setLabel('This is a Fieldset');
+
+        $email = $group->addField('Input_Email', 'test_email')
             ->setLabel('Email Address')
             ->validate('IsEmail', 'That was not a valid email address!');
 
-        $group = $this->addFieldGroup('group1')
-            ->setLabel('This is a Fieldset');
+        $email->attach('Input_Text', 'phone')
+            ->required('Enter a phone number!')
+            ->attach('Select', 'countryCode')
+            ->addOptions(array(0 => '+1', 1 => '+2'));
 
         $group->addField('Input_Password', 'test_password')
             ->setLabel('Password')
