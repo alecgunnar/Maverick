@@ -118,6 +118,6 @@ class Cache {
     public function clear() {
         $this->set(null);
 
-        file_put_contents($this->expireFile, 0);
+        file_put_contents($this->expiresFile, 0);
     }
 }
