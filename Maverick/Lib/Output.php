@@ -250,4 +250,26 @@ class Output {
 
         exit;
     }
+
+    /**
+     * Prints out text
+     *
+     * @param string $text
+     */
+    public static function printText($text) {
+        print $text;
+
+        exit;
+    }
+
+    /**
+     * Prints an encoded json object
+     *
+     * @param mixed $json
+     */
+    public static function printJson($json) {
+        print json_encode($json);
+
+        exit;
+    }
 }

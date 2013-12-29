@@ -124,7 +124,7 @@ class Builder_Tag {
      *
      * @return array
      */
-    public function getAttributes($name) {
+    public function getAttributes() {
         return $this->attributes;
     }
 
