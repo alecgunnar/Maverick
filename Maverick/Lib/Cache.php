@@ -111,4 +111,13 @@ class Cache {
 
         return false;
     }
+
+    /**
+     * Clears the cache and expire time
+     */
+    public function clear() {
+        $this->set(null);
+
+        file_put_contents($this->expireFile, 0);
+    }
 }
