@@ -131,6 +131,8 @@ class Router {
 
             if($shift) {
                 array_shift($params);
+            } else {
+                break;
             }
         }
 
