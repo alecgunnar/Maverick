@@ -109,24 +109,27 @@ class Router {
      * @return array
      */
     private static function routeAutomatically() {
-        $pathToController = APPLICATION_PATH . 'Controller' . DS;
-        $expUri           = $params = explode('/', self::$uri->getResourcePath());
-        $namespace        = '';
-        $controller       = '';
+        $pathToController  = APPLICATION_PATH . 'Controller' . DS;
+        $expUri            = $params = explode('/', self::$uri->getResourcePath());
+        $lastWasController = false;
+        $namespace         = '';
+        $controller        = '';
 
         foreach($expUri as $u) {
             $uri   = self::convertUri($u);
             $shift = false;
 
-            if(file_exists($pathToController . $uri . PHP_EXT)) {
-                $controller = $namespace . $uri;
-                $shift      = true;
+            if(file_exists($pathToController . $uri . PHP_EXT) && !$lastWasController) {
+                $controller        = $namespace . $uri;
+                $shift             = true;
+                $lastWasController = true;
             }
             
             if(is_dir($pathToController . $uri)) {
                 $namespace        .= $uri . '_';
                 $pathToController .= $uri . DS;
                 $shift             = true;
+                $lastWasController = false;
             }
 
             if($shift) {
