@@ -1,7 +1,6 @@
 <?php
 
-return array('enable_ob'      => false,
-             'display_errors' => false,
+return array('display_errors' => false,
              'log_errors'     => false,
              'report_errors'  => E_ALL,
              'error_log_file' => ROOT_PATH . 'Logs' . DS . 'PHPErrors.txt',

@@ -18,6 +18,10 @@ class ErrorHandler {
      * @param boolean  $isException
      */
     public static function handleError($number, $message, $file, $line, $isException=false, $stackTrace=array()) {
+        if(!error_reporting()) {
+            return;
+        }
+
         if(\Maverick\Maverick::getConfig('Environment')->get('email_errors')) {
             self::sendEmail($message, $file, $line);
         }

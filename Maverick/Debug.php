@@ -9,6 +9,8 @@ function dump() {
     $args   = func_get_args();
     $output = '';
 
+    ob_get_clean();
+
     if(count($args)) {
         foreach($args as $a) {
             ob_start();
