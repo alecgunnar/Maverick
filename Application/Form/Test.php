@@ -98,7 +98,9 @@ class Test extends \Maverick\Lib\Form {
             ->setValue('Submit');
     }
     
-    public function validate() { }
+    public function validate() {
+        $files = $this->getFilesModel();
+    }
     public function submit() {
         \Maverick\Lib\Http::location('/', 'Submission successful!');
     }

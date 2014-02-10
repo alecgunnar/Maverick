@@ -13,7 +13,7 @@ class Environment {
      *
      * @var string $environment
      */
-    private static $environment = 1000;
+    private static $environment = null;
 
     /**
      * A list of possible environments in order
@@ -27,9 +27,9 @@ class Environment {
                                          'PROD' => 2500);
 
     /**
-     * Sets up the environment
-     *
-     * @return null
+     * Sets up the environment, including:
+     *  - The error handler
+     *  - 
      */
     public static function initialize() {
         self::$environments = \Maverick\Maverick::getConfig('Environments')->getAsArray() ?: self::$environments;
@@ -59,20 +59,22 @@ class Environment {
         $code = 0;
 
         if(is_numeric($env)) {
-            $values = array_flip($this->environments);
+            $values = array_flip(self::$environments);
 
             if(array_key_exists($env, $values)) {
-                $this->environment = $code = $env;
+                $code = $env;
             }
         } else {
-            if(array_key_exists($env, $this->environments)) {
-                $this->environment = $code = $this->environments[$env];
+            if(array_key_exists($env, self::$environments)) {
+                $code = self::$environments[$env];
             }
         }
 
         if(!$code) {
             throw new \Exception('Invalid environment ' . $env);
         }
+
+        self::$environment = $code;
 
         return $code;
     }
@@ -84,20 +86,18 @@ class Environment {
      * @return string | integer
      */
     public static function getEnvironment($getCode=false) {
-        if(!self::$environment) {
+        if(is_null(self::$environment)) {
             $load = ROOT_PATH . 'ENVIRONMENT';
-    
+
             if(file_exists($load)) {
                 $env = strtoupper(file_get_contents($load));
-    
-                if(array_key_exists($env, $this->environments)) {
-                    self::setEnvironment($env);
-                }
+
+                self::setEnvironment($env);
             }
         }
 
         if($getCode) {
-            return $this->environment;
+            return self::$environment;
         }
 
         $values = array_flip(self::$environments);
@@ -109,7 +109,6 @@ class Environment {
      *
      * @throws \Exception
      * @param  string $check
-     * @return null
      */
     public static function lessThan($check) {
         if(array_key_exists($check, self::$environments)) {
@@ -127,8 +126,6 @@ class Environment {
 
     /**
      * The shutdown function for Maverick
-     *
-     * @return null
      */
     public static function shutdown() {
         $error = error_get_last();

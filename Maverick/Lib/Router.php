@@ -16,6 +16,13 @@ class Router {
     private static $routed = false;
 
     /**
+     *  Whether or not automatic routing was used
+     *
+     * @var boolean
+     */
+    private static $autoRouted = false;
+
+    /**
      * The URI for the current page
      *
      * @var \Maverick\Lib\Model_Uri $uri
@@ -109,6 +116,8 @@ class Router {
      * @return array
      */
     private static function routeAutomatically() {
+        self::$autoRouted  = true;
+
         $pathToController  = APPLICATION_PATH . 'Controller' . DS;
         $expUri            = $params = explode('/', self::$uri->getResourcePath());
         $lastWasController = false;
@@ -200,8 +209,19 @@ class Router {
      * @return mixed
      */
     public static function loadController($controller, $variables=array()) {
-        $controllerClassWithNamespace = 'Application\Controller\\' . $controller;
+        $controllersNamespace         = 'Application\Controller\\';
+        $controllerClassWithNamespace = $controllersNamespace . $controller;
         $inst                         = new $controllerClassWithNamespace;
+
+        if(self::$autoRouted) {
+            $splitSubNamespace = explode('_', $controller);
+            $rootController    = $splitSubNamespace[0];
+
+            if(method_exists($controllersNamespace . $rootController, 'rootSetup')) {
+                $rootControllerWithNamespace = $controllersNamespace . $rootController;
+                $rootControllerWithNamespace::rootSetup();
+            }
+        }
 
         self::$controllerObject = $inst;
         self::$controllerClass  = $controller;
