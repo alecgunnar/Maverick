@@ -70,7 +70,7 @@ abstract class Validator {
      * @return boolean
      */
     public static function test($validator, $value) {
-        $class = __NAMESPACE__ . '\Validator_' . $validator;
+        $class = 'Maverick\Lib\Validator_' . $validator;
         $inst  = new $class;
 
         return $inst->setValue($value)->isValid();

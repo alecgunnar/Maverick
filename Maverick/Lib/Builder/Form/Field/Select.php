@@ -100,14 +100,9 @@ class Builder_Form_Field_Select extends Builder_Form_Field {
     /**
      * Renders this field
      *
-     * @throws \Exception
      * @return string
      */
     public function render() {
-        if(!count($this->options)) {
-            throw new \Exception('No options were added to field: "' . $this->name . '"');
-        }
-
         $options = $this->renderOptions($this->options);
 
         $multi = '';
@@ -136,23 +131,25 @@ class Builder_Form_Field_Select extends Builder_Form_Field {
     private function renderOptions($options) {
         $opts = '';
 
-        foreach($options as $value => $label) {
-            $opt = new Builder_Tag('option');
-            $opt->addAttribute('value', $value)
-                ->setContent($label);
-
-            if($this->isSelected($value)) {
-                $opt->addAttribute('selected', '');
-            }
-
-            if(is_array($label)) {
-                $optGroup = new Builder_Tag('optgroup');
-                $optGroup->addAttribute('label', $value)
-                    ->setContent($this->renderOptions($label));
-
-                $opts .= $optGroup->render();
-            } else {
-                $opts .= $opt->render();
+        if(count($options)) {
+            foreach($options as $value => $label) {
+                $opt = new Builder_Tag('option');
+                $opt->addAttribute('value', $value)
+                    ->setContent($label);
+    
+                if($this->isSelected($value)) {
+                    $opt->addAttribute('selected', '');
+                }
+    
+                if(is_array($label)) {
+                    $optGroup = new Builder_Tag('optgroup');
+                    $optGroup->addAttribute('label', $value)
+                        ->setContent($this->renderOptions($label));
+    
+                    $opts .= $optGroup->render();
+                } else {
+                    $opts .= $opt->render();
+                }
             }
         }
 

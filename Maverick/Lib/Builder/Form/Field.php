@@ -74,7 +74,7 @@ class Builder_Form_Field extends Builder_Form_Component {
     /**
      * The submitted value of the field
      *
-     * @var string
+     * @var string | array
      */
     protected $submittedValue = null;
 
@@ -232,7 +232,7 @@ class Builder_Form_Field extends Builder_Form_Component {
     /**
      * Sets the value of the field to an attribute of the class
      * this will not make the value show up in the HTML form field
-     * use value() for that.
+     * use setValue() for that.
      *
      * @param string $value
      */
@@ -300,15 +300,25 @@ class Builder_Form_Field extends Builder_Form_Component {
      * Add validation constraints
      *
      * @throws \Exception
-     * @param  mixed  $validator
+     * @param  \Maverick\Lib\Validator | string $validator
      * @param  string $message=''
      * @param  array  $args
      * @return self
      */
     public function validate($validator, $message='') {
-        $class = '\Maverick\Lib\Validator_' . $validator;
+        if($validator instanceof \Maverick\Lib\Validator) {
+            $inst = $validator;
 
-        $this->validateFor[$validator] = new $class($message);
+            $splitClassName = explode('_', get_class($validator));
+            unset($splitClassName[0]);
+
+            $validator = implode('_', $splitClassName);
+        } else {
+            $class = '\Maverick\Lib\Validator_' . $validator;
+            $inst  = new $class($message);
+        }
+
+        $this->validateFor[$validator] = $inst;
 
         return $this;
     }
@@ -485,10 +495,8 @@ class Builder_Form_Field extends Builder_Form_Component {
             $this->addAttribute('name', $this->getFullName());
         }
 
-        $value = $this->getActualValue();
-
-        if($value) {
-            $this->addAttribute('value', $value);
+        if($this->getActualValue()) {
+            $this->addAttribute('value', $this->getActualValue());
         }
 
         return parent::render();
