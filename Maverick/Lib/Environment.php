@@ -90,7 +90,7 @@ class Environment {
             $load = ROOT_PATH . 'ENVIRONMENT';
 
             if(file_exists($load)) {
-                $env = strtoupper(file_get_contents($load));
+                $env = strtoupper(trim(file_get_contents($load)));
 
                 self::setEnvironment($env);
             }

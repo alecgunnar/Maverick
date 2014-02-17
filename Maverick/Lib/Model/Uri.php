@@ -60,7 +60,7 @@ class Model_Uri {
         $this->https    = $https;
         $this->hostName = $hostName;
 
-        $this->setResourcePath($path);
+        $this->setPath($path);
 
         if(is_array($queryData) && count($queryData)) {
             $this->setQueryData($queryData);
@@ -140,7 +140,7 @@ class Model_Uri {
      * @param  string $path
      * @return self
      */
-    public function setResourcePath($path) {
+    public function setPath($path) {
         $this->path = trim($path, '/');
 
         return $this;
@@ -151,7 +151,7 @@ class Model_Uri {
      *
      * return string
      */
-    public function getResourcePath() {
+    public function getPath() {
         return $this->path;
     }
 

@@ -119,7 +119,7 @@ class Router {
         self::$autoRouted  = true;
 
         $pathToController  = APPLICATION_PATH . 'Controller' . DS;
-        $expUri            = $params = explode('/', self::$uri->getResourcePath());
+        $expUri            = $params = explode('/', self::$uri->getPath());
         $lastWasController = false;
         $namespace         = '';
         $controller        = '';
@@ -134,7 +134,7 @@ class Router {
                 $lastWasController = true;
             }
             
-            if(is_dir($pathToController . $uri)) {
+            if(is_dir($pathToController . $uri) && (!$controller || ($namespace . $uri) == $controller)) {
                 $namespace        .= $uri . '_';
                 $pathToController .= $uri . DS;
                 $shift             = true;
@@ -151,7 +151,7 @@ class Router {
         if(count($expUri) == count($params)) {
             self::throw404();
         }
-
+dump($params, $namespace, $pathToController, $controller);
         return array($controller, $params);
     }
     
