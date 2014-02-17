@@ -151,7 +151,7 @@ class Router {
         if(count($expUri) == count($params)) {
             self::throw404();
         }
-dump($params, $namespace, $pathToController, $controller);
+
         return array($controller, $params);
     }
     
