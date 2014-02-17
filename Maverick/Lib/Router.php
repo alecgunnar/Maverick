@@ -123,6 +123,7 @@ class Router {
         $lastWasController = false;
         $namespace         = '';
         $controller        = '';
+        $goodParams        = array();
 
         foreach($expUri as $u) {
             $uri   = self::convertUri($u);
@@ -132,9 +133,10 @@ class Router {
                 $controller        = $namespace . $uri;
                 $shift             = true;
                 $lastWasController = true;
+                $goodParams        = $params;
             }
             
-            if(is_dir($pathToController . $uri) && (!$controller || ($namespace . $uri) == $controller)) {
+            if(is_dir($pathToController . $uri)) {
                 $namespace        .= $uri . '_';
                 $pathToController .= $uri . DS;
                 $shift             = true;
@@ -152,7 +154,9 @@ class Router {
             self::throw404();
         }
 
-        return array($controller, $params);
+        array_shift($goodParams);
+
+        return array($controller, $goodParams);
     }
     
     /**
