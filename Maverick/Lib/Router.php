@@ -230,8 +230,8 @@ class Router {
 
             
 
-            if(method_exists($controllersNamespace . $rootController, 'rootSetup') && $this->lastRootController != $rootController) {
-                $this->lastRootController    = $rootController;
+            if(method_exists($controllersNamespace . $rootController, 'rootSetup') && self::$lastRootController != $rootController) {
+                self::$lastRootController    = $rootController;
                 $rootControllerWithNamespace = $controllersNamespace . $rootController;
                 $rootControllerWithNamespace::rootSetup();
             }
