@@ -65,6 +65,13 @@ class Router {
     private static $appRoot = null;
 
     /**
+     * The last root controller method to be called
+     *
+     * @var string
+     */
+    private static $lastRootController = '';
+
+    /**
      * Set a controller to be forcibly loaded
      *
      * @param string $controller
@@ -221,7 +228,10 @@ class Router {
             $splitSubNamespace = explode('_', $controller);
             $rootController    = $splitSubNamespace[0];
 
-            if(method_exists($controllersNamespace . $rootController, 'rootSetup')) {
+            
+
+            if(method_exists($controllersNamespace . $rootController, 'rootSetup') && $this->lastRootController != $rootController) {
+                $this->lastRootController    = $rootController;
                 $rootControllerWithNamespace = $controllersNamespace . $rootController;
                 $rootControllerWithNamespace::rootSetup();
             }
