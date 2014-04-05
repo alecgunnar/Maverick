@@ -10,7 +10,7 @@ class Index extends \Maverick\Lib\Controller {
         $this->setVariable('pathToController', __FILE__);
 
         if(\Maverick\Lib\Http::getRedirectMessage()) {
-            dump(\Maverick\Lib\Http::getRedirectMessage())
+            dump(\Maverick\Lib\Http::getRedirectMessage());
         }
     }
 }

@@ -30,6 +30,13 @@ class Cache {
     private $expiresFile = null;
 
     /**
+     * The controller for this cache
+     *
+     * @var mixed
+     */
+    private $controller = null;
+
+    /**
      * Starts-up the cache class
      *
      * @param  string  $cacheKey
@@ -42,7 +49,7 @@ class Cache {
             throw new \Exception('Parameter two for method ' . __NAMESPACE__ . '\Cache::__construct must be an integer.');
         }
 
-        $cacheLoc = \Maverick\Maverick::getConfig('Cache')->get('path');
+        $cacheLoc = APPLICATION_PATH . 'Cache/Storage';
         $checkDir = function($dir) { if(!is_dir($dir)) mkdir($dir); };
 
         $checkDir($cacheLoc);
@@ -119,5 +126,23 @@ class Cache {
         $this->set(null);
 
         file_put_contents($this->expiresFile, 0);
+    }
+
+    /**
+     * Calls the cache's controller to recache the cache
+     *
+     * @throws \Exception
+     */
+    public function recache() {
+        if(file_exists(APPLICATION_PATH . 'Cache/Controller/' . ucfirst($this->cacheKey) . PHP_EXT)) {
+            $class            = '\Application\Cache\Controller_' . ucfirst($this->cacheKey);
+            $this->controller = new $class;
+
+            $this->set(call_user_func_array(array($this->controller, 'cache'), func_get_args()));
+
+            return true;
+        }
+
+        throw new \Exception('The cache: ' . $this->cacheKey . ' does not have a controller.');
     }
 }
