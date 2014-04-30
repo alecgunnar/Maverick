@@ -125,7 +125,7 @@ class Http_REST {
      *
      * @return boolean
      */
-    private function get() {
+    public function get() {
         $this->setOption(CURLOPT_URL, $this->url . '?' . http_build_query($this->parameters));
 
         return $this->makeRequest();
@@ -136,7 +136,7 @@ class Http_REST {
      *
      * @return boolean
      */
-    private function post() {
+    public function post() {
         $this->setOptions(array(CURLOPT_URL        => $this->url,
                                 CURLOPT_POST       => true,
                                 CURLOPT_POSTFIELDS => http_build_query($this->parameters)));
@@ -149,7 +149,7 @@ class Http_REST {
      *
      * @return boolean
      */
-    private function put() {
+    public function put() {
         $this->setOptions(array(CURLOPT_URL           => $this->url,
                                 CURLOPT_CUSTOMREQUEST => 'PUT'
                                 CURLOPT_POSTFIELDS    => http_build_query($this->parameters)));
@@ -162,7 +162,7 @@ class Http_REST {
      *
      * @return boolean
      */
-    private function delete() {
+    public function delete() {
         $this->setOptions(array(CURLOPT_URL           => $this->url . '?' . http_build_query($this->parameters),
                                 CURLOPT_CUSTOMREQUEST => 'DELETE'));
 
