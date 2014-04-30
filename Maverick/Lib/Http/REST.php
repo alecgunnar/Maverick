@@ -151,7 +151,7 @@ class Http_REST {
      */
     public function put() {
         $this->setOptions(array(CURLOPT_URL           => $this->url,
-                                CURLOPT_CUSTOMREQUEST => 'PUT'
+                                CURLOPT_CUSTOMREQUEST => 'PUT',
                                 CURLOPT_POSTFIELDS    => http_build_query($this->parameters)));
 
         return $this->makeRequest();
