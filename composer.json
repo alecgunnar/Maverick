@@ -1,5 +1,5 @@
 {
-    "package": "maverick/maverick",
+    "name": "maverick/maverick",
     "description": "A micro framework for PHP",
     "version": "0.1.0",
     "type": "library",
