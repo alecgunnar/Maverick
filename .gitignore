@@ -1,8 +1,3 @@
-/Application/Cache
-/Application/Templates/Cache
-/Logs
-/vendor
-composer.phar
+.DS_Store
 composer.lock
-/bin
-/Config/Dev
+vendor
