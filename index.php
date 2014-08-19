@@ -10,6 +10,8 @@ use Maverick\View\IndexView;
 
 require './vendor/autoload.php';
 
+define('ROOT', __DIR__ . '/');
+
 $app = new Maverick\Application();
 
 $app->router->match('*', '/', function() {

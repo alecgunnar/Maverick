@@ -9,6 +9,8 @@ An application written with Maverick starts out like this:
 
 require './vendor/autoload.php';
 
+define('ROOT', __DIR__ . '/');
+
 $app = new Maverick\Application();
 ```
 

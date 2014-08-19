@@ -1,5 +1,9 @@
 <?php
 
+use Maverick\Application;
+
+define('ROOT', __DIR__ . '/');
+
 require(__DIR__ . '/vendor/autoload.php');
 
-Maverick\Application::$debugLevel = Maverick\Application::DEBUG_LEVEL_TEST;
+Application::setDebugLevel(Application::DEBUG_LEVEL_TEST);

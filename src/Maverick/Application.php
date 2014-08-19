@@ -16,7 +16,8 @@ use Maverick\Http\Request,
     Maverick\DependencyManagement\ServiceManager,
     Maverick\Exception\InvalidValueException,
     Maverick\Exception\NoRouteException,
-    Exception;
+    Exception,
+    Maverick\DataStructure\ReadOnlyMap;
 
 class Application {
     /**
@@ -31,7 +32,7 @@ class Application {
      *
      * @var int
      */
-    public static $debugLevel;
+    protected static $debugLevel;
 
     /**
      * Various debug levels
@@ -42,6 +43,18 @@ class Application {
     const DEBUG_LEVEL_TEST = 1010;
     const DEBUG_LEVEL_BETA = 1015;
     const DEBUG_LEVEL_PROD = 1020;
+
+    /**
+     * Environments
+     *
+     * @var array
+     */
+    protected static $levels = [
+        1005 => 'dev',
+        1010 => 'test',
+        1015 => 'beta',
+        1020 => 'prod'
+    ];
 
     /** 
      * The current request being worked with
@@ -81,9 +94,17 @@ class Application {
     /**
      * Constructor
      *
-     * @param int $debugLevel=null
+     * @throws Exception
      */
-    public function __construct($debugLevel=null) {
+    public function __construct() {
+        if(!defined('ROOT')) {
+            throw new Exception('You must define "ROOT" in your index file! It should point to the root of your project.');
+        }
+
+        if(!self::$debugLevel) {
+            self::$debugLevel = self::DEBUG_LEVEL_PROD;
+        }
+
         $this->registerErrorHandler();
 
         $this->services = new ServiceManager();
@@ -94,6 +115,30 @@ class Application {
         $this->response = $this->services->get('response');
         $this->router   = $this->services->get('router');
         $this->session  = $this->services->get('session');
+    }
+
+    /**
+     * Sets the debug level
+     *
+     * @codeCoverageIgnore
+     * @var int $level
+     */
+    public static function setDebugLevel($level) {
+        if(!isset(self::$levels[$level])) {
+            throw new InvalidValueException('Debug level ' . $level . ' is not valid.');
+        }
+
+        self::$debugLevel = $level;
+    }
+
+    /**
+     * Gets the debug level
+     *
+     * @codeCoverageIgnore
+     * @return int
+     */
+    public static function getDebugLevel() {
+        return self::$debugLevel;
     }
 
     /**
@@ -198,6 +243,31 @@ class Application {
                 call_user_func_array($errorHandler, $err);
             }
         });
+    }
+
+    /**
+     * Loads configuration information
+     *
+     * @codeCoverageIgnore
+     * @param  string $name
+     * @return Maverick\DataStructure\ReadOnlyMap
+     */
+    public function getConfig($name) {
+        $dir    = ROOT . 'config/';
+        $env    = $dir . self::$levels[self::$debugLevel] . '/';
+        $master = $dir . 'master/';
+
+        $config = [];
+
+        if(file_exists($master . $name . '.php')) {
+            $config = include $master . $name . '.php';
+        }
+
+        if(file_exists($env . $name . '.php')) {
+            $config = array_merge($config, include $env . $name . '.php');
+        }
+
+        return new ReadOnlyMap($config);
     }
 
     /**

@@ -25,7 +25,7 @@ class IndexView extends DefaultLayout{
       Before going any farther, you should install all of the Composer packages required by Maverick. This can be done by running <kbd>composer install</kbd> via the command line or terminal. If you do not have Composer installed, you can get it from <a href="http://getcomposer.org" target="_blank">getcomposer.org</a>. Once all of the dependencies have been installed, you can start creating your application.<br />
       <br />
       Every application created with Maverick starts out the same way. Inside of your index file, <code>index.php</code> for this example, place the following:
-      <pre>require \'./vendore/autoload.php\';<br /><br />$app = new Maverick\Application();</pre>
+      <pre>require \'./vendore/autoload.php\';<br /><br />// This should be the web root<br />define(\'ROOT\', __DIR__ . \'/\');<br /><br />$app = new Maverick\Application();</pre>
       <br />
       Next, add some routes. A route defines a set of conditions for the router, and when those conditions are satisfied, the router will tell it\'s controller to generate the page. For example, the route for your homepage might look like:
       <pre>$app->router->match(\'*\', \'/\', function() {<br />&nbsp;&nbsp;&nbsp;&nbsp;return \'Welcome to my new website!\';<br />});</pre>
