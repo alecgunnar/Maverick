@@ -28,7 +28,7 @@ class IndexView extends DefaultLayout{
       <pre>require \'./vendore/autoload.php\';<br /><br />$app = new Maverick\Application();</pre>
       <br />
       Next, add some routes. A route defines a set of conditions for the router, and when those conditions are satisfied, the router will tell it\'s controller to generate the page. For example, the route for your homepage might look like:
-      <pre>$app->match(\'*\', \'/\', function() {<br />&nbsp;&nbsp;&nbsp;&nbsp;return \'Welcome to my new website!\';<br />});</pre>
+      <pre>$app->router->match(\'*\', \'/\', function() {<br />&nbsp;&nbsp;&nbsp;&nbsp;return \'Welcome to my new website!\';<br />});</pre>
       <br />
       Finally, to tell Maverick that the request by the user has been satisfied, add the following to the end of your index file:
       <pre>$app->finish();</pre>
