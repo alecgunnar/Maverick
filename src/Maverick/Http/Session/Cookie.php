@@ -6,7 +6,7 @@
  * (c) Alec Carpenter <gunnar94@me.com>
  */
 
-namespace Maverick\Http\Session\Cookie;
+namespace Maverick\Http\Session;
 
 use Maverick\Exception\InvalidArgumentException,
     DateTime;
@@ -75,7 +75,7 @@ class Cookie {
     public function __construct($name, $value='', $expire=0, $path='', $domain='', $secure=false, $httpOnly=false) {
         $this->setName($name);
         $this->setValue($value);
-        $this->setExpire($expire);
+        $this->setExpiration($expire);
         $this->setPath($path);
         $this->setDomain($domain);
 
@@ -99,7 +99,7 @@ class Cookie {
             $cookie .= ' Path=' . $this->path . ';';
         }
 
-        if($this->expires !== null) {
+        if($this->expire !== null) {
             $cookie .= ' Expires=' . $this->expire->format(DateTime::RFC1123) . ';';
         }
 
@@ -154,7 +154,7 @@ class Cookie {
             $this->expire = new DateTime('now');
             $this->expire->modify($expire . ' seconds');
         } else {
-            throw new InvalidArgumentException(__METHOD__, 1, ['DateTime', 'number']);
+            throw new InvalidArgumentException(__METHOD__, 1, ['DateTime', 'int']);
         }
 
         return $this;
@@ -179,7 +179,7 @@ class Cookie {
     }
 
     public function setDomain($domain) {
-        if(!is_string($name)) {
+        if(!is_string($domain)) {
             throw new InvalidArgumentException(__METHOD__, 1, ['string']);
         }
 

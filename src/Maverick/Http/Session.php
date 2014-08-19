@@ -8,7 +8,9 @@
 
 namespace Maverick\Http;
 
-use Maverick\DataStructure\UserInputMap;
+use Maverick\DataStructure\UserInputMap,
+    Maverick\DataStructure\ReadOnlyMap,
+    Maverick\Http\Session\Cookie;
 
 class Session {
     /**
@@ -16,13 +18,20 @@ class Session {
      *
      * @var Maverick\DataStructure\ReadOnlyMap
      */
-    private $cookies;
+    protected $cookies;
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->cookies = new UserInputMap($_COOKIE);
+        $cleanedCookies = new UserInputMap($_COOKIE);
+        $cookies        = [];
+
+        foreach($cleanedCookies as $name => $value) {
+            $cookies[$name] = new Cookie($name, $value);
+        }
+
+        $this->cookies = new ReadOnlyMap($cookies);
     }
 
     /**

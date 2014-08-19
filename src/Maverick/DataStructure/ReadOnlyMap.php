@@ -26,6 +26,7 @@ class ReadOnlyMap extends Map {
         foreach($data as $key => $value) {
             if($value !== null) {
                 $this->data[$key] = $value;
+                $this->keys[]     = $key;
             }
         }
     }
