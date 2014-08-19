@@ -14,6 +14,7 @@ use Maverick\Http\Request,
     Maverick\Http\Session,
     Maverick\Controller\ExceptionController,
     Maverick\DependencyManagement\ServiceManager,
+    Maverick\Exception\InvalidValueException,
     Maverick\Exception\NoRouteException,
     Exception;
 
@@ -23,7 +24,24 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.1.0';
+    const VERSION = '0.2.0';
+
+    /**
+     * Debug level for the app
+     *
+     * @var int
+     */
+    private $debugLevel;
+
+    /**
+     * Various debug levels
+     *
+     * @var int
+     */
+    const DEBUG_LEVEL_DEV  = 1005;
+    const DEBUG_LEVEL_TEST = 1010;
+    const DEBUG_LEVEL_BETA = 1015;
+    const DEBUG_LEVEL_PROD = 1020;
 
     /** 
      * The current request being worked with
@@ -62,8 +80,12 @@ class Application {
 
     /**
      * Constructor
+     *
+     * @param int $debugLevel=null
      */
-    public function __construct() {
+    public function __construct($debugLevel=null) {
+        $this->debugLevel = $debugLevel ?: self::DEBUG_LEVEL_PROD;
+
         $this->registerErrorHandler();
 
         $this->services = new ServiceManager();
@@ -77,11 +99,56 @@ class Application {
     }
 
     /**
+     * Gets the debug level
+     *
+     * @codeCoverageIgnore
+     * @return int
+     */
+    public function getDebugLevel() {
+        return $this->debugLevel;
+    }
+
+    /**
+     * Compares the debug level to another
+     *
+     * All comparisions are handled in this way:
+     *
+     * {current level} {method} {compare level}
+     *
+     * @param  string $method
+     * @param  int    $comareTo
+     * @return boolean
+     */
+    public function debugCompare($method, $compareTo) {
+        switch($method) {
+            case '>':
+                return $this->debugLevel > $compareTo;
+            case '>=':
+                return $this->debugLevel >= $compareTo;
+            case '<':
+                return $this->debugLevel < $compareTo;
+            case '<=':
+                return $this->debugLevel <= $compareTo;
+            case '==':
+            case '===':
+                return $this->debugLevel === $compareTo;
+            case '!=':
+                return $this->debugLevel != $compareTo;
+            default:
+                throw new InvalidValueException($method . ' is not a valid compare method. Please try: >, >=, <, <=, == or !=.');
+        }
+
+        return false;
+    }
+
+    /**
      * Registers default services with the container
      *
      * @codeCoverageIgnore
      */
     private function registerDefaultServices() {
+        $app = $this;
+
         $this->services->register('request', function() {
             return new Request();
         });
@@ -98,8 +165,8 @@ class Application {
             return new Session();
         });
 
-        $this->services->register('exception.controller', function($mgr) {
-            return new ExceptionController($mgr->get('response'));
+        $this->services->register('exception.controller', function() use($app) {
+            return new ExceptionController($app);
         });
     }
 
@@ -113,7 +180,17 @@ class Application {
         ini_set('display_errors', 0);
 
         $shutdown = function(Exception $exception) {
-            $this->response->setBody($this->services->call('exception.controller->showErrorAction', [$exception]));
+            $code   = 500;
+            $method = 'error500Action';
+
+            if(get_class($exception) == 'Maverick\Exception\NoRouteException') {
+                $code   = 404;
+                $method = 'error404Action';
+            }
+
+            $this->response->setBody($this->services->call('exception.controller->' . $method, [$exception]));
+
+            $this->response->setStatus($code);
             $this->response->send();
         };
 

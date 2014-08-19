@@ -8,36 +8,22 @@
 
 namespace Maverick\Controller;
 
-use Maverick\Http\Response,
+use Maverick\Application,
     Maverick\View\ExceptionView,
     Exception;
 
 class ExceptionController {
-    /**
-     * The current response object
-     *
-     * @var Maverick\Http\Response
-     */
-    protected $response;
+    private $debug;
 
-    /**
-     * Construtor
-     *
-     * @param Maverick\Http\Response $response
-     */
-    public function __construct(Response $response) {
-        $this->response = $response;
+    public function __construct(Application $app) {
+        $this->debug = $app->debugCompare('<', Application::DEBUG_LEVEL_BETA);
     }
 
-    public function showErrorAction(Exception $e) {
-        $code = 500;
+    public function error500Action(Exception $e) {
+        return ExceptionView::render500($e, $this->debug);
+    }
 
-        if(get_class($e) == 'Maverick\Exception\NoRouteException') {
-            $code = 404;
-        }
-
-        $this->response->setStatus($code);
-
-        return ExceptionView::render($code, $e);
+    public function error404Action(Exception $e) {
+        return ExceptionView::render404($e->getMessage(), $this->debug);
     }
 }
