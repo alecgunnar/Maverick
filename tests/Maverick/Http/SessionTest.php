@@ -8,6 +8,6 @@ class SessionTest extends PHPUnit_Framework_Testcase {
     public function testConstruct() {
         $obj = new Session();
 
-        $this->assertAttributeInstanceOf('Maverick\DataStructure\UserInputMap', 'cookies', $obj);
+        $this->assertAttributeInstanceOf('Maverick\DataStructure\ReadOnlyMap', 'cookies', $obj);
     }
 }

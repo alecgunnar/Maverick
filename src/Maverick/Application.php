@@ -31,7 +31,7 @@ class Application {
      *
      * @var int
      */
-    private $debugLevel;
+    public static $debugLevel;
 
     /**
      * Various debug levels
@@ -84,8 +84,6 @@ class Application {
      * @param int $debugLevel=null
      */
     public function __construct($debugLevel=null) {
-        $this->debugLevel = $debugLevel ?: self::DEBUG_LEVEL_PROD;
-
         $this->registerErrorHandler();
 
         $this->services = new ServiceManager();
@@ -96,16 +94,6 @@ class Application {
         $this->response = $this->services->get('response');
         $this->router   = $this->services->get('router');
         $this->session  = $this->services->get('session');
-    }
-
-    /**
-     * Gets the debug level
-     *
-     * @codeCoverageIgnore
-     * @return int
-     */
-    public function getDebugLevel() {
-        return $this->debugLevel;
     }
 
     /**
@@ -122,18 +110,18 @@ class Application {
     public function debugCompare($method, $compareTo) {
         switch($method) {
             case '>':
-                return $this->debugLevel > $compareTo;
+                return self::$debugLevel > $compareTo;
             case '>=':
-                return $this->debugLevel >= $compareTo;
+                return self::$debugLevel >= $compareTo;
             case '<':
-                return $this->debugLevel < $compareTo;
+                return self::$debugLevel < $compareTo;
             case '<=':
-                return $this->debugLevel <= $compareTo;
+                return self::$debugLevel <= $compareTo;
             case '==':
             case '===':
-                return $this->debugLevel === $compareTo;
+                return self::$debugLevel === $compareTo;
             case '!=':
-                return $this->debugLevel != $compareTo;
+                return self::$debugLevel != $compareTo;
             default:
                 throw new InvalidValueException($method . ' is not a valid compare method. Please try: >, >=, <, <=, == or !=.');
         }
@@ -154,7 +142,7 @@ class Application {
         });
 
         $this->services->register('response', function($mgr) {
-            return new Response($mgr->get('request'));
+            return new Response($mgr->get('request'), $mgr->get('session'));
         });
 
         $this->services->register('router', function($mgr) {
@@ -176,8 +164,12 @@ class Application {
      * @codeCoverageIgnore
      */
     private function registerErrorHandler() {
-        ini_set('error_reporting', 'E_ALL');
-        ini_set('display_errors', 0);
+        if(self::$debugLevel === self::DEBUG_LEVEL_TEST) {
+            ini_set('display_errors', '1');
+            return;
+        }
+
+        ini_set('display_errors', '0');
 
         $shutdown = function(Exception $exception) {
             $code   = 500;

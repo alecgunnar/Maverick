@@ -23,6 +23,13 @@ class Response {
     private $request;
 
     /**
+     * The session of the request
+     *
+     * @var Maverick\Http\Session
+     */
+    private $session;
+
+    /**
      * A list of http status codes
      *
      * @var array
@@ -96,8 +103,9 @@ class Response {
      *
      * @param Maverick\Http\Request $request
      */
-    public function __construct(Request $request) {
+    public function __construct(Request $request, Session $session) {
         $this->request = $request;
+        $this->session = $session;
         $this->headers = new ArrayList(['Content-type' => 'text/html']);
     }
 
@@ -156,16 +164,6 @@ class Response {
     }
 
     /**
-     * Adds a cookie to the response
-     *
-     * @codeCoverageIgnore
-     * @param Maverick\Http\Session\Cookie $cookie
-     */
-    public function addCookie(Cookie $cookie) {
-        $this->setHeader('Set-Cookie', (string)$cookie);
-    }
-
-    /**
      * Sets the body of the response
      *
      * @param string $content
@@ -198,6 +196,10 @@ class Response {
 
         foreach($this->headers as $header) {
             header($header);
+        }
+
+        foreach($this->session->getNewCookies() as $cookie) {
+            header('Set-Cookie: ' . (string)$cookie);
         }
 
         header('X-Framework: Maverick/' . Application::VERSION);

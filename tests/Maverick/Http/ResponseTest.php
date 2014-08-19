@@ -2,12 +2,13 @@
 
 use Maverick\Http\Request,
     Maverick\Http\Response,
-    Maverick\Http\Session\Cookie;
+    Maverick\Http\Session;
 
 class ResponseTest extends PHPUnit_Framework_Testcase {
     public function testConstructor() {
-        $req = new Request();
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
 
         $this->assertAttributeEquals(200, 'status', $obj);
         $this->assertAttributeInstanceOf('Maverick\DataStructure\ArrayList', 'headers', $obj);
@@ -17,8 +18,9 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidArgumentException
      */
     public function testSetHeaderWithInvalidName() {
-        $req = new Request();
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
         $obj->setHeader(false, '123');
     }
 
@@ -26,8 +28,9 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidArgumentException
      */
     public function testSetHeaderWithInvalidValue() {
-        $req = new Request();
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
         $obj->setHeader('123', false);
     }
 
@@ -35,14 +38,16 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidArgumentException
      */
     public function testSetBodyWithInvalidContent() {
-        $req = new Request();
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
         $obj->setBody(false);
     }
 
     public function testSetStatusCode() {
-        $req = new Request();
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
 
         $obj->setStatus(404);
 
@@ -53,8 +58,9 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidValueException
      */
     public function testSetStatusWithInvalidCode() {
-        $req = new Request;
-        $obj = new Response($req);
+        $req     = new Request();
+        $session = new Session();
+        $obj     = new Response($req, $session);
 
         $obj->setStatus(306);
     }
