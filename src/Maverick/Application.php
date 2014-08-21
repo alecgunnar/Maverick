@@ -95,16 +95,17 @@ class Application {
      * Constructor
      *
      * @throws Exception
-     * @codeCoverageIgnore
      */
     public function __construct() {
+        // @codeCoverageIgnoreStart
         if(!defined('ROOT')) {
-            throw new Exception('You must define "ROOT" in your index file! It should point to the root of your project.');
+            throw new Exception('You must define "ROOT" before creating a new application!');
         }
 
         if(!self::$debugLevel) {
             self::$debugLevel = self::DEBUG_LEVEL_PROD;
         }
+        // @codeCoverageIgnoreEnd
 
         $this->registerErrorHandler();
 

@@ -16,6 +16,18 @@ class RouterTest extends PHPUnit_Framework_Testcase {
         $this->assertAttributeInstanceOf('Maverick\Http\Response', 'response', $obj);
     }
 
+    public function testUrlThatDoesNotMatch() {
+        $req = new Request([
+            'REQUEST_URI'    => '/path/to/pages',
+            'REQUEST_METHOD' => 'POST'
+        ]);
+        $session = new Session();
+        $res     = new Response($req, $session);
+        $obj     = new Router($req, $res);
+
+        $this->assertFalse($obj->match('GET', '/path/to/page', function () { }));
+    }
+
     public function testRequestMethodRequirement() {
         $req = new Request([
             'REQUEST_URI'    => '/path/to/page',
