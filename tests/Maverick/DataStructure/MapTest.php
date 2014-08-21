@@ -82,5 +82,18 @@ class MapTest extends PHPUnit_Framework_Testcase {
         }
 
         $this->assertEquals($data, $test);
+        $this->assertEquals(count($data), $obj->getLength());
+    }
+
+    public function testGetKey() {
+        $data = ['a' => 'b', 'c' => 'd', 'e' => 'f', 'g' => 'h'];
+        $obj  = new Map($data);
+
+        foreach($obj as $key => $val) {
+            if($key == 'c')
+                break;
+        }
+
+        $this->assertEquals('c', $obj->key());
     }
 }

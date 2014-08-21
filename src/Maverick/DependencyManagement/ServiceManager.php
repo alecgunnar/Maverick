@@ -55,10 +55,6 @@ class ServiceManager {
         }
 
         $this->services->set($name, $callback);
-
-        if($this->objects->get($name)) {
-            $this->objects->set($name, null);
-        }
     }
 
     /**

@@ -22,10 +22,6 @@ class DefaultLayout {
         padding: 15px;
     }
     
-    p.version {
-        margin-top: 20px;
-    }
-    
     pre {
         margin: 10px 0;
     }

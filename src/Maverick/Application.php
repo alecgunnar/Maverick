@@ -25,7 +25,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.2.0';
+    const VERSION = '0.2.1';
 
     /**
      * Debug level for the app
@@ -95,6 +95,7 @@ class Application {
      * Constructor
      *
      * @throws Exception
+     * @codeCoverageIgnore
      */
     public function __construct() {
         if(!defined('ROOT')) {
@@ -120,7 +121,6 @@ class Application {
     /**
      * Sets the debug level
      *
-     * @codeCoverageIgnore
      * @var int $level
      */
     public static function setDebugLevel($level) {
@@ -152,7 +152,7 @@ class Application {
      * @param  int    $comareTo
      * @return boolean
      */
-    public function debugCompare($method, $compareTo) {
+    public static function debugCompare($method, $compareTo) {
         switch($method) {
             case '>':
                 return self::$debugLevel > $compareTo;
@@ -172,6 +172,30 @@ class Application {
         }
 
         return false;
+    }
+
+    /**
+     * Loads configuration information
+     *
+     * @param  string $name
+     * @return Maverick\DataStructure\ReadOnlyMap
+     */
+    public static function getConfig($name) {
+        $dir    = ROOT . 'config/';
+        $env    = $dir . self::$levels[self::$debugLevel] . '/';
+        $master = $dir . 'master/';
+
+        $config = [];
+
+        if(file_exists($master . $name . '.php')) {
+            $config = include $master . $name . '.php';
+        }
+
+        if(file_exists($env . $name . '.php')) {
+            $config = array_merge($config, include $env . $name . '.php');
+        }
+
+        return new ReadOnlyMap($config);
     }
 
     /**
@@ -246,33 +270,9 @@ class Application {
     }
 
     /**
-     * Loads configuration information
-     *
-     * @codeCoverageIgnore
-     * @param  string $name
-     * @return Maverick\DataStructure\ReadOnlyMap
-     */
-    public function getConfig($name) {
-        $dir    = ROOT . 'config/';
-        $env    = $dir . self::$levels[self::$debugLevel] . '/';
-        $master = $dir . 'master/';
-
-        $config = [];
-
-        if(file_exists($master . $name . '.php')) {
-            $config = include $master . $name . '.php';
-        }
-
-        if(file_exists($env . $name . '.php')) {
-            $config = array_merge($config, include $env . $name . '.php');
-        }
-
-        return new ReadOnlyMap($config);
-    }
-
-    /**
      * Finishes off the request, and sends the response
      *
+     * @codeCoverageIgnore
      * @throws Maverick\Exception\NoRouteException
      */
     public function finish() {

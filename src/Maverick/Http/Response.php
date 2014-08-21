@@ -8,11 +8,12 @@
 
 namespace Maverick\Http;
 
-use Maverick\DataStructure\ArrayList,
+use Maverick\Application,
+    Maverick\DataStructure\ArrayList,
     Maverick\Exception\InvalidArgumentException,
     Maverick\Exception\InvalidValueException,
-    Maverick\Http\Session\Cookie,
-    Maverick\Application;
+    Maverick\Exception\UnavailableMethodException,
+    Maverick\Http\Session\Cookie;
 
 class Response {
     /**
@@ -106,7 +107,11 @@ class Response {
     public function __construct(Request $request, Session $session) {
         $this->request = $request;
         $this->session = $session;
-        $this->headers = new ArrayList(['Content-type' => 'text/html']);
+        $this->headers = new ArrayList(['Content-type: text/html']);
+
+        if(Application::getConfig('system')->get('expose_maverick') !== false) {
+            $this->headers->add('X-Framework: Maverick/' . Application::VERSION);
+        }
     }
 
     /**
@@ -189,9 +194,14 @@ class Response {
     /**
      * Sends the response
      *
+     * @throws Maverick\Exception\
      * @codeCoverageIgnore
      */
     public function send() {
+        if(headers_sent()) {
+            throw new UnavailableMethodException(__METHOD__ . ' cannot send the headers because they have already been sent!');
+        }
+
         http_response_code($this->status);
 
         foreach($this->headers as $header) {
@@ -201,8 +211,6 @@ class Response {
         foreach($this->session->getNewCookies() as $cookie) {
             header('Set-Cookie: ' . (string)$cookie);
         }
-
-        header('X-Framework: Maverick/' . Application::VERSION);
 
         print $this->body;
 

@@ -13,8 +13,7 @@ use Maverick\Application;
 class IndexView extends DefaultLayout{
     public static function render() {
         $content = '<header class="container">
-      <p class="version pull-right">version ' . Application::VERSION . '</p>
-      <h1>Welcome to Maverick</h1>
+      <h1>Welcome to Maverick <small>v' . Application::VERSION . '</small></h1>
       <p class="lead">
         Maverick is a light-weight PHP framework for building websites and APIs.
       </p>

@@ -3,6 +3,10 @@
 use Maverick\Application;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase {
+    public function testIniSetShowErrorsForTesting() {
+        ini_set('display_errors', true);
+    }
+
     public function testConstruct() {
         $app = new Application;
 
@@ -27,7 +31,32 @@ class ApplicationTest extends PHPUnit_Framework_TestCase {
         $app->finish();
     }
 
-    public function testIniSetShowErrorsForTesting() {
-        ini_set('display_errors', true);
+    /**
+     * @expectedException Maverick\Exception\InvalidValueException
+     */
+    public function testSetDebugLevelWithInvalidLevel() {
+        Application::setDebugLevel(123);
+    }
+
+    public function testDebugCompare() {
+        Application::setDebugLevel(Application::DEBUG_LEVEL_TEST);
+        $this->assertTrue(Application::debugCompare('>', Application::DEBUG_LEVEL_DEV));
+        $this->assertFalse(Application::debugCompare('<', Application::DEBUG_LEVEL_DEV));
+        $this->assertTrue(Application::debugCompare('<=', Application::DEBUG_LEVEL_TEST));
+        $this->assertTrue(Application::debugCompare('>=', Application::DEBUG_LEVEL_DEV));
+        $this->assertTrue(Application::debugCompare('==', Application::DEBUG_LEVEL_TEST));
+        $this->assertTrue(Application::debugCompare('===', Application::DEBUG_LEVEL_TEST));
+        $this->assertTrue(Application::debugCompare('!=', Application::DEBUG_LEVEL_DEV));
+    }
+
+    /**
+     * @expectedException Maverick\Exception\InvalidValueException
+     */
+    public function testDebugCompareWithInvalidOperator() {
+        $this->assertTrue(Application::debugCompare('=>', Application::DEBUG_LEVEL_DEV));
+    }
+
+    public function testGetConfig() {
+        $this->assertFalse(Application::getConfig('system')->get('expose_maverick'));
     }
 }

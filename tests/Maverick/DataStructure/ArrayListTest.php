@@ -31,5 +31,18 @@ class ArrayListTest extends PHPUnit_Framework_Testcase {
         }
 
         $this->assertEquals($data, $test);
+        $this->assertEquals(count($data), $obj->getLength());
+    }
+
+    public function testGetKey() {
+        $data = ['a', 'b', 'c', 'd'];
+        $obj  = new ArrayList($data);
+
+        foreach($obj as $key => $val) {
+            if($key == 2)
+                break;
+        }
+
+        $this->assertEquals(2, $obj->key());
     }
 }

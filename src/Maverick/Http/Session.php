@@ -8,7 +8,7 @@
 
 namespace Maverick\Http;
 
-use Maverick\DataStructure\ArrayList,
+use Maverick\DataStructure\Map,
     Maverick\DataStructure\UserInputMap,
     Maverick\DataStructure\ReadOnlyMap,
     Maverick\Http\Session\Cookie;
@@ -40,17 +40,16 @@ class Session {
         }
 
         $this->cookies    = new ReadOnlyMap($cookies);
-        $this->newCookies = new ArrayList();
+        $this->newCookies = new Map();
     }
 
     /**
      * Adds a cookie to the response
      *
-     * @codeCoverageIgnore
      * @param Maverick\Http\Session\Cookie $cookie
      */
     public function addCookie(Cookie $cookie) {
-        $this->newCookies->add($cookie);
+        $this->newCookies->set($cookie->getName(), $cookie);
     }
 
     /**

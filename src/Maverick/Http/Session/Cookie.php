@@ -146,15 +146,17 @@ class Cookie {
     }
 
     public function setExpiration($expire) {
-        if($expire == 0 || $expire === null) {
-            $expire = null;
-        } elseif($expire instanceof DateTime) {
+        if($expire instanceof DateTime) {
             $this->expire = $expire;
+        } elseif($expire === true) {
+            $this->setExpiration(-86400);
         } elseif(is_numeric($expire)) {
             $this->expire = new DateTime('now');
             $this->expire->modify($expire . ' seconds');
+        } elseif(!$expire) {
+            $this->expire = null;
         } else {
-            throw new InvalidArgumentException(__METHOD__, 1, ['DateTime', 'int']);
+            throw new InvalidArgumentException(__METHOD__, 1, ['DateTime', 'int', 'boolean']);
         }
 
         return $this;
