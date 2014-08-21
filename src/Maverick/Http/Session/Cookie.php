@@ -8,7 +8,7 @@
 
 namespace Maverick\Http\Session;
 
-use Maverick\Exception\InvalidArgumentException,
+use Maverick\Exception\InvalidTypeException,
     DateTime;
 
 class Cookie {
@@ -119,7 +119,7 @@ class Cookie {
      */
     public function setName($name) {
         if(!is_string($name)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $name);
         }
 
         $this->name = $name;
@@ -133,7 +133,7 @@ class Cookie {
 
     public function setValue($value) {
         if(!is_string($value)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $value);
         }
 
          $this->value = $value;
@@ -156,7 +156,7 @@ class Cookie {
         } elseif(!$expire) {
             $this->expire = null;
         } else {
-            throw new InvalidArgumentException(__METHOD__, 1, ['DateTime', 'int', 'boolean']);
+            throw new InvalidTypeException(__METHOD__, 1, ['DateTime', 'int', 'boolean'], $expire);
         }
 
         return $this;
@@ -168,7 +168,7 @@ class Cookie {
 
     public function setPath($path) {
         if(!is_string($path)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $path);
         }
 
         $this->path = $path;
@@ -182,7 +182,7 @@ class Cookie {
 
     public function setDomain($domain) {
         if(!is_string($domain)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $domain);
         }
 
         $this->domain = $domain;

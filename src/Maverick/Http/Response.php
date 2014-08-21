@@ -10,7 +10,7 @@ namespace Maverick\Http;
 
 use Maverick\Application,
     Maverick\DataStructure\ArrayList,
-    Maverick\Exception\InvalidArgumentException,
+    Maverick\Exception\InvalidTypeException,
     Maverick\Exception\InvalidValueException,
     Maverick\Exception\UnavailableMethodException,
     Maverick\Http\Session\Cookie;
@@ -146,7 +146,7 @@ class Response {
     public function setHeader($name, $value=null) {
         if(is_string($name)) {
             if(!is_string($value)) {
-                throw new InvalidArgumentException(__METHOD__, 2, ['string']);
+                throw new InvalidTypeException(__METHOD__, 2, ['string'], $value);
             }
 
             $this->headers->add($name . ': ' . $value);
@@ -155,7 +155,7 @@ class Response {
                 $this->setHeader($key, $value);
             }
         } else {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string', 'array']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string', 'array'], $name);
         }
     }
 
@@ -175,7 +175,7 @@ class Response {
      */
     public function setBody($content) {
         if(!is_string($content)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $content);
         }
 
         $this->body = $content;

@@ -27,7 +27,7 @@ class MapTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetDataWithInvalidArg() {
         $obj = new Map;
@@ -59,7 +59,7 @@ class MapTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testGetDataWithNonStringThrowsException() {
         $obj = new Map();

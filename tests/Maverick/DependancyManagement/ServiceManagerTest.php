@@ -24,7 +24,7 @@ class ServiceManagerTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testRegisterServiceWithInvalidName() {
         $obj = new ServiceManager();
@@ -45,7 +45,7 @@ class ServiceManagerTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testRegisterServiceWithInvalidCallback() {
         $obj = new ServiceManager();
@@ -112,7 +112,7 @@ class ServiceManagerTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testValidateCallStringForNonStringThrowsException() {
         $obj = new ServiceManager;

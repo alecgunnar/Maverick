@@ -25,7 +25,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.2.1';
+    const VERSION = '0.3.0';
 
     /**
      * Debug level for the app
@@ -216,7 +216,7 @@ class Application {
         });
 
         $this->services->register('router', function($mgr) {
-            return new Router($mgr->get('request'), $mgr->get('response'));
+            return new Router($mgr->get('request'), $mgr->get('response'), $mgr);
         });
 
         $this->services->register('session', function() {

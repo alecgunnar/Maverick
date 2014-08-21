@@ -1,7 +1,7 @@
 {
     "name": "maverick/maverick",
     "description": "A micro framework for PHP",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "type": "library",
     "license": "MIT",
     "authors": [

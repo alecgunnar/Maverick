@@ -8,19 +8,19 @@
 
 namespace Maverick\DataStructure;
 
-use Maverick\Exception\InvalidArgumentException,
+use Maverick\Exception\InvalidTypeException,
     Maverick\Exception\UnavailableMethodException;
 
 class ReadOnlyMap extends Map {
     /**
      * Constructor
      *
-     * @throws Maverick\Exception\InvalidArgumentException
+     * @throws Maverick\Exception\InvalidTypeException
      * @param  array $data
      */
     public function __construct($data=[]) {
         if(!is_array($data)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['array']);
+            throw new InvalidTypeException(__METHOD__, 1, ['array'], $data);
         }
 
         foreach($data as $key => $value) {

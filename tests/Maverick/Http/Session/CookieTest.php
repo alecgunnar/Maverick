@@ -40,7 +40,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetNameThrowsExceptionWhenNonStringSupplied() {
         $obj = new Cookie('abc');
@@ -48,7 +48,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetValueThrowsExceptionWhenNonStringSupplied() {
         $obj = new Cookie('abc');
@@ -92,7 +92,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetExpirationThrowsExceptionWhenNonStringSupplied() {
         $obj = new Cookie('abc');
@@ -100,7 +100,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetPathThrowsExceptionWhenNonStringSupplied() {
         $obj = new Cookie('abc');
@@ -108,7 +108,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetDomainThrowsExceptionWhenNonStringSupplied() {
         $obj = new Cookie('abc');

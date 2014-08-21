@@ -9,7 +9,7 @@
 namespace Maverick\DependencyManagement;
 
 use Maverick\DataStructure\Map,
-    Maverick\Exception\InvalidArgumentException,
+    Maverick\Exception\InvalidTypeException,
     Maverick\Exception\UnknownValueException,
     Maverick\Exception\InvalidOperationException,
     Maverick\Exception\DuplicateValueException,
@@ -41,7 +41,7 @@ class ServiceManager {
     /**
      * Registers a service
      *
-     * @throws Maverick\Exception\InvalidArgumentException
+     * @throws Maverick\Exception\InvalidTypeException
      * @param  string   $name
      * @param  callable $callback
      */
@@ -51,7 +51,7 @@ class ServiceManager {
         }
 
         if(!is_callable($callback)) {
-            throw new InvalidArgumentException(__METHOD__, 2, ['callable']);
+            throw new InvalidTypeException(__METHOD__, 2, ['callable'], $name);
         }
 
         $this->services->set($name, $callback);
@@ -118,26 +118,30 @@ class ServiceManager {
     }
 
     /**
-     * Call a method of a service
+     * Calls whatever is sent in with the arguments supplied
      *
-     * @throws Maverick\Exception\InvalidArgumentException
+     * @throws Maverick\Exception\InvalidTypeException
      * @throws Maverick\Exception\InvalidValueException
      * @param  string $call
      * @param  array  $args=[]
      * @return mixed
      */
     public function call($call, array $args=[]) {
-        if(!is_string($call)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+        switch(gettype($call)) {
+            case 'string':
+                $exp = explode('->', $call);
+
+                if(count($exp) !== 2) {
+                    throw new InvalidValueException('A valid service method call must be formatted as: "service.name->methodName"');
+                }
+
+                $call = array($this->get($exp[0]), $exp[1]);
+            case 'array':
+            case 'object':
+                return call_user_func_array($call, $args);
+            default:
+                throw new InvalidTypeException(__METHOD__, 1, ['string', 'array', 'callable'], $call);
         }
-
-        $exp = explode('->', $call);
-
-        if(count($exp) !== 2) {
-            throw new InvalidValueException('A valid service method call must be formatted as: "service.name->methodName"');
-        }
-
-        return call_user_func_array(array($this->get($exp[0]), $exp[1]), $args);
     }
 
     /**

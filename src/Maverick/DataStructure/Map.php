@@ -9,7 +9,7 @@
 namespace Maverick\DataStructure;
 
 use Maverick\DataStructure\Iterable,
-    Maverick\Exception\InvalidArgumentException;
+    Maverick\Exception\InvalidTypeException;
 
 class Map extends Iterable {
     /**
@@ -22,8 +22,7 @@ class Map extends Iterable {
     /**
      * Constructor
      *
-     * @throws Maverick\Exception\InvalidArgumentException
-     * @param  array $data=[]
+     * @param array $data=[]
      */
     public function __construct(array $data=[]) {
         if(count($data)) {
@@ -36,7 +35,7 @@ class Map extends Iterable {
      *
      * Will not keep values which are null
      *
-     * @throws Maverick\Exception\InvalidArgumentException
+     * @throws Maverick\Exception\InvalidTypeException
      * @param  string $key
      * @param  mixed  $value=null
      */
@@ -55,7 +54,7 @@ class Map extends Iterable {
                 }
             }
         } else {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string', 'array']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string', 'array'], $key);
         }
     }
 
@@ -77,7 +76,7 @@ class Map extends Iterable {
      */
     public function get($key) {
         if(!is_string($key)) {
-            throw new InvalidArgumentException(__METHOD__, 1, ['string']);
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $key);
         }
 
         return isset($this->data[$key]) ? $this->data[$key] : null;

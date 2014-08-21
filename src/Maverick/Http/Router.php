@@ -8,36 +8,46 @@
 
 namespace Maverick\Http;
 
+use Maverick\DependencyManagement\ServiceManager;
+
 class Router {
     /**
      * The request being routed
      *
      * @var Maverick\Http\Request
      */
-    private $request;
+    protected $request;
 
     /**
      * The response to be sent
      *
      * @var Maverick\Http\Response
      */
-    private $response;
+    protected $response;
+
+    /**
+     * The service manager
+     *
+     * @var Maverick\DependencyManagement\ServiceManager
+     */
+    protected $services;
 
     /**
      * Has a route been found?
      *
      * @var boolean
      */
-    private $routeFound = false;
+    protected $routeFound = false;
 
     /**
      * Constructor
      *
      * @param Maverick\Http\Request $request
      */
-    public function __construct(Request $request, Response $response) {
+    public function __construct(Request $request, Response $response, ServiceManager $services) {
         $this->request  = $request;
         $this->response = $response;
+        $this->services = $services;
     }
 
     /**
@@ -101,7 +111,7 @@ class Router {
 
         $this->routeFound = true;
 
-        $this->response->setBody(call_user_func_array($controller, $params) ?: '');
+        $this->response->setBody($this->services->call($controller, $params) ?: '');
 
         return true;
     }

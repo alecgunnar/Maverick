@@ -13,7 +13,7 @@ class ReadOnlyMapTest extends PHPUnit_Framework_Testcase {
     }
 
     /** 
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testConstructorWithNonArrayArgument() {
         new ReadOnlyMap(false);

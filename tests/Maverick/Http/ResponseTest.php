@@ -36,7 +36,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetHeaderWithInvalidName() {
         $req     = new Request();
@@ -46,7 +46,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetHeaderWithInvalidValue() {
         $req     = new Request();
@@ -56,7 +56,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
     }
 
     /**
-     * @expectedException Maverick\Exception\InvalidArgumentException
+     * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetBodyWithInvalidContent() {
         $req     = new Request();
