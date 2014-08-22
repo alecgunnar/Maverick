@@ -50,7 +50,7 @@ class RedirectInstruction implements InstructionInterface {
      * @param  string $uri
      * @param  int    $code
      */
-    public function __construct($uri, $code=307) {
+    public function __construct($uri, $code=303) {
         if(!is_string($uri)) {
             throw new InvalidTypeException(__METHOD__, 1, ['string'], $uri);
         }
