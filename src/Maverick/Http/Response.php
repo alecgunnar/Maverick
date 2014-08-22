@@ -194,8 +194,8 @@ class Response {
     /**
      * Sends the response
      *
-     * @throws Maverick\Exception\
      * @codeCoverageIgnore
+     * @throws Maverick\Exception\
      */
     public function send() {
         if(headers_sent()) {
@@ -212,7 +212,9 @@ class Response {
             header('Set-Cookie: ' . (string)$cookie);
         }
 
-        print $this->body;
+        if($this->body) {
+            print $this->body;
+        }
 
         exit();
     }

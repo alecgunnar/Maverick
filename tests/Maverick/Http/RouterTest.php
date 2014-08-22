@@ -264,4 +264,26 @@ class RouterTest extends PHPUnit_Framework_Testcase {
 
         $this->assertEquals('abc', $res->getBody());
     }
+
+    public function testResponseInstructionReturnedFromController() {
+        $req = new Request([
+            'REQUEST_URI'    => '/dev',
+            'REQUEST_METHOD' => 'GET'
+        ]);
+        $session  = new Session();
+        $res      = new Response($req, $session);
+        $services = new ServiceManager();
+        $obj      = new Router($req, $res, $services);
+
+        $mock = $this->getMockBuilder('Maverick\Http\Response\Instruction\RedirectInstruction')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mock->expects($this->once())
+            ->method('instruct');
+
+        $obj->match('get', '/dev', function () use($mock) {
+            return $mock;
+        });
+    }
 }

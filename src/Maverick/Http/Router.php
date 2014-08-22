@@ -8,7 +8,8 @@
 
 namespace Maverick\Http;
 
-use Maverick\DependencyManagement\ServiceManager;
+use Maverick\DependencyManagement\ServiceManager,
+    Maverick\Http\Response\Instruction\InstructionInterface;
 
 class Router {
     /**
@@ -100,20 +101,37 @@ class Router {
      * @return boolean
      */
     public function match($method, $urn, $controller, $require=[]) {
-        $params = [];
+        $args = [];
 
         if($this->routeFound === true
             || ($method != '*' && in_array($this->request->getMethod(), explode('|', strtolower($method))) === false)
             || isset($require['https']) && (($require['https'] === true && !$this->request->isHttps()) || ($require['https'] === false && $this->request->isHttps()))
-            || ($params = $this->checkUrn($urn)) === false) {
+            || ($args = $this->checkUrn($urn)) === false) {
             return false;
         }
 
         $this->routeFound = true;
 
-        $this->response->setBody($this->services->call($controller, $params) ?: '');
+        $this->handleController($controller, $args);
 
         return true;
+    }
+
+    /**
+     * Handles calling the controller and dealing with its return value
+     *
+     * @param mixed $controller
+     * @param array $args
+     */
+    private function handleController($controller, $args) {
+        $return = $this->services->call($controller, $args);
+
+        if($return instanceof InstructionInterface) {
+            $return->instruct($this->response);
+            return;
+        }
+
+        $this->response->setBody($return ?: '');
     }
 
     /**

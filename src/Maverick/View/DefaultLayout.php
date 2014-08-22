@@ -16,20 +16,9 @@ class DefaultLayout {
 <html>
   <head lang="en">
     <title>' . $title . '</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <style>
-    p.padding {
-        padding: 15px;
-    }
-    
-    pre {
-        margin: 10px 0;
-    }
-    
-    footer p {
-        margin-top: 20px;
-    }
-    </style>
+    <link rel="stylesheet" href="/assets/css/main.css">
   </head>
   <body>
     ' . $content . '

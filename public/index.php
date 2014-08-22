@@ -8,9 +8,9 @@
 
 use Maverick\View\IndexView;
 
-require './vendor/autoload.php';
+define('ROOT', dirname(__DIR__) . '/');
 
-define('ROOT', __DIR__ . '/');
+require ROOT . 'vendor/autoload.php';
 
 $app = new Maverick\Application();
 
