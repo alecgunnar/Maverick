@@ -8,8 +8,7 @@
 
 namespace Maverick\DataStructure;
 
-use Maverick\DataStructure\Iterable,
-    Maverick\Exception\InvalidTypeException;
+use Maverick\Exception\InvalidTypeException;
 
 class Map extends Iterable {
     /**

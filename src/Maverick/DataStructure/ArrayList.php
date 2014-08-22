@@ -8,8 +8,6 @@
 
 namespace Maverick\DataStructure;
 
-use Maverick\DataStructure\Iterable;
-
 class ArrayList extends Iterable {
     /**
      * Constructor
