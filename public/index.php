@@ -14,6 +14,8 @@ require ROOT . 'vendor/autoload.php';
 
 $app = new Maverick\Application();
 
+$app->start();
+
 $app->router->match('*', '/', function() {
     return IndexView::render();
 });

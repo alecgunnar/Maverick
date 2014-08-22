@@ -7,8 +7,9 @@ class ApplicationTest extends PHPUnit_Framework_TestCase {
         ini_set('display_errors', true);
     }
 
-    public function testConstruct() {
+    public function testConstructAndStart() {
         $app = new Application;
+        $app->start();
 
         $this->assertAttributeInstanceOf('Maverick\Http\Request', 'request', $app);
 
@@ -28,6 +29,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase {
      */
     public function testFinishWithNoRouteMatched() {
         $app = new Application;
+        $app->start();
         $app->finish();
     }
 

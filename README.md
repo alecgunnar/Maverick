@@ -12,6 +12,7 @@ require './vendor/autoload.php';
 define('ROOT', __DIR__ . '/');
 
 $app = new Maverick\Application();
+$app->start();
 ```
 
 This will create the application and all necessary services. The default services include `request`, `session`, `router`, `response` and `exception.controller`. The names should be pretty self explanatory. The nice part about the service manager built into Maverick is that all services can be overwritten after they are registered. The only exception is that you cannot override a service after it has been instantiated.

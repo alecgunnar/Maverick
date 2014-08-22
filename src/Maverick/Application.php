@@ -25,7 +25,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.3.0';
+    const VERSION = '0.3.1';
 
     /**
      * Debug level for the app
@@ -112,7 +112,12 @@ class Application {
         $this->services = new ServiceManager();
 
         $this->registerDefaultServices();
+    }
 
+    /**
+     * Assigns the primary services to the attributes of this class
+     */
+    public function start() {
         $this->request  = $this->services->get('request');
         $this->response = $this->services->get('response');
         $this->router   = $this->services->get('router');
