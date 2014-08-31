@@ -8,8 +8,8 @@
 
 namespace Maverick\View;
 
-class ExceptionView extends DefaultLayout {
-    public static function render500($e, $debug) {
+class ErrorView extends DefaultLayout {
+    public static function renderGeneralError($code, $debug, $e) {
         $main = '<p class="padding bg-danger">Your request could not be completed because there was an error. We apologize for any inconvenience.</p>';
 
         if($debug) {
@@ -28,12 +28,12 @@ class ExceptionView extends DefaultLayout {
         return parent::build('There was an Error!', $content);
     }
 
-    public static function render404($msg, $debug) {
+    public static function render404Error($debug, $e) {
         $content = '<header class="container">
       <h1>Page not Found!</h1>
     </header>
     <main class="container">
-      <p class="padding bg-danger">' . ($debug ? $msg : 'The page you are looking for does not exist.') . '</p>
+      <p class="padding bg-danger">' . ($debug ? $e->getMessage() : 'The page you are looking for does not exist.') . '</p>
     </main>';
 
         return parent::build('Page not Found!', $content);

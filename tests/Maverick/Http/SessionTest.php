@@ -32,4 +32,12 @@ class SessionTest extends PHPUnit_Framework_Testcase {
         $obj->addCookie($cookie);
         $this->assertTrue($obj->getNewCookies()->has('abc'));
     }
+
+    public function testGetRedirectMessage() {
+        $msg              = 'test';
+        $_COOKIE['flash'] = $msg;
+        $obj              = new Session();
+
+        $this->assertEquals($msg, $obj->getRedirectMessage());
+    }
 }

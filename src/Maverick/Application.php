@@ -12,12 +12,13 @@ use Maverick\Http\Request,
     Maverick\Http\Router,
     Maverick\Http\Response,
     Maverick\Http\Session,
-    Maverick\Controller\ExceptionController,
+    Maverick\Controller\ErrorController,
     Maverick\DependencyManagement\ServiceManager,
     Maverick\Exception\InvalidValueException,
     Maverick\Exception\NoRouteException,
     Exception,
-    Maverick\DataStructure\ReadOnlyMap;
+    Maverick\DataStructure\ReadOnlyMap,
+    Maverick\Http\Response\Instruction\ErrorInstruction;
 
 class Application {
     /**
@@ -25,7 +26,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.3.1';
+    const VERSION = '0.4.0';
 
     /**
      * Debug level for the app
@@ -228,8 +229,8 @@ class Application {
             return new Session();
         });
 
-        $this->services->register('exception.controller', function() use($app) {
-            return new ExceptionController($app);
+        $this->services->register('error.controller', function() {
+            return new ErrorController();
         });
     }
 
@@ -247,18 +248,15 @@ class Application {
         ini_set('display_errors', '0');
 
         $shutdown = function(Exception $exception) {
-            $code   = 500;
-            $method = 'error500Action';
+            $code = 500;
 
             if(get_class($exception) == 'Maverick\Exception\NoRouteException') {
-                $code   = 404;
-                $method = 'error404Action';
+                $code = 404;
             }
 
-            $this->response->setBody($this->services->call('exception.controller->' . $method, [$exception]));
+            $controller = $this->services->get('error.controller')->setException($exception);
 
-            $this->response->setStatus($code);
-            $this->response->send();
+            ErrorInstruction::factory($code)->instruct($this->services->get('response'), $controller);
         };
 
         $errorHandler = function($num, $str, $file, $line) use($shutdown) {
@@ -282,7 +280,7 @@ class Application {
      * @throws Maverick\Exception\NoRouteException
      */
     public function finish() {
-        if(!$this->router->hasRouted()) {
+        if(!$this->router->doRoute()) {
             throw new NoRouteException('No route exists for ' . htmlentities($this->request->getUrn()) . ' using method ' . htmlentities($this->request->getMethod()) . ' and ' . ($this->request->isHttps() ? 'https' : 'http'));
         }
 

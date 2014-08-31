@@ -3,7 +3,7 @@
 use Maverick\Application;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase {
-    public function testIniSetShowErrorsForTesting() {
+    public function __construct() {
         ini_set('display_errors', true);
     }
 

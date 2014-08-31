@@ -82,4 +82,18 @@ class Session {
     public function getNewCookies() {
         return $this->newCookies;
     }
+
+    /**
+     * Gets the redirect message
+     *
+     * @return string
+     */
+    public function getRedirectMessage() {
+        if($this->cookies->has('flash')) {
+            $cookie = $this->cookies->get('flash');
+            $this->deleteCookie($cookie);
+
+            return $cookie->getValue();
+        }
+    }
 }

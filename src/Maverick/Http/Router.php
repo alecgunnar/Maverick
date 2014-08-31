@@ -9,7 +9,11 @@
 namespace Maverick\Http;
 
 use Maverick\DependencyManagement\ServiceManager,
-    Maverick\Http\Response\Instruction\InstructionInterface;
+    Maverick\Http\Response\Instruction\InstructionInterface,
+    Maverick\DataStructure\Map,
+    Maverick\Exception\InvalidTypeException,
+    Maverick\Exception\UnknownValueException,
+    Maverick\Exception\InvalidValueException;
 
 class Router {
     /**
@@ -34,11 +38,32 @@ class Router {
     protected $services;
 
     /**
+     * All of the named routes
+     *
+     * @var Maverick\DataStructure\Map
+     */
+    protected $named;
+
+    /**
+     * The controller for the current request
+     *
+     * @var array
+     */
+    protected $controller;
+
+    /**
      * Has a route been found?
      *
      * @var boolean
      */
     protected $routeFound = false;
+
+    /**
+     * Whether or not the request has been routed
+     *
+     * @var boolean
+     */
+    protected $hasRouted = false;
 
     /**
      * Constructor
@@ -49,6 +74,7 @@ class Router {
         $this->request  = $request;
         $this->response = $response;
         $this->services = $services;
+        $this->named    = new Map();
     }
 
     /**
@@ -97,34 +123,53 @@ class Router {
      * @param  string $method
      * @param  string $urn
      * @param  mixed  $controller
-     * @param  array  $require=[]
+     * @param  array  $params=[]
      * @return boolean
      */
-    public function match($method, $urn, $controller, $require=[]) {
+    public function match($method, $urn, $controller, $params=[]) {
         $args = [];
+
+        if(isset($params['name'])) {
+            $this->named->set($params['name'], $urn);
+        }
 
         if($this->routeFound === true
             || ($method != '*' && in_array($this->request->getMethod(), explode('|', strtolower($method))) === false)
-            || isset($require['https']) && (($require['https'] === true && !$this->request->isHttps()) || ($require['https'] === false && $this->request->isHttps()))
+            || isset($params['https']) && (($params['https'] === true && !$this->request->isHttps()) || ($params['https'] === false && $this->request->isHttps()))
             || ($args = $this->checkUrn($urn)) === false) {
             return false;
         }
 
         $this->routeFound = true;
+        $this->controller = [$controller, $args];
 
-        $this->handleController($controller, $args);
+        return true;
+    }
+
+    /**
+     * Handles the route which has been matched
+     *
+     * @return boolean
+     */
+    public function doRoute() {
+        if(!$this->routeFound) {
+            return false;
+        }
+
+        if(!$this->hasRouted) {
+            $this->hasRouted = true;
+
+            $this->handleController();
+        }
 
         return true;
     }
 
     /**
      * Handles calling the controller and dealing with its return value
-     *
-     * @param mixed $controller
-     * @param array $args
      */
-    private function handleController($controller, $args) {
-        $return = $this->services->call($controller, $args);
+    private function handleController() {
+        $return = $this->services->call($this->controller[0], $this->controller[1]);
 
         if($return instanceof InstructionInterface) {
             $return->instruct($this->response);
@@ -183,12 +228,75 @@ class Router {
     }
 
     /**
+     * Generates a URN
+     *
+     * @throws Maverick\Exception\InvalidTypeException
+     * @throws Maverick\Exception\InvalidValueException
+     * @throws Maverick\Exception\UnknownValueException
+     * @param  string $name
+     * @param  array  $params=[]
+     * @return string
+     */
+    public function generateUrn($name, array $params=[]) {
+        if(!is_string($name)) {
+            throw new InvalidTypeException(__METHOD__, 1, ['string'], $name);
+        }
+
+        if(!$this->named->has($name)) {
+            throw new UnknownValueException('Unknown named route: ' . $name);
+        }
+
+        $exp = explode('/', trim($this->named->get($name), '/'));
+        $urn = '';
+
+        foreach($exp as $part) {
+            $value = $part;
+
+            if($value[0] == '{') {
+                $regex = trim($part, '{}');
+                $value = array_shift($params);
+
+                if($value === null) {
+                    throw new InvalidValueException('Not enough params have been supplied to ' . __METHOD__ . ' to generate: ' . $name);
+                }
+
+                if(!preg_match($regex, $value)) {
+                    throw new InvalidValueException($value . ' does not satisfy ' . $regex);
+                }
+            }
+
+            $urn .= '/' . $value;
+        }
+
+        return $urn;
+    }
+
+    /**
+     * Gets the named routes
+     *
+     * @return Maverick\DataStructure\Map
+     */
+    public function getNamedRoutes() {
+        return $this->named;
+    }
+
+    /**
      * Gets whether or not a route has been found.
      *
      * @codeCoverageIgnore
      * @return boolean
      */
-    public function hasRouted() {
+    public function routeFound() {
         return $this->routeFound;
+    }
+
+    /**
+     * Gets whether or not the request has been routed.
+     *
+     * @codeCoverageIgnore
+     * @return boolean
+     */
+    public function hasRouted() {
+        return $this->hasRouted;
     }
 }

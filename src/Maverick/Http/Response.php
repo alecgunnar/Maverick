@@ -79,6 +79,16 @@ class Response {
     ];
 
     /**
+     * Statuses that do not require a message body
+     *
+     * @var array
+     */
+    private $noMessageBody = [
+        204 => true,
+        304 => true
+    ];
+
+    /**
      * The status of the response
      *
      * @var int
@@ -135,6 +145,15 @@ class Response {
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Get all of the possible status codes
+     *
+     * @return array
+     */
+    public function getStatusCodes() {
+        return $this->statusCodes;
     }
 
     /**
@@ -195,11 +214,15 @@ class Response {
      * Sends the response
      *
      * @codeCoverageIgnore
-     * @throws Maverick\Exception\
+     * @throws Maverick\Exception\UnavailableMethodException
      */
     public function send() {
+        if(Application::debugCompare('==', Application::DEBUG_LEVEL_TEST)) {
+            return;
+        }
+
         if(headers_sent()) {
-            throw new UnavailableMethodException(__METHOD__ . ' cannot send the headers because they have already been sent!');
+            throw new UnavailableMethodException('The headers have already been sent.');
         }
 
         http_response_code($this->status);
@@ -212,7 +235,7 @@ class Response {
             header('Set-Cookie: ' . (string)$cookie);
         }
 
-        if($this->body) {
+        if($this->body && !isset($this->noMessageBody[$this->status])) {
             print $this->body;
         }
 

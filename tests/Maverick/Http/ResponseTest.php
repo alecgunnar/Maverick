@@ -6,10 +6,14 @@ use Maverick\Application,
     Maverick\Http\Session;
 
 class ResponseTest extends PHPUnit_Framework_Testcase {
-    public function testConstructor() {
+    private function getObj() {
         $req     = new Request();
         $session = new Session();
-        $obj     = new Response($req, $session);
+        return new Response($req, $session);
+    }
+
+    public function testConstructor() {
+        $obj = $this->getObj();
 
         $this->assertAttributeEquals(200, 'status', $obj);
         $this->assertAttributeInstanceOf('Maverick\DataStructure\ArrayList', 'headers', $obj);
@@ -18,18 +22,14 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testSetHeaderWithString() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
+        $obj = $this->getObj();
         $obj->setHeader('abc', '123');
 
         $this->assertTrue(in_array('abc: 123', $obj->getHeaders()->dump()));
     }
 
     public function testSetHeaderWithArray() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
+        $obj = $this->getObj();
         $obj->setHeader(['abc' => '123']);
 
         $this->assertTrue(in_array('abc: 123', $obj->getHeaders()->dump()));
@@ -39,9 +39,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetHeaderWithInvalidName() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
+        $obj = $this->getObj();
         $obj->setHeader(false, '123');
     }
 
@@ -49,9 +47,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetHeaderWithInvalidValue() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
+        $obj = $this->getObj();
         $obj->setHeader('123', false);
     }
 
@@ -59,19 +55,13 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testSetBodyWithInvalidContent() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
+        $obj = $this->getObj();
         $obj->setBody(false);
     }
 
     public function testSetStatusCode() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
-
+        $obj = $this->getObj();
         $obj->setStatus(404);
-
         $this->assertEquals(404, $obj->getStatus());
     }
 
@@ -79,21 +69,7 @@ class ResponseTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidValueException
      */
     public function testSetStatusWithInvalidCode() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
-
+        $obj = $this->getObj();
         $obj->setStatus(306);
-    }
-
-    /**
-     * @expectedException Maverick\Exception\UnavailableMethodException
-     */
-    public function testSendThrowsExceptionIfHeadersAlreadySent() {
-        $req     = new Request();
-        $session = new Session();
-        $obj     = new Response($req, $session);
-
-        $obj->send();
     }
 }
