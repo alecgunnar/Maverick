@@ -13,8 +13,6 @@ define('ROOT', dirname(__DIR__) . '/');
 
 require ROOT . 'vendor/autoload.php';
 
-Application::setDebugLevel(Application::DEBUG_LEVEL_DEV);
-
 $app = new Maverick\Application();
 
 $app->start();
