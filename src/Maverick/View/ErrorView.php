@@ -14,7 +14,7 @@ class ErrorView extends DefaultLayout {
 
         if($debug) {
             $main = '<p class="padding bg-danger">' . $e->getMessage() . '</p>
-      <pre>' . $e->getTraceAsString() . '</pre>';
+      <pre>' . htmlentities($e->getTraceAsString(), ENT_QUOTES) . '</pre>';
         }
 
         $content = '
