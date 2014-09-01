@@ -1,6 +1,7 @@
 <?php
 
-use Maverick\Http\Router,
+use Maverick\Application,
+    Maverick\Http\Router,
     Maverick\Http\Request,
     Maverick\Http\Response,
     Maverick\Http\Session,
@@ -310,5 +311,31 @@ class RouterTest extends PHPUnit_Framework_Testcase {
         $obj->get($urn, 'callback', ['name' => 'testRoute']);
 
         $this->assertEquals('/test/123', $obj->generateUrn('testRoute', ['123']));
+    }
+
+    public function testRouteOnlyAvailableInCertainEnvironment() {
+        $urn = '/test/test-env-only';
+        $obj = $this->getObj(new Request([
+            'REQUEST_URI'    => $urn,
+            'REQUEST_METHOD' => 'GET'
+        ]));
+
+        $mock = $this->getMock('stdClass', ['badAction', 'goodAction']);
+
+        $mock->expects($this->never())
+            ->method('badAction');
+
+        $mock->expects($this->once())
+            ->method('goodAction');
+
+        $obj->get($urn, function() use($mock) {
+            $mock->badAction();
+        }, ['env' => Application::DEBUG_LEVEL_DEV]);
+
+        $obj->get($urn, function() use($mock) {
+            $mock->goodAction();
+        }, ['env' => Application::getDebugLevel()]);
+
+        $obj->doRoute();
     }
 }

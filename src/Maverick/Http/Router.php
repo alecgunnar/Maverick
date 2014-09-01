@@ -8,7 +8,8 @@
 
 namespace Maverick\Http;
 
-use Maverick\DependencyManagement\ServiceManager,
+use Maverick\Application,
+    Maverick\DependencyManagement\ServiceManager,
     Maverick\Http\Response\Instruction\InstructionInterface,
     Maverick\DataStructure\Map,
     Maverick\Exception\InvalidTypeException,
@@ -134,6 +135,7 @@ class Router {
         }
 
         if($this->routeFound === true
+            || (isset($params['env']) && Application::debugCompare('!=', $params['env']))
             || ($method != '*' && in_array($this->request->getMethod(), explode('|', strtolower($method))) === false)
             || isset($params['https']) && (($params['https'] === true && !$this->request->isHttps()) || ($params['https'] === false && $this->request->isHttps()))
             || ($args = $this->checkUrn($urn)) === false) {
