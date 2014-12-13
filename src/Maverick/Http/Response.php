@@ -238,7 +238,5 @@ class Response {
         if($this->body && !isset($this->noMessageBody[$this->status])) {
             print $this->body;
         }
-
-        exit();
     }
 }
