@@ -24,7 +24,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testToString() {
-        $dateTime = new DateTime(null);
+        $dateTime = new DateTime();
 
         $name     = 'abc';
         $value    = '123';
@@ -77,14 +77,14 @@ class CookieTest extends PHPUnit_Framework_Testcase {
 
         $obj->setExpiration(true);
 
-        $this->assertTrue($obj->getExpiration() < new DateTime(null));
+        $this->assertTrue($obj->getExpiration() < new DateTime());
     }
 
     public function testSetExpirationWithObjectOfDateTime() {
         $obj     = new Cookie('abc');
         $seconds = '123';
 
-        $expireTime = new DateTime(null, $this->timezone);
+        $expireTime = new DateTime();
 
         $obj->setExpiration($expireTime);
 
