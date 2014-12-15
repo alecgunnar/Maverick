@@ -2,7 +2,7 @@
 
 use Maverick\Application;
 
-define('ROOT', __DIR__ . '/');
+define('ROOT', __DIR__);
 
 require(__DIR__ . '/vendor/autoload.php');
 

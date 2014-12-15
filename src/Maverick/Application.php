@@ -26,7 +26,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.4.1';
+    const VERSION = '0.4.2';
 
     /**
      * Debug level for the app
@@ -57,7 +57,7 @@ class Application {
         1020 => 'prod'
     ];
 
-    /** 
+    /**
      * The current request being worked with
      *
      * @var Maverick\Http\Request
@@ -113,6 +113,8 @@ class Application {
         $this->services = new ServiceManager();
 
         $this->registerDefaultServices();
+
+        date_default_timezone_set(self::getConfig('system')->get('timezone'));
     }
 
     /**
@@ -188,7 +190,7 @@ class Application {
      * @return Maverick\DataStructure\ReadOnlyMap
      */
     public static function getConfig($name) {
-        $dir    = ROOT . 'config/';
+        $dir    = ROOT . '/config/';
         $env    = $dir . self::$levels[self::$debugLevel] . '/';
         $master = $dir . 'master/';
 

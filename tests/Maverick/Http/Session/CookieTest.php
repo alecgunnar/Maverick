@@ -6,7 +6,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     public function testConstruct() {
         $name     = 'abc';
         $value    = '123';
-        $expire   = new DateTime();
+        $expire   = new DateTime(null);
         $path     = '/path';
         $domain   = '*.domain.com';
         $secure   = true;
@@ -24,7 +24,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testToString() {
-        $dateTime = new \DateTime();
+        $dateTime = new DateTime(null, $this->timezone);
 
         $name     = 'abc';
         $value    = '123';
@@ -36,7 +36,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
 
         $obj = new Cookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
 
-        $this->assertEquals($name . '=' . $value . '; Domain=' . $domain . '; Path=' . $path . '; Expires=' . $dateTime->format(\DateTime::RFC1123) . '; Secure; HttpOnly;', (string)$obj);
+        $this->assertEquals($name . '=' . $value . '; Domain=' . $domain . '; Path=' . $path . '; Expires=' . $dateTime->format(DateTime::RFC1123) . '; Secure; HttpOnly;', (string)$obj);
     }
 
     /**
@@ -57,11 +57,11 @@ class CookieTest extends PHPUnit_Framework_Testcase {
 
     public function testSetExpirationWithNumericString() {
         $obj     = new Cookie('abc');
-        $seconds = '123';        
+        $seconds = '123';
 
         $obj->setExpiration($seconds); // Expires in 123 seconds
 
-        $expireTime = new \DateTime();
+        $expireTime = new DateTime();
         $expireTime->modify($seconds . ' seconds');
 
         $this->assertEquals($obj->getExpiration(), $expireTime);
@@ -69,7 +69,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
 
     public function testSetExpirationWithBools() {
         $obj     = new Cookie('abc');
-        $seconds = '123';        
+        $seconds = '123';
 
         $obj->setExpiration(false);
 
@@ -77,14 +77,14 @@ class CookieTest extends PHPUnit_Framework_Testcase {
 
         $obj->setExpiration(true);
 
-        $this->assertTrue($obj->getExpiration() < new \DateTime());
+        $this->assertTrue($obj->getExpiration() < new DateTime(null));
     }
 
     public function testSetExpirationWithObjectOfDateTime() {
         $obj     = new Cookie('abc');
-        $seconds = '123';        
+        $seconds = '123';
 
-        $expireTime = new \DateTime();
+        $expireTime = new DateTime(null, $this->timezone);
 
         $obj->setExpiration($expireTime);
 

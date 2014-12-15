@@ -9,7 +9,7 @@
 use Maverick\Application,
     Maverick\View\IndexView;
 
-define('ROOT', dirname(__DIR__) . '/');
+define('ROOT', dirname(__DIR__));
 
 require ROOT . 'vendor/autoload.php';
 

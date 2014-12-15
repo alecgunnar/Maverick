@@ -9,6 +9,7 @@
 namespace Maverick\Http\Session;
 
 use Maverick\Exception\InvalidTypeException,
+    Maverick\Application,
     DateTime;
 
 class Cookie {
