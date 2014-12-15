@@ -24,7 +24,7 @@ class CookieTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testToString() {
-        $dateTime = new DateTime(null, $this->timezone);
+        $dateTime = new DateTime(null);
 
         $name     = 'abc';
         $value    = '123';
