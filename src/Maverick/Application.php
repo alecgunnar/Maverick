@@ -98,6 +98,8 @@ class Application {
      * @throws Exception
      */
     public function __construct() {
+        date_default_timezone_set(self::getConfig('system')->get('timezone'));
+
         // @codeCoverageIgnoreStart
         if(!defined('ROOT')) {
             throw new Exception('You must define "ROOT" before creating a new application!');
@@ -113,8 +115,6 @@ class Application {
         $this->services = new ServiceManager();
 
         $this->registerDefaultServices();
-
-        date_default_timezone_set(self::getConfig('system')->get('timezone'));
     }
 
     /**
