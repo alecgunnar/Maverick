@@ -6,11 +6,11 @@
  * (c) Alec Carpenter <gunnar94@me.com>
  */
 
-namespace Maverick\Http\Response\Instruction;
+namespace Maverick\Http\ResponseInstruction;
 
 use Maverick\Http\Response;
 
-interface InstructionInterface {
+interface ResponseInstructionInterface {
     /**
      * A factory method to standardize the creation of
      * response instructions.

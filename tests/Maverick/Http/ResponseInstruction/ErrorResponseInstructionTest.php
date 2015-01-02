@@ -3,11 +3,11 @@
 use Maverick\Http\Request,
     Maverick\Http\Session,
     Maverick\Http\Response,
-    Maverick\Http\Response\Instruction\ErrorInstruction;
+    Maverick\Http\ResponseInstruction\ErrorResponseInstruction;
 
-class ErrorInstructionTest extends PHPUnit_Framework_Testcase {
+class ErrorResponseInstructionTest extends PHPUnit_Framework_Testcase {
     public function testConstruct() {
-        $obj = new ErrorInstruction(500);
+        $obj = new ErrorResponseInstruction(500);
 
         $this->assertAttributeEquals(500, 'code', $obj);
     }
@@ -16,13 +16,13 @@ class ErrorInstructionTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidValueException
      */
     public function testConstructorWithInvalidCodeThrowsException() {
-        $obj = ErrorInstruction::factory(300);
+        $obj = ErrorResponseInstruction::factory(300);
     }
 
     public function testInstruct() {
         $code = 500;
         $res  = new Response(new Request(), new Session());
-        $obj  = ErrorInstruction::factory($code);
+        $obj  = ErrorResponseInstruction::factory($code);
 
         $obj->instruct($res);
 

@@ -1,11 +1,11 @@
 <?php
 
 use Maverick\Http\Response,
-    Maverick\Http\Response\Instruction\RedirectInstruction;
+    Maverick\Http\ResponseInstruction\RedirectResponseInstruction;
 
-class RedirectInstructionTest extends PHPUnit_Framework_Testcase {
+class RedirectResponseInstructionTest extends PHPUnit_Framework_Testcase {
     public function testConstruct() {
-        $obj = new RedirectInstruction('/dev', 'message', 305);
+        $obj = new RedirectResponseInstruction('/dev', 'message', 305);
 
         $this->assertAttributeEquals('/dev', 'uri', $obj);
         $this->assertAttributeEquals('message', 'message', $obj);
@@ -13,7 +13,7 @@ class RedirectInstructionTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testFactory() {
-        $obj = RedirectInstruction::factory('/dev');
+        $obj = RedirectResponseInstruction::factory('/dev');
 
         $this->assertAttributeEquals('/dev', 'uri', $obj);
         $this->assertAttributeEquals('', 'message', $obj);
@@ -21,7 +21,7 @@ class RedirectInstructionTest extends PHPUnit_Framework_Testcase {
     }
 
     public function testConstructAcceptsStringNumericCode() {
-        $obj = RedirectInstruction::factory('/dev', null, '305');
+        $obj = RedirectResponseInstruction::factory('/dev', null, '305');
 
         $this->assertAttributeEquals(305, 'code', $obj);
     }
@@ -30,27 +30,27 @@ class RedirectInstructionTest extends PHPUnit_Framework_Testcase {
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testConstructThrowsExceptionWithInvalidUri() {
-        new RedirectInstruction(false, '', 303);
+        new RedirectResponseInstruction(false, '', 303);
     }
 
     /**
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testConstructThrowsExceptionWithInvalidMessage() {
-        new RedirectInstruction('/dev', 123, 303);
+        new RedirectResponseInstruction('/dev', 123, 303);
     }
 
     /**
      * @expectedException Maverick\Exception\InvalidTypeException
      */
     public function testConstructThrowsExceptionWithInvalidCodeType() {
-        new RedirectInstruction('/dev', null, false);
+        new RedirectResponseInstruction('/dev', null, false);
     }
 
     /**
      * @expectedException Maverick\Exception\InvalidValueException
      */
     public function testConstructThrowsExceptionWithInvalidCodeValue() {
-        new RedirectInstruction('/dev', null, 306);
+        new RedirectResponseInstruction('/dev', null, 306);
     }
 }

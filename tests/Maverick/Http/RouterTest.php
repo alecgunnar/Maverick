@@ -133,7 +133,7 @@ class RouterTest extends PHPUnit_Framework_Testcase {
         ]);
         $res = new Response($req, new Session());
         $obj = $this->getObj($req, $res);
-        
+
         $obj->match('GET', '/path/{#(\d+)#}/to/{#([a-z0-9]+)#i}/page/{#(\w+)#i}', function ($a, $b, $c) { return $a . $b . $c; });
         $obj->doRoute();
 
@@ -227,7 +227,7 @@ class RouterTest extends PHPUnit_Framework_Testcase {
             'REQUEST_METHOD' => 'GET'
         ]));
 
-        $mock = $this->getMockBuilder('Maverick\Http\Response\Instruction\RedirectInstruction')
+        $mock = $this->getMockBuilder('Maverick\Http\ResponseInstruction\RedirectResponseInstruction')
             ->disableOriginalConstructor()
             ->getMock();
 

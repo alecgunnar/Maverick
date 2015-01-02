@@ -10,7 +10,7 @@ namespace Maverick\Http;
 
 use Maverick\Application,
     Maverick\DependencyManagement\ServiceManager,
-    Maverick\Http\Response\Instruction\InstructionInterface,
+    Maverick\Http\ResponseInstruction\ResponseInstructionInterface,
     Maverick\DataStructure\Map,
     Maverick\Exception\InvalidTypeException,
     Maverick\Exception\UnknownValueException,
@@ -173,7 +173,7 @@ class Router {
     private function handleController() {
         $return = $this->services->call($this->controller[0], $this->controller[1]);
 
-        if($return instanceof InstructionInterface) {
+        if($return instanceof ResponseInstructionInterface) {
             $return->instruct($this->response);
             return;
         }

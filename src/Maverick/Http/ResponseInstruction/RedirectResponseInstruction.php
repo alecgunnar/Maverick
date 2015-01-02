@@ -6,13 +6,13 @@
  * (c) Alec Carpenter <gunnar94@me.com>
  */
 
-namespace Maverick\Http\Response\Instruction;
+namespace Maverick\Http\ResponseInstruction;
 
 use Maverick\Http\Response,
     Maverick\Exception\InvalidTypeException,
     Maverick\Exception\InvalidValueException;
 
-class RedirectInstruction implements InstructionInterface {
+class RedirectResponseInstruction implements ResponseInstructionInterface {
     /**
      * The URI to redirect to
      *
