@@ -108,7 +108,7 @@ class Application {
         }
         // @codeCoverageIgnoreEnd
 
-        date_default_timezone_set(self::getConfig('system')->get('timezone'));
+        date_default_timezone_set(self::getConfig('system')->get('timezone') ?: 'America/Detroit');
 
         $this->registerErrorHandler();
 
