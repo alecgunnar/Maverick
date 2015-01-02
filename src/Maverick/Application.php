@@ -18,7 +18,7 @@ use Maverick\Http\Request,
     Maverick\Exception\NoRouteException,
     Exception,
     Maverick\DataStructure\ReadOnlyMap,
-    Maverick\Http\Response\Instruction\ErrorInstruction;
+    Maverick\Http\ResponseInstruction\ErrorResponseInstruction;
 
 class Application {
     /**
@@ -258,7 +258,7 @@ class Application {
 
             $controller = $this->services->get('error.controller')->setException($exception);
 
-            ErrorInstruction::factory($code)->instruct($this->services->get('response'), $controller);
+            ErrorResponseInstruction::factory($code)->instruct($this->services->get('response'), $controller);
         };
 
         $errorHandler = function($num, $str, $file, $line) use($shutdown) {
