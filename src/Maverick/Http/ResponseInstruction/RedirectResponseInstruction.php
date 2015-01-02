@@ -12,7 +12,7 @@ use Maverick\Http\Response,
     Maverick\Exception\InvalidTypeException,
     Maverick\Exception\InvalidValueException;
 
-class RedirectResponseInstruction implements ResponseInstructionInterface {
+class RedirectResponseInstruction implements ResponseInstruction {
     /**
      * The URI to redirect to
      *

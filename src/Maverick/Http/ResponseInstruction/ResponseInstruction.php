@@ -10,7 +10,7 @@ namespace Maverick\Http\ResponseInstruction;
 
 use Maverick\Http\Response;
 
-interface ResponseInstructionInterface {
+interface ResponseInstruction {
     /**
      * A factory method to standardize the creation of
      * response instructions.

@@ -12,7 +12,7 @@ use Maverick\Http\Response,
     Maverick\Exception\InvalidValueException,
     Maverick\Controller\ErrorController;
 
-class ErrorResponseInstruction implements ResponseInstructionInterface {
+class ErrorResponseInstruction implements ResponseInstruction {
     /**
      * Redriect response code
      *
