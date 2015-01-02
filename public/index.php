@@ -11,7 +11,7 @@ use Maverick\Application,
 
 define('ROOT', dirname(__DIR__));
 
-require ROOT . 'vendor/autoload.php';
+require ROOT . '/vendor/autoload.php';
 
 $app = new Maverick\Application();
 
