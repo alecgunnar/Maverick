@@ -26,7 +26,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.4.2';
+    const VERSION = '0.4.5';
 
     /**
      * Debug level for the app
