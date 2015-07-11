@@ -1,7 +1,7 @@
 # Maverick - PHP Framework
 Maverick is a general purpose PHP framework, it can be as light-weight as Slim or as fully-featured as Symfony. The purpose of Maverick is to be as flexible as possible, while providing a firm foundation for development.
 
-[![Build Status](https://travis-ci.org/gunnar94/Maverick.svg?branch=master)](https://travis-ci.org/gunnar94/Maverick)
+[![Build Status](https://travis-ci.org/gunnar94/Dijon.svg?branch=master)](https://travis-ci.org/gunnar94/Maverick)
 [![Code Climate](https://codeclimate.com/github/gunnar94/Maverick/badges/gpa.svg)](https://codeclimate.com/github/gunnar94/Maverick)
 
 ## Starting Your Application
