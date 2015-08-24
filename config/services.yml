@@ -1,0 +1,10 @@
+services:
+    maverick.stdclass:
+        class: stdclass
+
+    maverick.route_collection:
+        class: Symfony\Component\Routing\RouteCollection
+
+    maverick.router:
+        class: Maverick\Router
+        arguments: ["@maverick.route_collection"]

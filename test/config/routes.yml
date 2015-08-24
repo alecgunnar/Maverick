@@ -1,0 +1,21 @@
+homepage:
+    path: /
+
+no-controller:
+    path: /no-controller
+
+undefined-controller:
+    path: /undefined-controller
+    defaults: {_controller: undefined.controller}
+
+non-implemented-controller:
+    path: /bad-controller
+    defaults: {_controller: bad.controller}
+
+good-controller:
+    path: /good-controller
+    defaults: {_controller: good.controller}
+
+good-controller-with-params:
+    path: /good-controller-with-params/{name}/{word}
+    defaults: {_controller: good.controller}

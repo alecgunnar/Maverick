@@ -1,0 +1,5 @@
+config:
+    test: 123
+    name: "Maverick"
+    version: "1.0.0"
+    free: true

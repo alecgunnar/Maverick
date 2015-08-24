@@ -1,0 +1,10 @@
+services:
+    test.class.for.container:
+        class: TestClassForContainer
+        arguments: ["@maverick.stdclass"]
+
+    maverick.stdclass:
+        class: DateTime
+
+    bad.controller:
+        class: stdclass
