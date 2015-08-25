@@ -35,23 +35,19 @@ class Router
 
         $matcher = new UrlMatcher($this->routes, $context);
 
-        try {
-            $params = $matcher->matchRequest($request);
+        $params = $matcher->matchRequest($request);
 
-            if (!isset($params['_controller'])) {
-                throw new NoControllerException(sprintf('The route %s does not have controller assigned to it.', $params['_route']));
-            }
-
-            if(!($controller = $this->controllers->get($params['_controller']))) {
-                throw new UndefinedControllerException(sprintf('The controller %s assigned to route %s does not exist.', $params['_controller'], $params['_route']));
-            }
-
-            $params['_controller'] = $controller;
-
-            return $params;
-        } catch (ResourceNotFoundException $e) {
-            return false;
+        if (!isset($params['_controller'])) {
+            throw new NoControllerException(sprintf('The route %s does not have controller assigned to it.', $params['_route']));
         }
+
+        if(!($controller = $this->controllers->get($params['_controller']))) {
+            throw new UndefinedControllerException(sprintf('The controller %s assigned to route %s does not exist.', $params['_controller'], $params['_route']));
+        }
+
+        $params['_controller'] = $controller;
+
+        return $params;
     }
 
     public function getRoutes()

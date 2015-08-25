@@ -8,9 +8,11 @@
 
 namespace Maverick\Controller;
 
+use Maverick\Http\StandardRequest;
+
 class NotFoundController implements ControllerInterface
 {
-    public function doAction()
+    public function doAction(StandardRequest $request)
     {
         
     }

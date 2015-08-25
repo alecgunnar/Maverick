@@ -8,7 +8,22 @@
 
 namespace Maverick\Controller;
 
-abstract class StandardController implements ControllerInterface
+use Maverick\Http\StandardRequest;
+use Maverick\Http\StandardResponse;
+
+class StandardController implements ControllerInterface
 {
-    
+    protected $request;
+    protected $response;
+
+    public function __construct(StandardRequest $request, StandardResponse $response)
+    {
+        $this->request  = $request;
+        $this->response = $response;
+    }
+
+    public function doAction()
+    {
+
+    }    
 }

@@ -8,7 +8,9 @@
 
 namespace Maverick\Controller;
 
+use Maverick\Http\StandardRequest;
+
 interface ControllerInterface
 {
-    public function doAction();
+    public function doAction(StandardRequest $request);
 }

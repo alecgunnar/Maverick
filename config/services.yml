@@ -2,13 +2,13 @@ services:
     maverick.stdclass:
         class: stdclass
 
-    maverick.request:
-        class: Symfony\Component\HttpFoundation\Request
-        factory: ["Symfony\\Component\\HttpFoundation\\Request", "createFromGlobals"]
+    maverick.http.request:
+        class: Maverick\Http\Request
+        factory: ["Maverick\\Http\\Request", "createFromGlobals"]
 
-    maverick.response:
-        class: Symfony\Component\HttpFoundation\Response
-        factory: ["Symfony\\Component\\HttpFoundation\\Response", "create"]
+    maverick.http.response:
+        class: Maverick\Http\Response
+        factory: ["Maverick\\Http\\Response", "create"]
 
     maverick.router.collection:
         class: Symfony\Component\Routing\RouteCollection

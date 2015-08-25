@@ -7,5 +7,5 @@ require(__DIR__ . '/vendor/autoload.php');
 
 class TestController extends \Maverick\Controller\StandardController
 {
-    public function doAction() { }
+    public function doAction(\Maverick\Http\StandardRequest $request) { }
 }

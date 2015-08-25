@@ -10,8 +10,8 @@ namespace Maverick;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Maverick\Router\Router;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Maverick\Http\StandardRequest;
+use Maverick\Http\StandardResponse;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Maverick\Exception\NoControllerException;
 use Maverick\Exception\UndefinedControllerException;
@@ -25,7 +25,7 @@ class Maverick
     private $request;
     private $response;
 
-    public function __construct(LoaderInterface $loader, Router $router=null, Request $request=null, Response $response=null)
+    public function __construct(LoaderInterface $loader, Router $router=null, StandardRequest $request=null, StandardResponse $response=null)
     {
         $this->config   = $loader;
         $this->router   = $router;
@@ -44,13 +44,11 @@ class Maverick
 
     public function run()
     {
-        if (!($params = $this->router->matchRequest($this->request))) {
-            $params = [
-                '_controller' => $this->router->getControllers()->get('maverick.controller.not_found')
-            ];
-        }
+        $params = $this->router->matchRequest($this->request);
 
-        $response = call_user_func_array([$params['_controller'], 'doAction'], $this->filterParams($params));
+        $this->request->attributes->add($this->filterParams($params));
+
+        $response = $params['_controller']->doAction($this->request);
 
         if ($response instanceof Response) {
             return $response->send();

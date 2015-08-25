@@ -99,13 +99,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers Maverick\Router\Router::matchRequest
+     * @expectedException Symfony\Component\Routing\Exception\ResourceNotFoundException
      */
     public function testMatchRequestWithUndefinedRoute()
     {
-        $routePath = '/undefined-route';
-        $expected  = false;
-
-        $this->assertEquals($this->getInstance()->matchRequest(Request::create($routePath)), $expected);
+        $this->getInstance()->matchRequest(Request::create('/undefined-route'));
     }
 
     /**
