@@ -44,7 +44,7 @@ class Maverick
         $this->loadRoutes();
     }
 
-    private function loadContainer()
+    protected function loadContainer()
     {
         $this->container = new ContainerBuilder();
 
@@ -70,7 +70,7 @@ class Maverick
         ))->load('services.yml');
     }
 
-    private function loadRoutes()
+    protected function loadRoutes()
     {
         $this->router->getCollection()->addCollection((new RouterYamlLoader(
             $this->config->getLocator()
@@ -100,7 +100,7 @@ class Maverick
         return $this->runAction($controller, $params);
     }
 
-    private function runAction(ControllerInterface $controller, array $params=array())
+    protected function runAction(ControllerInterface $controller, array $params=array())
     {
         $response = call_user_func_array([$controller, 'doAction'], $this->filterParams($params));
 
@@ -111,7 +111,7 @@ class Maverick
         return $this->response->setContent($response)->send();
     }
 
-    private function filterParams($params)
+    protected function filterParams($params)
     {
         $filtered = [];
 
