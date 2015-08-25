@@ -2,7 +2,8 @@
 /**
  * Maverick
  *
- * @author Alec Carpenter <gunnar94@me.com>
+ * @package Maverick
+ * @author  Alec Carpenter <gunnar94@me.com>
  */
 
 namespace Maverick;
@@ -108,7 +109,7 @@ class Maverick
             return $response->send();
         }
 
-        return $this->response->setContent($response)->send();
+        return $this->response->send();
     }
 
     protected function filterParams($params)

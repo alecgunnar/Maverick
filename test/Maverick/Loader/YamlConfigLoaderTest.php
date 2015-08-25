@@ -2,7 +2,8 @@
 /**
  * Maverick
  *
- * @author Alec Carpenter <gunnar94@me.com>
+ * @package Maverick
+ * @author  Alec Carpenter <gunnar94@me.com>
  */
 
 use Symfony\Component\Config\FileLocator;

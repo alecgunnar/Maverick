@@ -2,7 +2,8 @@
 /**
  * Maverick
  *
- * @author Alec Carpenter <gunnar94@me.com>
+ * @package Maverick
+ * @author  Alec Carpenter <gunnar94@me.com>
  */
 
 use Maverick\Maverick;
@@ -274,33 +275,6 @@ class MaverickTest extends PHPUnit_Framework_TestCase
             );
 
         $instance->run();
-    }
-
-    /**
-     * @covers Maverick\Maverick::run
-     */
-    public function testRunAddsStringReturnValueToDefaultResponse()
-    {
-        $output   = 'This is a test!';
-        $request  = Request::create('/good-controller');
-        $response = $this->getMockBuilder('Symfony\\Component\\HttpFoundation\\Response')->getMock();
-
-        $response->expects($this->once())
-            ->method('setContent')
-            ->with($this->equalTo($output))
-            ->will($this->returnValue($response));
-
-        $response->expects($this->once())
-            ->method('send')
-            ->will($this->returnValue($response));
-
-        $instance   = $this->getInstance(null, null, $request, $response);
-        $controller = $this->getGoodControllerMock($instance);
-
-        $controller->method('doAction')
-            ->will($this->returnValue($output));
-
-        $this->assertEquals($instance->run(), $response);
     }
 
     /**
