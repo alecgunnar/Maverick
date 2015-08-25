@@ -180,6 +180,24 @@ class MaverickTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers Maverick\Maverick::run
+     */
+    public function testNotFoundControllerRunWhenNoRouteMatched()
+    {
+        $request  = Request::create('/not-found');
+        $instance = $this->getInstance(null, null, $request);
+
+        $controller = $this->getMockBuilder('Maverick\\Controller\\NotFoundController')->getMock();
+
+        $controller->expects($this->once())
+            ->method('doAction');
+
+        $instance->getContainer()->set('maverick.controller.not_found', $controller);
+
+        $instance->run();
+    }
+
+    /**
+     * @covers Maverick\Maverick::run
      * @expectedException Maverick\Exception\NoControllerException
      */
     public function testRunExpectsController()
