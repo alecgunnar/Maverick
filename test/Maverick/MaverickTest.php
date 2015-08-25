@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Maverick\Controller\ControllerInterface;
+use Maverick\Router\Router;
+use Symfony\Component\Routing\RouteCollection;
 
 class TestClassForContainer { }
 
@@ -27,11 +29,11 @@ class MaverickTest extends PHPUnit_Framework_TestCase
 {
     const CLASS_NAME = '\\Maverick\\Maverick';
 
-    protected function getInstance($configLoader=null, $request=null, $response=null)
+    protected function getInstance($configLoader=null, $router=null, $request=null, $response=null)
     {
         return new Maverick($configLoader ?: new YamlConfigLoader(new FileLocator([
             TEST_PATH . DIRECTORY_SEPARATOR . 'config'
-        ])), $request, $response);
+        ])), $router, $request, $response);
     }
 
     public function testForClassAttributes()
@@ -39,7 +41,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
         $this->getInstance();
         $this->assertClassHasAttribute('config', self::CLASS_NAME);
         $this->assertClassHasAttribute('container', self::CLASS_NAME);
-        $this->assertClassHasAttribute('routes', self::CLASS_NAME);
+        $this->assertClassHasAttribute('router', self::CLASS_NAME);
         $this->assertClassHasAttribute('request', self::CLASS_NAME);
         $this->assertClassHasAttribute('response', self::CLASS_NAME);
     }
@@ -61,10 +63,21 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Maverick\Maverick::__construct
      */
+    public function testConstructorSetsRouter()
+    {
+        $router   = new Router(new RouteCollection());
+        $instance = $this->getInstance(null, $router);
+
+        $this->assertAttributeEquals($router, 'router', $instance);
+    }
+
+    /**
+     * @covers Maverick\Maverick::__construct
+     */
     public function testConstructorSetsRequest()
     {
         $request  = Request::create('/requested-uri');
-        $instance = $this->getInstance(null, $request);
+        $instance = $this->getInstance(null, null, $request);
 
         $this->assertAttributeEquals($request, 'request', $instance);
     }
@@ -75,7 +88,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testConstructorSetsResponse()
     {
         $response = Response::create();
-        $instance = $this->getInstance(null, null, $response);
+        $instance = $this->getInstance(null, null, null, $response);
 
         $this->assertAttributeEquals($response, 'response', $instance);
     }
@@ -93,21 +106,31 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Maverick\Maverick::__construct
      */
-    public function testConstructorCreatesRequest()
+    public function testConstructorUsesDefaultRouter()
     {
         $instance = $this->getInstance();
 
-        $this->assertAttributeInstanceOf('Symfony\\Component\\HttpFoundation\\Request', 'request', $instance);
+        $this->assertAttributeEquals($instance->getContainer()->get('maverick.router'), 'router', $instance);
     }
 
     /**
      * @covers Maverick\Maverick::__construct
      */
-    public function testConstructorCreatesResponse()
+    public function testConstructorUsesDefaultRequest()
     {
         $instance = $this->getInstance();
 
-        $this->assertAttributeInstanceOf('Symfony\\Component\\HttpFoundation\\Response', 'response', $instance);
+        $this->assertAttributeEquals($instance->getContainer()->get('maverick.request'), 'request', $instance);
+    }
+
+    /**
+     * @covers Maverick\Maverick::__construct
+     */
+    public function testConstructorUsesDefaultResponse()
+    {
+        $instance = $this->getInstance();
+
+        $this->assertAttributeEquals($instance->getContainer()->get('maverick.response'), 'response', $instance);
     }
 
     /**
@@ -145,9 +168,14 @@ class MaverickTest extends PHPUnit_Framework_TestCase
      */
     public function testRoutesLoaded()
     {
-        $instance = $this->getInstance();
+        $collection = $this->getMockBuilder('Symfony\\Component\\Routing\\RouteCollection')->getMock();
 
-        $this->assertTrue($instance->getRoutes()->get('homepage') instanceof Route);
+        $collection->expects($this->once())
+            ->method('addCollection')
+            ->with($this->isInstanceOf('Symfony\\Component\\Routing\\RouteCollection'));
+
+        $router   = new Router($collection);
+        $instance = $this->getInstance(null, $router);
     }
 
     /**
@@ -157,7 +185,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testRunExpectsController()
     {
         $request  = Request::create('/no-controller');
-        $instance = $this->getInstance(null, $request);
+        $instance = $this->getInstance(null, null, $request);
 
         $instance->run();
     }
@@ -169,7 +197,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testRunExpectsControllerDefinedInContainer()
     {
         $request  = Request::create('/undefined-controller');
-        $instance = $this->getInstance(null, $request);
+        $instance = $this->getInstance(null, null, $request);
 
         $instance->run();
     }
@@ -181,7 +209,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testRunExpectsProperlyImplementedController()
     {
         $request  = Request::create('/bad-controller');
-        $instance = $this->getInstance(null, $request);
+        $instance = $this->getInstance(null, null, $request);
 
         $instance->run();
     }
@@ -199,7 +227,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testRunCallsMatchedRoutesController()
     {
         $request    = Request::create('/good-controller');
-        $instance   = $this->getInstance(null, $request);
+        $instance   = $this->getInstance(null, null, $request);
         $controller = $this->getGoodControllerMock($instance);
 
         $controller->expects($this->once())
@@ -217,7 +245,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
         $word = 'focus';
 
         $request    = Request::create('/good-controller-with-params/' . $name . '/' . $word);
-        $instance   = $this->getInstance(null, $request);
+        $instance   = $this->getInstance(null, null, $request);
         $controller = $this->getGoodControllerMock($instance);
 
         $controller->expects($this->once())
@@ -248,7 +276,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
             ->method('send')
             ->will($this->returnValue($response));
 
-        $instance   = $this->getInstance(null, $request, $response);
+        $instance   = $this->getInstance(null, null, $request, $response);
         $controller = $this->getGoodControllerMock($instance);
 
         $controller->method('doAction')
@@ -263,7 +291,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testRunSendsResponseReturnValue()
     {
         $request    = Request::create('/good-controller');
-        $instance   = $this->getInstance(null, $request);
+        $instance   = $this->getInstance(null, null, $request);
         $controller = $this->getGoodControllerMock($instance);
         $response   = $this->getMockBuilder('Symfony\\Component\\HttpFoundation\\Response')->getMock();
 
@@ -283,7 +311,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testGetRequest()
     {
         $request  = Request::createFromGlobals();
-        $instance = $this->getInstance(null, $request);
+        $instance = $this->getInstance(null, null, $request);
 
         $this->assertEquals($instance->getRequest(), $request);
     }
@@ -294,7 +322,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function testGetResponse()
     {
         $response = Response::create();
-        $instance = $this->getInstance(null, null, $response);
+        $instance = $this->getInstance(null, null, null, $response);
 
         $this->assertEquals($instance->getResponse(), $response);
     }

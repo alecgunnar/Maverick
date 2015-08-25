@@ -8,6 +8,7 @@
 namespace Maverick;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Maverick\Router\Router;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader as DependencyInjectionYamlLoader;
@@ -26,19 +27,21 @@ class Maverick
 {
     protected $config;
     protected $container;
-    protected $routes;
+    protected $router;
     protected $request;
     protected $response;
 
-    public function __construct(LoaderInterface $loader, Request $request=null, Response $response=null)
+    public function __construct(LoaderInterface $loader, Router $router=null, Request $request=null, Response $response=null)
     {
         $this->config = $loader;
 
         $this->loadContainer();
-        $this->loadRoutes();
 
-        $this->request  = $request  ?: Request::createFromGlobals();
-        $this->response = $response ?: Response::create();
+        $this->router   = $router   ?: $this->container->get('maverick.router');
+        $this->request  = $request  ?: $this->container->get('maverick.request');
+        $this->response = $response ?: $this->container->get('maverick.response');
+
+        $this->loadRoutes();
     }
 
     private function loadContainer()
@@ -69,21 +72,19 @@ class Maverick
 
     private function loadRoutes()
     {
-        $this->routes = (new RouterYamlLoader(
+        $this->router->getCollection()->addCollection((new RouterYamlLoader(
             $this->config->getLocator()
-        ))->load('routes.yml');
+        ))->load('routes.yml'));
     }
 
     public function run()
     {
-        $context = new RequestContext();
-        $context->fromRequest($this->request);
-
-        $matcher = new UrlMatcher($this->routes, $context);
-        $params  = $matcher->matchRequest($this->request);
+        if (!($params = $this->router->matchRequest($this->request))) {
+            return $this->runAction($this->container->get('maverick.controller.not_found'));
+        }
 
         if (!isset($params['_controller'])) {
-            throw new NoControllerException(sprintf('No controller provided for route %s.', $params['_route']));
+            throw new NoControllerException(sprintf('No controller provided for route %s. Controllers must be assigned via the "_controller" key in the route defaults.', $params['_route']));
         }
 
         if (!$this->container->has($params['_controller'])) {
@@ -96,6 +97,11 @@ class Maverick
             throw new InvalidControllerException(sprintf('The controller %s is not properly implemented.', $params['_controller']));
         }
 
+        return $this->runAction($controller, $params);
+    }
+
+    private function runAction(ControllerInterface $controller, array $params=array())
+    {
         $response = call_user_func_array([$controller, 'doAction'], $this->filterParams($params));
 
         if ($response instanceof Response) {

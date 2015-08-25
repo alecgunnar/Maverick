@@ -2,9 +2,20 @@ services:
     maverick.stdclass:
         class: stdclass
 
-    maverick.route_collection:
+    maverick.request:
+        class: Symfony\Component\HttpFoundation\Request
+        factory: ["Symfony\\Component\\HttpFoundation\\Request", "createFromGlobals"]
+
+    maverick.response:
+        class: Symfony\Component\HttpFoundation\Response
+        factory: ["Symfony\\Component\\HttpFoundation\\Response", "create"]
+
+    maverick.router.collection:
         class: Symfony\Component\Routing\RouteCollection
 
     maverick.router:
-        class: Maverick\Router
-        arguments: ["@maverick.route_collection"]
+        class: Maverick\Router\Router
+        arguments: ["@maverick.router.collection"]
+
+    maverick.controller.not_found:
+        class: Maverick\Controller\NotFoundController
