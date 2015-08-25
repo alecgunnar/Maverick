@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Route;
 use Maverick\Controller\ControllerInterface;
 use Maverick\Router\Router;
 use Symfony\Component\Routing\RouteCollection;
+use Maverick\Collection\ControllerCollection;
 
 class TestClassForContainer { }
 
@@ -30,18 +31,35 @@ class MaverickTest extends PHPUnit_Framework_TestCase
 {
     const CLASS_NAME = '\\Maverick\\Maverick';
 
-    protected function getInstance($configLoader=null, $router=null, $request=null, $response=null)
+    private $container;
+
+    protected function getInstance($loader=null, $router=null, $request=null, $response=null)
     {
-        return new Maverick($configLoader ?: new YamlConfigLoader(new FileLocator([
-            TEST_PATH . DIRECTORY_SEPARATOR . 'config'
-        ])), $router, $request, $response);
+        if (!$loader) {
+            $loader = new YamlConfigLoader(new FileLocator([
+                TEST_PATH . DIRECTORY_SEPARATOR . 'config'
+            ]));
+        }
+
+        if (!$router) {
+            $router = new Router(new RouteCollection(), new ControllerCollection());
+        }
+
+        if (!$request) {
+            $request = Request::create('/');
+        }
+
+        if (!$response) {
+            $response = Response::create();
+        }
+
+        return new Maverick($loader, $router, $request, $response);
     }
 
     public function testForClassAttributes()
     {
         $this->getInstance();
         $this->assertClassHasAttribute('config', self::CLASS_NAME);
-        $this->assertClassHasAttribute('container', self::CLASS_NAME);
         $this->assertClassHasAttribute('router', self::CLASS_NAME);
         $this->assertClassHasAttribute('request', self::CLASS_NAME);
         $this->assertClassHasAttribute('response', self::CLASS_NAME);
@@ -66,7 +84,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
      */
     public function testConstructorSetsRouter()
     {
-        $router   = new Router(new RouteCollection());
+        $router   = new Router(new RouteCollection(), new ControllerCollection());
         $instance = $this->getInstance(null, $router);
 
         $this->assertAttributeEquals($router, 'router', $instance);
@@ -95,76 +113,6 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Maverick\Maverick::__construct
-     */
-    public function testConstructorCreatesContainer()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertAttributeInstanceOf('Symfony\\Component\\DependencyInjection\\ContainerBuilder', 'container', $instance);
-    }
-
-    /**
-     * @covers Maverick\Maverick::__construct
-     */
-    public function testConstructorUsesDefaultRouter()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertAttributeEquals($instance->getContainer()->get('maverick.router'), 'router', $instance);
-    }
-
-    /**
-     * @covers Maverick\Maverick::__construct
-     */
-    public function testConstructorUsesDefaultRequest()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertAttributeEquals($instance->getContainer()->get('maverick.request'), 'request', $instance);
-    }
-
-    /**
-     * @covers Maverick\Maverick::__construct
-     */
-    public function testConstructorUsesDefaultResponse()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertAttributeEquals($instance->getContainer()->get('maverick.response'), 'response', $instance);
-    }
-
-    /**
-     * @covers Maverick\Maverick::__construct
-     */
-    public function testConstructorCreatesContainerWithServices()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertTrue($instance->getContainer()->get('test.class.for.container') instanceof TestClassForContainer);
-    }
-
-    /**
-     * @covers Maverick\Maverick::loadContainer
-     */
-    public function testFrameworkServiceConfigLoaded()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertTrue($instance->getContainer()->has('maverick.stdclass'));
-    }
-
-    /**
-     * @covers Maverick\Maverick::loadFrameworkServices
-     */
-    public function testApplicationServicesOverrideFrameworkServices()
-    {
-        $instance = $this->getInstance();
-
-        $this->assertTrue($instance->getContainer()->get('maverick.stdclass') instanceof \DateTime);
-    }
-
-    /**
      * @covers Maverick\Maverick::loadRoutes
      */
     public function testRoutesLoaded()
@@ -175,7 +123,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
             ->method('addCollection')
             ->with($this->isInstanceOf('Symfony\\Component\\Routing\\RouteCollection'));
 
-        $router   = new Router($collection);
+        $router   = new Router($collection, new ControllerCollection());
         $instance = $this->getInstance(null, $router);
     }
 
@@ -192,43 +140,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
         $controller->expects($this->once())
             ->method('doAction');
 
-        $instance->getContainer()->set('maverick.controller.not_found', $controller);
-
-        $instance->run();
-    }
-
-    /**
-     * @covers Maverick\Maverick::run
-     * @expectedException Maverick\Exception\NoControllerException
-     */
-    public function testRunExpectsController()
-    {
-        $request  = Request::create('/no-controller');
-        $instance = $this->getInstance(null, null, $request);
-
-        $instance->run();
-    }
-
-    /**
-     * @covers Maverick\Maverick::run
-     * @expectedException Maverick\Exception\UndefinedControllerException
-     */
-    public function testRunExpectsControllerDefinedInContainer()
-    {
-        $request  = Request::create('/undefined-controller');
-        $instance = $this->getInstance(null, null, $request);
-
-        $instance->run();
-    }
-
-    /**
-     * @covers Maverick\Maverick::run
-     * @expectedException Maverick\Exception\InvalidControllerException
-     */
-    public function testRunExpectsProperlyImplementedController()
-    {
-        $request  = Request::create('/bad-controller');
-        $instance = $this->getInstance(null, null, $request);
+        $instance->getRouter()->getControllers()->add('maverick.controller.not_found', $controller);
 
         $instance->run();
     }
@@ -236,7 +148,7 @@ class MaverickTest extends PHPUnit_Framework_TestCase
     public function getGoodControllerMock($instance)
     {
         $controller = $this->getMockBuilder('GoodController')->getMock();
-        $instance->getContainer()->set('good.controller', $controller);
+        $instance->getRouter()->getControllers()->add('good.controller', $controller);
         return $controller;
     }
 

@@ -9,18 +9,23 @@
 namespace Maverick\Router;
 
 use Symfony\Component\Routing\RouteCollection;
+use Maverick\Collection\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Maverick\Router\Exception\NoControllerException;
+use Maverick\Router\Exception\UndefinedControllerException;
 
 class Router
 {
-    protected $collection;
+    protected $routes;
+    protected $controllers;
 
-    public function __construct(RouteCollection $routes)
+    public function __construct(RouteCollection $routes, ControllerCollection $controllers)
     {
-        $this->collection = $routes;
+        $this->routes      = $routes;
+        $this->controllers = $controllers;
     }
 
     public function matchRequest(Request $request)
@@ -28,17 +33,34 @@ class Router
         $context = new RequestContext();
         $context->fromRequest($request);
 
-        $matcher = new UrlMatcher($this->collection, $context);
+        $matcher = new UrlMatcher($this->routes, $context);
 
         try {
-            return $matcher->matchRequest($request);
+            $params = $matcher->matchRequest($request);
+
+            if (!isset($params['_controller'])) {
+                throw new NoControllerException(sprintf('The route %s does not have controller assigned to it.', $params['_route']));
+            }
+
+            if(!($controller = $this->controllers->get($params['_controller']))) {
+                throw new UndefinedControllerException(sprintf('The controller %s assigned to route %s does not exist.', $params['_controller'], $params['_route']));
+            }
+
+            $params['_controller'] = $controller;
+
+            return $params;
         } catch (ResourceNotFoundException $e) {
             return false;
         }
     }
 
-    public function getCollection()
+    public function getRoutes()
     {
-        return $this->collection;
+        return $this->routes;
+    }
+
+    public function getControllers()
+    {
+        return $this->controllers;
     }
 }

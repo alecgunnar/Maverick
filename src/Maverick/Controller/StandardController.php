@@ -6,11 +6,9 @@
  * @author  Alec Carpenter <gunnar94@me.com>
  */
 
-namespace Maverick\Exception;
+namespace Maverick\Controller;
 
-use \Exception;
-
-class UndefinedControllerException extends Exception
+abstract class StandardController implements ControllerInterface
 {
     
 }

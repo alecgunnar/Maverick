@@ -6,11 +6,11 @@
  * @author  Alec Carpenter <gunnar94@me.com>
  */
 
-namespace Maverick\Exception;
+namespace Maverick\Router\Exception;
 
 use \Exception;
 
-class InvalidControllerException extends Exception
+class NoControllerException extends Exception
 {
     
 }

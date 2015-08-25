@@ -7,6 +7,7 @@
  */
 
 use Maverick\Router\Router;
+use Maverick\Collection\ControllerCollection;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,39 +17,56 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RouterTest extends PHPUnit_Framework_TestCase
 {
-    const CLASS_NAME  = '\\Maverick\\Router\\Router';
+    const CLASS_NAME = '\\Maverick\\Router\\Router';
 
-    protected function getInstance($collection=null)
+    protected function getInstance($routes=null, $controllers=null)
     {
-        return new Router($collection ?: new RouteCollection());
+        return new Router(
+            $routes ?: new RouteCollection(),
+            $controllers ?: new ControllerCollection()
+        );
     }
 
     public function testForClassAttributes()
     {
         $this->getInstance();
-        $this->assertClassHasAttribute('collection', self::CLASS_NAME);
+        $this->assertClassHasAttribute('routes', self::CLASS_NAME);
+        $this->assertClassHasAttribute('controllers', self::CLASS_NAME);
     }
 
     /**
      * @covers Maverick\Router\Router::__construct
      */
-    public function testConstructorSetsCollection()
+    public function testConstructorSetsAttributes()
     {
-        $collection = new RouteCollection();
-        $instance   = new Router($collection);
+        $routes      = new RouteCollection();
+        $controllers = new ControllerCollection();
+        $instance    = new Router($routes, $controllers);
 
-        $this->assertAttributeEquals($collection, 'collection', $instance);
+        $this->assertAttributeEquals($routes, 'routes', $instance);
+        $this->assertAttributeEquals($controllers, 'controllers', $instance);
     }
 
     /**
-     * @covers Maverick\Router\Router::getCollection
+     * @covers Maverick\Router\Router::getRoutes
      */
-    public function testGetCollection()
+    public function testGetRoutes()
     {
-        $collection = new RouteCollection();
-        $instance   = $this->getInstance($collection);
+        $routes   = new RouteCollection();
+        $instance = $this->getInstance($routes);
 
-        $this->assertEquals($instance->getCollection(), $collection);
+        $this->assertEquals($instance->getRoutes(), $routes);
+    }
+
+    /**
+     * @covers Maverick\Router\Router::getControllers
+     */
+    public function testGetControllers()
+    {
+        $controllers = new ControllerCollection();
+        $instance    = $this->getInstance(null, $controllers);
+
+        $this->assertEquals($instance->getControllers(), $controllers);
     }
 
     /**
@@ -56,17 +74,21 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchRequestWithDefinedRoute()
     {
+        $controller     = new TestController();
         $routeName      = 'test-route';
         $controllerName = 'test.controller';
         $routePath      = '/test-route';
         $expected       = [
             '_route'      => $routeName,
-            '_controller' => $controllerName
+            '_controller' => $controller
         ];
 
-        $instance = $this->getInstance();
+        $controllers = new ControllerCollection();
+        $controllers->add($controllerName, $controller);
 
-        $instance->getCollection()->add($routeName, new Route(
+        $instance = $this->getInstance(null, $controllers);
+
+        $instance->getRoutes()->add($routeName, new Route(
             $routePath, [
                 '_controller' => $controllerName
             ]
@@ -91,6 +113,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchRequestWithDefinedRouteAndParams()
     {
+        $controller       = new TestController();
         $routeName        = 'test-route';
         $controllerName   = 'test.controller';
         $namedParam1      = 'name';
@@ -103,17 +126,50 @@ class RouterTest extends PHPUnit_Framework_TestCase
             '_route'      => $routeName,
             $namedParam1  => $namedParam1Value,
             $namedParam2  => $namedParam2Value,
-            '_controller' => $controllerName
+            '_controller' => $controller
         ];
 
-        $instance = $this->getInstance();
+        $controllers = new ControllerCollection();
+        $controllers->add($controllerName, $controller);
 
-        $instance->getCollection()->add($routeName, new Route(
+        $instance = $this->getInstance(null, $controllers);
+
+        $instance->getRoutes()->add($routeName, new Route(
             $routePathDefn, [
                 '_controller' => $controllerName
             ]
         ));
 
         $this->assertEquals($instance->matchRequest(Request::create($routePathTest)), $expected);
+    }
+
+    /**
+     * @covers Maverick\Router\Router::matchRequest
+     * @expectedException Maverick\Router\Exception\NoControllerException
+     */
+    public function testMatchRequestWithoutControllerDefinedByRoute()
+    {
+        $routePath = '/test-route';
+        $instance  = $this->getInstance();
+
+        $instance->getRoutes()->add('test-route', new Route($routePath));
+
+        $instance->matchRequest(Request::create($routePath));
+    }
+
+    /**
+     * @covers Maverick\Router\Router::matchRequest
+     * @expectedException Maverick\Router\Exception\UndefinedControllerException
+     */
+    public function testMatchRequestWithUndefinedController()
+    {
+        $routePath = '/test-route';
+        $instance  = $this->getInstance();
+
+        $instance->getRoutes()->add('test-route', new Route($routePath, [
+            '_controller' => 'undefined.controller'
+        ]));
+
+        $instance->matchRequest(Request::create($routePath));
     }
 }
