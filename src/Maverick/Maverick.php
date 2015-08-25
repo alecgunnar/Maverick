@@ -20,10 +20,10 @@ use Maverick\Exception\InvalidControllerException;
 
 class Maverick
 {
-    protected $config;
-    protected $router;
-    protected $request;
-    protected $response;
+    private $config;
+    private $router;
+    private $request;
+    private $response;
 
     public function __construct(LoaderInterface $loader, Router $router=null, Request $request=null, Response $response=null)
     {
