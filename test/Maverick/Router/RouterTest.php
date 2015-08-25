@@ -10,7 +10,8 @@ use Maverick\Router\Router;
 use Maverick\Collection\ControllerCollection;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
-use Symfony\Component\HttpFoundation\Request;
+use Maverick\Http\StandardResponse;
+use Maverick\Http\StandardRequest;
 
 /**
  * @covers Maverick\Router\Router
@@ -74,7 +75,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchRequestWithDefinedRoute()
     {
-        $controller     = new TestController();
+        $controller     = new TestController(StandardResponse::create());
         $routeName      = 'test-route';
         $controllerName = 'test.controller';
         $routePath      = '/test-route';
@@ -94,7 +95,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             ]
         ));
 
-        $this->assertEquals($instance->matchRequest(Request::create($routePath)), $expected);
+        $this->assertEquals($instance->matchRequest(StandardRequest::create($routePath)), $expected);
     }
 
     /**
@@ -103,7 +104,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchRequestWithUndefinedRoute()
     {
-        $this->getInstance()->matchRequest(Request::create('/undefined-route'));
+        $this->getInstance()->matchRequest(StandardRequest::create('/undefined-route'));
     }
 
     /**
@@ -111,7 +112,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testMatchRequestWithDefinedRouteAndParams()
     {
-        $controller       = new TestController();
+        $controller       = new TestController(StandardResponse::create());
         $routeName        = 'test-route';
         $controllerName   = 'test.controller';
         $namedParam1      = 'name';
@@ -138,7 +139,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             ]
         ));
 
-        $this->assertEquals($instance->matchRequest(Request::create($routePathTest)), $expected);
+        $this->assertEquals($instance->matchRequest(StandardRequest::create($routePathTest)), $expected);
     }
 
     /**
@@ -152,7 +153,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $instance->getRoutes()->add('test-route', new Route($routePath));
 
-        $instance->matchRequest(Request::create($routePath));
+        $instance->matchRequest(StandardRequest::create($routePath));
     }
 
     /**
@@ -168,6 +169,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
             '_controller' => 'undefined.controller'
         ]));
 
-        $instance->matchRequest(Request::create($routePath));
+        $instance->matchRequest(StandardRequest::create($routePath));
     }
 }

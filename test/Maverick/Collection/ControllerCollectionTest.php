@@ -7,6 +7,7 @@
  */
 
 use Maverick\Collection\ControllerCollection;
+use Maverick\Http\StandardResponse;
 
 /**
  * @covers Maverick\Container\ControllerCollection
@@ -34,7 +35,7 @@ class ControllerCollectionTest extends PHPUnit_Framework_TestCase
         $instance = $this->getInstance();
 
         $name       = 'test.controller';
-        $controller = new TestController();
+        $controller = new TestController(StandardResponse::create());
 
         $instance->add($name, $controller);
 
@@ -49,7 +50,7 @@ class ControllerCollectionTest extends PHPUnit_Framework_TestCase
         $instance = $this->getInstance();
 
         $name       = 'test.controller';
-        $controller = new TestController();
+        $controller = new TestController(StandardResponse::create());
 
         $instance->add($name, $controller);
 

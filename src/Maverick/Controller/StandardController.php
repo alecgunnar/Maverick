@@ -13,16 +13,14 @@ use Maverick\Http\StandardResponse;
 
 class StandardController implements ControllerInterface
 {
-    protected $request;
     protected $response;
 
-    public function __construct(StandardRequest $request, StandardResponse $response)
+    public function __construct(StandardResponse $response)
     {
-        $this->request  = $request;
         $this->response = $response;
     }
 
-    public function doAction()
+    public function doAction(StandardRequest $request)
     {
 
     }    
