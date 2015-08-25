@@ -31,8 +31,6 @@ class MaverickTest extends PHPUnit_Framework_TestCase
 {
     const CLASS_NAME = '\\Maverick\\Maverick';
 
-    private $container;
-
     protected function getInstance($loader=null, $router=null, $request=null, $response=null)
     {
         if (!$loader) {
