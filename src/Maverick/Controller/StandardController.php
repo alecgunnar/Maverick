@@ -20,8 +20,27 @@ class StandardController implements ControllerInterface
         $this->response = $response;
     }
 
+    protected function render($view, $params=[])
+    {
+        return $this->response->setView($view, $params);
+    }
+
+    protected function redirectUri($uri, $flash='', $status=303)
+    {
+        $this->response = new RedirectResponse($uri, $status);
+
+        return $this->response;
+    }
+
+    protected function redirectNamed($name, $flash='', $status=303)
+    {
+        return $this->response;
+    }
+
     public function doAction(StandardRequest $request)
     {
-
-    }    
+        if ($view = $request->attributes->get('view')) {
+            $this->render($view, $request->attributes->all());
+        }
+    }
 }
