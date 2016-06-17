@@ -8,16 +8,17 @@ declare(strict_types=1);
 
 namespace Maverick;
 
+use Interop\Container\ContainerInterface;
+use DI\ContainerBuilder;
+use Maverick\Container\Exception\NotFoundException;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
+use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\RouteCollection;
 use Maverick\Router\Loader\FileSystemLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
-use Maverick\Container\Exception\NotFoundException;
-use Interop\Container\ContainerInterface;
-use DI\ContainerBuilder;
 
 class Application implements ContainerInterface, MiddlewareQueueInterface
 {
@@ -121,6 +122,9 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
             'system.handler.not_allowed' => function() {
                 return new NotAllowedHandler();
             },
+            'system.middleware.router' => function($c) {
+                return new RouterMiddleware($c->get('system.router'));
+            }
         ]);
 
         $this->withContainer($builder->build());
@@ -131,6 +135,6 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
      */
     protected function loadMiddleware()
     {
-
+        $this->withMiddleware($this->get('system.middleware.router'));
     }
 }
