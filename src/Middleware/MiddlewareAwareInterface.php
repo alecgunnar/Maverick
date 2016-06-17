@@ -31,5 +31,5 @@ interface MiddlewareAwareInterface
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function dispatch(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 }

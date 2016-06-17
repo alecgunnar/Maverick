@@ -43,16 +43,14 @@ trait MiddlewareAwareTrait
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function dispatch(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        static $index = 0;
-
-        if (count($this->middleware) > $index) {
-            $handler = $this->middleware[$index++];
-            $response = $handler($request, $response, [$this, 'dispatch']);
+        if ($this->middleware) {
+            $handler  = array_shift($this->middleware);
+            $response = $handler($request, $response, [$this, 'run']);
 
             if (!($response instanceof ResponseInterface)) {
-                throw new InvalidMiddlewareException('Middleware did not return instance of Psr\Http\Message\ResponseInterface.');
+                throw new InvalidMiddlewareException('Middleware did not return an instance of ' . ResponseInterface::class . '.');
             }
         }
 
