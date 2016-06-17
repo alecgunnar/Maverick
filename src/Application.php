@@ -4,22 +4,28 @@
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
+declare(strict_types=1);
 
 namespace Maverick;
 
-use Acclimate\Container\CompositeContainer;
-use Interop\Container\ContainerInterface;
-use DI\ContainerBuilder;
 use Maverick\Middleware\MiddlewareAwareTrait;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\RouteCollection;
 use Maverick\Router\Loader\FileSystemLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
+use Maverick\Container\Exception\NotFoundException;
+use Interop\Container\ContainerInterface;
+use DI\ContainerBuilder;
 
-class Application extends CompositeContainer
+class Application implements ContainerInterface
 {
     use MiddlewareAwareTrait;
+
+    /**
+     * @var ContainerInterface[]
+     */
+    protected $containers = [];
 
     /**
      * @var bool
@@ -27,13 +33,62 @@ class Application extends CompositeContainer
     protected $initialized = false;
 
     /**
-     * Perform generic setup tasks
+     * @var int
      */
-    public function initialize()
+    protected $foundInContainer;
+
+    /**
+     * Add a new container
+     *
+     * @param ContainerInterface $container
+     * @return self
+     */
+    public function withContainer(ContainerInterface $container): self
+    {
+        $this->containers[] = $container;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function has($id): bool
+    {
+        foreach ($this->containers as $index => $container) {
+            if ($container->has($id)) {
+                $this->foundInContainer = $index;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function get($id)
+    {
+        if (!$this->has($id)) {
+            throw new NotFoundException('The service ' . $id . ' does not exist.');
+        }
+
+        return $this->containers[$this->foundInContainer]
+            ->get($id);
+    }
+
+    /**
+     * Perform generic setup tasks
+     *
+     * @return self
+     */
+    public function initialize(): self
     {
         $this->loadContainer();
 
         $this->initialized = true;
+
+        return $this;
     }
 
     /**
@@ -66,6 +121,6 @@ class Application extends CompositeContainer
             },
         ]);
 
-        $this->addContainer($builder->build());
+        $this->withContainer($builder->build());
     }
 }
