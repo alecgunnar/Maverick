@@ -22,21 +22,18 @@ class Application extends CompositeContainer
     use MiddlewareAwareTrait;
 
     /**
-     * @param ContainerInterface[] $containers
+     * @var bool
      */
-    public function __construct(array $containers = [])
-    {
-        parent::__construct($containers);
-
-        $this->initialize();
-    }
+    protected $initialized = false;
 
     /**
      * Perform generic setup tasks
      */
-    protected function initialize()
+    public function initialize()
     {
         $this->loadContainer();
+
+        $this->initialized = true;
     }
 
     /**
