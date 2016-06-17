@@ -1,18 +1,18 @@
 <?php
 
-namespace Maverick\Middleware;
+namespace Maverick\Middleware\Queue;
 
 use PHPUnit_Framework_TestCase;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Response;
 use Maverick\Testing\Middleware\SampleMiddleware;
 
-class MiddlewarwAwareTraitTest extends PHPUnit_Framework_TestCase
+class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
 {
     protected function getInstance()
     {
-        return new class implements MiddlewareAwareInterface {
-            use MiddlewareAwareTrait;
+        return new class implements MiddlewareQueueInterface {
+            use MiddlewareQueueTrait;
         };
     }
 

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Maverick;
 
-use Maverick\Middleware\MiddlewareAwareInterface;
-use Maverick\Middleware\MiddlewareAwareTrait;
+use Maverick\Middleware\Queue\MiddlewareQueueInterface;
+use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\RouteCollection;
 use Maverick\Router\Loader\FileSystemLoader;
@@ -19,9 +19,9 @@ use Maverick\Container\Exception\NotFoundException;
 use Interop\Container\ContainerInterface;
 use DI\ContainerBuilder;
 
-class Application implements ContainerInterface, MiddlewareAwareInterface
+class Application implements ContainerInterface, MiddlewareQueueInterface
 {
-    use MiddlewareAwareTrait;
+    use MiddlewareQueueTrait;
 
     /**
      * @var ContainerInterface[]

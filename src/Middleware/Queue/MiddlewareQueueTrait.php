@@ -6,13 +6,13 @@
  */
 declare(strict_types=1);
 
-namespace Maverick\Middleware;
+namespace Maverick\Middleware\Queue;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Maverick\Middleware\Exception\InvalidMiddlewareException;
 
-trait MiddlewareAwareTrait
+trait MiddlewareQueueTrait
 {
     /**
      * @var callable[]
@@ -23,7 +23,7 @@ trait MiddlewareAwareTrait
      * @param callable $handler
      * @return self
      */
-    public function withMiddleware(callable $handler): MiddlewareAwareInterface
+    public function withMiddleware(callable $handler): MiddlewareQueueInterface
     {
         $this->middleware[] = $handler;
         return $this;

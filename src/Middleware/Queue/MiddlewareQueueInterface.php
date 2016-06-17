@@ -6,19 +6,19 @@
  */
 declare(strict_types=1);
 
-namespace Maverick\Middleware;
+namespace Maverick\Middleware\Queue;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Maverick\Middleware\Exception\InvalidMiddlewareException;
 
-interface MiddlewareAwareInterface
+interface MiddlewareQueueInterface
 {
     /**
      * @param callable $handler
-     * @return MiddlewareAwareInterface
+     * @return MiddlewareQueueInterface
      */
-    public function withMiddleware(callable $handler): MiddlewareAwareInterface;
+    public function withMiddleware(callable $handler): MiddlewareQueueInterface;
 
     /**
      * @return callable[]
