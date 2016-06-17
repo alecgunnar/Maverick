@@ -27,15 +27,28 @@ class Application extends CompositeContainer
     public function __construct(array $containers)
     {
         parent::__construct($containers);
+
+        $this->initialize();
     }
 
     /**
-     * @return ContainerInterface
+     * Perform generic setup tasks
      */
-    protected function buildFrameworkContainer(): ContainerInterface
+    protected function initialize()
+    {
+        $this->loadContainer();
+    }
+
+    /**
+     * Create the system's container with all of
+     * the basic dependencies
+     */
+    protected function loadContainer()
     {
         $builder = new ContainerBuilder();
 
+        $builder->useAutowiring(false);
+        $builder->useAnnotations(false);
         $builder->wrapContainer($this);
 
         $builder->setDefinitions([
