@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Maverick;
 
+use Maverick\Middleware\MiddlewareAwareInterface;
 use Maverick\Middleware\MiddlewareAwareTrait;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\RouteCollection;
@@ -18,7 +19,7 @@ use Maverick\Container\Exception\NotFoundException;
 use Interop\Container\ContainerInterface;
 use DI\ContainerBuilder;
 
-class Application implements ContainerInterface
+class Application implements ContainerInterface, MiddlewareAwareInterface
 {
     use MiddlewareAwareTrait;
 
@@ -41,9 +42,9 @@ class Application implements ContainerInterface
      * Add a new container
      *
      * @param ContainerInterface $container
-     * @return self
+     * @return Application
      */
-    public function withContainer(ContainerInterface $container): self
+    public function withContainer(ContainerInterface $container): Application
     {
         $this->containers[] = $container;
         return $this;
@@ -80,11 +81,12 @@ class Application implements ContainerInterface
     /**
      * Perform generic setup tasks
      *
-     * @return self
+     * @return Application
      */
-    public function initialize(): self
+    public function initialize(): Application
     {
         $this->loadContainer();
+        $this->loadMiddleware();
 
         $this->initialized = true;
 
@@ -122,5 +124,13 @@ class Application implements ContainerInterface
         ]);
 
         $this->withContainer($builder->build());
+    }
+
+    /**
+     * Load framework specific middleware
+     */
+    protected function loadMiddleware()
+    {
+
     }
 }
