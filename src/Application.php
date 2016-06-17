@@ -24,7 +24,7 @@ class Application extends CompositeContainer
     /**
      * @param ContainerInterface[] $containers
      */
-    public function __construct(array $containers)
+    public function __construct(array $containers = [])
     {
         parent::__construct($containers);
 
@@ -51,7 +51,7 @@ class Application extends CompositeContainer
         $builder->useAnnotations(false);
         $builder->wrapContainer($this);
 
-        $builder->setDefinitions([
+        $builder->addDefinitions([
             'system.route_collection' => function() {
                 return new Collection();
             },
