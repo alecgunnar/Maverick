@@ -4,8 +4,16 @@ namespace Maverick;
 
 use PHPUnit_Framework_TestCase;
 
+use Maverick\Middleware\RouterMiddleware;
+
+/**
+ * @coversDefaultClass Maverick\Application
+ */
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers ::withContainer
+     */
     public function testWithContainerAddsContainer()
     {
         $given = $this->getMockBuilder('Interop\Container\ContainerInterface')
@@ -20,6 +28,9 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($expected, 'containers', $instance);
     }
 
+    /**
+     * @covers ::withContainer
+     */
     public function testWithContainerReturnsSelf()
     {
         $container = $this->getMockBuilder('Interop\Container\ContainerInterface')
@@ -32,6 +43,9 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $this->assertSame($instance, $ret);
     }
 
+    /**
+     * @covers ::has
+     */
     public function testHasChecksContainersInOrder()
     {
         $service = 'test.service';
@@ -58,6 +72,19 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $instance->has($service);
     }
 
+    /**
+     * @covers ::has
+     */
+    public function testHasReturnsFalseWhenServiceDoesNotExist()
+    {
+        $instance = new Application();
+
+        $this->assertFalse($instance->has('does not exist'));
+    }
+
+    /**
+     * @covers ::has
+     */
     public function testHasRetainsWhichContainerItFoundTheServiceIn()
     {
         $service  = 'test.service';
@@ -92,6 +119,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::get
      * @expectedException Interop\Container\Exception\NotFoundException
      * @expectedExceptionMessage The service some.service.which.does.not.exist does not exist.
      */
@@ -103,6 +131,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::get
      * @depends testHasRetainsWhichContainerItFoundTheServiceIn
      */
     public function testGetReturnsServiceFromCorrectContainer()
@@ -145,6 +174,8 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::initialize
+     * @covers ::loadContainer
      * @depends testHasChecksContainersInOrder
      */
     public function testInitializeAddsRequiredServices()
@@ -159,9 +190,28 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
                 && $instance->has('system.router')
                 && $instance->has('system.handler.not_found')
                 && $instance->has('system.handler.not_allowed')
+                && $instance->has('system.middleware.router')
         );
     }
 
+    /**
+     * @covers ::initialize
+     * @covers ::loadMiddleware
+     */
+    public function testInitializeAddsRequiredMiddlewareFromContainer()
+    {
+        $instance = new Application();
+
+        $instance->initialize();
+
+        $this->assertSame([
+            $instance->get('system.middleware.router')
+        ], $instance->getMiddleware());
+    }
+
+    /**
+     * @covers ::initialize
+     */
     public function testIntializedStatuesIsFalseByDefault()
     {
         $instance = new Application();
@@ -169,6 +219,9 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(false, 'initialized', $instance);
     }
 
+    /**
+     * @covers ::initialize
+     */
     public function testInitializeUpdatesInitializedStatusToTrue()
     {
         $instance = new Application();
@@ -178,6 +231,9 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(true, 'initialized', $instance);
     }
 
+    /**
+     * @covers ::initialize
+     */
     public function testInitializeReturnsSelf()
     {
         $instance = new Application();

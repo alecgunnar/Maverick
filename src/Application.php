@@ -108,10 +108,10 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
 
         $builder->addDefinitions([
             'system.route_collection' => function() {
-                return new Collection();
+                return new RouteCollection();
             },
             'system.route_loader' => function($c) {
-                return new FileSystemLoader($c->get('system.route_collection'));
+                return new RouteLoader($c->get('system.route_collection'));
             },
             'system.router' => function($c) {
                 return new FastRouteRouter($c->get('system.route_collection'));

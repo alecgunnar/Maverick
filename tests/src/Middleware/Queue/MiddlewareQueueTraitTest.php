@@ -7,6 +7,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Response;
 use Maverick\Testing\Middleware\SampleMiddleware;
 
+/**
+ * @coversDefaultClass Maverick\Middleware\Queue\MiddlewareQueueTrait
+ */
 class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
 {
     protected function getInstance()
@@ -16,6 +19,9 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         };
     }
 
+    /**
+     * @covers ::withMiddleware
+     */
     public function testWithMiddlewareAddsMiddleware()
     {
         $first = function() { return new Response(); };
@@ -30,6 +36,9 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($expected, 'middleware', $instance);
     }
 
+    /**
+     * @covers ::withMiddleware
+     */
     public function testWithMiddlewareReturnsSelf()
     {
         $instance = $this->getInstance();
@@ -40,6 +49,7 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::getMiddleware
      * @depends testWithMiddlewareAddsMiddleware
      */
     public function testGetMiddlewareReturnsMiddleware()
@@ -56,6 +66,9 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $instance->getMiddleware());
     }
 
+    /**
+     * @covers ::run
+     */
     public function testRunCallsUpMiddlewareWithRequestResponseAndNext()
     {
         $request  = ServerRequest::fromGlobals();
@@ -77,6 +90,7 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::run
      * @expectedException Maverick\Middleware\Exception\InvalidMiddlewareException
      * @expectedExceptionMessage Middleware did not return an instance of Psr\Http\Message\ResponseInterface
      */
@@ -98,6 +112,9 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::run
+     */
     public function testSuccessiveCallsToRunRemovesMiddlewareInQueuedOrder()
     {
         $request  = ServerRequest::fromGlobals();
@@ -120,6 +137,9 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals([], 'middleware', $instance);
     }
 
+    /**
+     * @covers ::run
+     */
     public function testRunReturnsResponseFromMiddleware()
     {
         $given = $expected = new Response();
