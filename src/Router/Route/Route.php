@@ -7,8 +7,12 @@
 
 namespace Maverick\Router\Route;
 
+use Maverick\Middleware\Queue\MiddlewareQueueTrait;
+
 class Route implements RouteInterface
 {
+    use MiddlewareQueueTrait;
+
     /**
      * @var string[]
      */

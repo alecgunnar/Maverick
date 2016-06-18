@@ -3,7 +3,6 @@
 namespace Maverick;
 
 use PHPUnit_Framework_TestCase;
-
 use Maverick\Middleware\RouterMiddleware;
 
 /**
