@@ -10,19 +10,19 @@ namespace Maverick\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Maverick\Router\RouterInterface;
+use Maverick\Router\AbstractRouter;
 
 class RouterMiddleware implements MiddlewareInterface
 {
     /**
-     * @var RouterInterface
+     * @var AbstractRouter
      */
     protected $router;
 
     /**
-     * @param RouterInterface $router
+     * @param AbstractRouter $router
      */
-    public function __construct(RouterInterface $router)
+    public function __construct(AbstractRouter $router)
     {
         $this->router = $router;
     }
@@ -34,7 +34,7 @@ class RouterMiddleware implements MiddlewareInterface
     {
         $queue = $this->router->handleRequest($request);
 
-        $response = $queue->run($request, $response);
+        $response = $queue($request, $response);
 
         return $next($request, $response);
     }

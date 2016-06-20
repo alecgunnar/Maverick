@@ -5,17 +5,17 @@
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
 
-namespace Maverick\Router\Route;
+namespace Maverick\Router\Entity;
 
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 
-interface RouteInterface extends MiddlewareQueueInterface
+interface RouteEntityInterface extends MiddlewareQueueInterface
 {
     /**
      * @param string[] $methods
-     * @return RouteInterface
+     * @return RouteEntityInterface
      */
-    public function setMethods(array $methods): RouteInterface;
+    public function setMethods(array $methods): RouteEntityInterface;
 
     /**
      * @return string[] $methods
@@ -24,9 +24,9 @@ interface RouteInterface extends MiddlewareQueueInterface
 
     /**
      * @param string $path
-     * @return RouteInterface
+     * @return RouteEntityInterface
      */
-    public function setPath(string $path): RouteInterface;
+    public function setPath(string $path): RouteEntityInterface;
 
     /**
      * @return string
@@ -35,9 +35,9 @@ interface RouteInterface extends MiddlewareQueueInterface
 
     /**
      * @param callable $handler
-     * @return RouteInterface
+     * @return RouteEntityInterface
      */
-    public function setHandler(callable $handler): RouteInterface;
+    public function setHandler(callable $handler): RouteEntityInterface;
 
     /**
      * @return callable

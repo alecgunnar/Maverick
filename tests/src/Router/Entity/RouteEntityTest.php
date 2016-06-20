@@ -1,13 +1,16 @@
 <?php
 
-namespace Maverick\Router\Route;
+namespace Maverick\Router\Entity;
 
 use PHPUnit_Framework_TestCase;
+use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Response;
+use Maverick\Testing\Utility\GenericCallable;
 
 /**
- * @coversDefaultClass Maverick\Router\Route\Route
+ * @coversDefaultClass Maverick\Router\Entity\RouteEntity
  */
-class ApplicationTest extends PHPUnit_Framework_TestCase
+class RouteEntityTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__construct
@@ -18,7 +21,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $path = '/journey/to/mars';
         $handler = function() { return 'MARS'; };
 
-        $instance = new Route($methods, $path, $handler);
+        $instance = new RouteEntity($methods, $path, $handler);
 
         $this->assertAttributeEquals($methods, 'methods', $instance);
         $this->assertAttributeEquals($path, 'path', $instance);
@@ -32,7 +35,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = ['GET', 'POST'];
 
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $instance->setMethods($given);
 
@@ -44,7 +47,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetMethodsReturnsSelf()
     {
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $ret = $instance->setMethods([]);
 
@@ -59,7 +62,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = ['GET', 'POST'];
 
-        $instance = new Route($given);
+        $instance = new RouteEntity($given);
 
         $this->assertEquals($expected, $instance->getMethods());
     }
@@ -71,7 +74,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = '/journey/to/mars';
 
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $instance->setPath($given);
 
@@ -83,7 +86,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetPathReturnsSelf()
     {
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $ret = $instance->setPath('/');
 
@@ -98,7 +101,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = '/journey/to/mars';
 
-        $instance = new Route([], $given);
+        $instance = new RouteEntity([], $given);
 
         $this->assertEquals($expected, $instance->getPath());
     }
@@ -110,7 +113,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = function() { return 'MARS'; };
 
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $instance->setHandler($given);
 
@@ -122,7 +125,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetHandlerReturnsSelf()
     {
-        $instance = new Route();
+        $instance = new RouteEntity();
 
         $ret = $instance->setHandler(function() { });
 
@@ -137,8 +140,41 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = function() { return 'MARS'; };
 
-        $instance = new Route([], '/', $given);
+        $instance = new RouteEntity([], '/', $given);
 
         $this->assertEquals($expected, $instance->getHandler());
     }
+
+    /**
+     * @covers ::__invoke
+     */
+    public function testRouteHandlerIsCalledAsMiddleware()
+    {
+        $request  = ServerRequest::fromGlobals();
+        $response = new Response();
+
+        $handler = $this->getMockBuilder(GenericCallable::class)
+            ->getMock();
+
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with($request, $response)
+            ->willReturn($response);
+
+        $instance = new RouteEntity();
+
+        $instance->setHandler($handler);
+
+        $instance($request, $response);
+    }
+
+    /**
+     * @covers ::__invoke
+     */
+    public function testMiddlewareAreCalled()
+    {
+
+    }
+
+    
 }

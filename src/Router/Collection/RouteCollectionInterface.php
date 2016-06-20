@@ -7,28 +7,28 @@
 
 namespace Maverick\Router\Collection;
 
-use Maverick\Router\Route\RouteInterface;
+use Maverick\Router\Entity\RouteEntityInterface;
 
-interface RouteCollectionInterface
+interface RouteCollectionInterface extends \Iterator
 {
     /**
      * Add the given route (with the optional name) to the collection.
      *
      * If the name is provided, the association should be retained.
      *
-     * @param RouteInterface $route
+     * @param RouteEntityInterface $route
      * @param string $name = null
      * @return RouteCollectionInterface
      */
-    public function withRoute(RouteInterface $route, string $name = null): RouteCollectionInterface;
+    public function withRoute(RouteEntityInterface $route, string $name = null): RouteCollectionInterface;
 
     /**
      * Get a route by name
      *
      * @param string $name
-     * @return RouteInterface
+     * @return RouteEntityInterface
      */
-    public function getRoute(string $name): RouteInterface;
+    public function getRoute(string $name): RouteEntityInterface;
 
     /**
      * Take the routes in the given collection, then add them to the

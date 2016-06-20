@@ -13,7 +13,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 {
     protected function getMockRouter()
     {
-        return $this->getMockBuilder('Maverick\Router\RouterInterface')
+        return $this->getMockBuilder('Maverick\Router\AbstractRouter')
             ->getMock();
     }
 
@@ -67,7 +67,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $queue = $this->getMockMiddlewareQueue();
 
         $queue->expects($this->once())
-            ->method('run')
+            ->method('__invoke')
             ->with($request, $response);
 
         $router = $this->getMockRouter();
@@ -94,7 +94,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $queue = $this->getMockMiddlewareQueue();
 
         $queue->expects($this->once())
-            ->method('run')
+            ->method('__invoke')
             ->willReturn($response);
 
         $next = $this->getMockBuilder('Maverick\Testing\Utility\GenericCallable')
@@ -126,7 +126,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $queue = $this->getMockMiddlewareQueue();
 
         $queue->expects($this->once())
-            ->method('run')
+            ->method('__invoke')
             ->willReturn($response);
 
         $next = $this->getMockBuilder('Maverick\Testing\Utility\GenericCallable')

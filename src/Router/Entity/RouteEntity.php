@@ -5,13 +5,17 @@
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
 
-namespace Maverick\Router\Route;
+namespace Maverick\Router\Entity;
 
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class Route implements RouteInterface
+class RouteEntity implements RouteEntityInterface
 {
-    use MiddlewareQueueTrait;
+    use MiddlewareQueueTrait {
+        __invoke as runMiddlewares;
+    }
 
     /**
      * @var string[]
@@ -43,7 +47,7 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function setMethods(array $methods): RouteInterface
+    public function setMethods(array $methods): RouteEntityInterface
     {
         $this->methods = $methods;
         return $this;
@@ -60,7 +64,7 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function setPath(string $path): RouteInterface
+    public function setPath(string $path): RouteEntityInterface
     {
         $this->path = $path;
         return $this;
@@ -77,7 +81,7 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function setHandler(callable $handler): RouteInterface
+    public function setHandler(callable $handler): RouteEntityInterface
     {
         $this->handler = $handler;
         return $this;
@@ -89,5 +93,23 @@ class Route implements RouteInterface
     public function getHandler(): callable
     {
         return $this->handler;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
+    {
+        if (is_callable($this->handler)) {
+            $this->withMiddleware($this->handler);
+        }
+
+        $response = $this->runMiddlewares($request, $response);
+
+        if (is_callable($next)) {
+            $response = $next($request, $response);
+        }
+
+        return $response;
     }
 }
