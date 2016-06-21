@@ -36,28 +36,6 @@ class RouteLoader extends AbstractRouteLoader
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function get(string $path, callable $handler, string $name = null): RouteEntityInterface
-    {
-        return $this->withRoute([__METHOD__], $path, $handler, $name);
-    }
-
-    /**
-     * @param string $path
-     * @param callable $handler
-     * @param string $name = null
-     * @return RouteEntityInterface
-     */
-    public function put(string $path, callable $handler, string $name = null): RouteEntityInterface
-    {
-        return $this->withRoute([__METHOD__], $path, $handler, $name);
-    }
-
-    /**
-     * @param string $path
-     * @param callable $handler
-     * @param string $name = null
-     * @return RouteEntityInterface
-     */
     public function post(string $path, callable $handler, string $name = null): RouteEntityInterface
     {
         return $this->withRoute([__METHOD__], $path, $handler, $name);

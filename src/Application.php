@@ -10,6 +10,7 @@ namespace Maverick;
 
 use Interop\Container\ContainerInterface;
 use DI\ContainerBuilder;
+use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 use Maverick\Container\Exception\NotFoundException;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
@@ -111,7 +112,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
                 return new FastRouteRouteCollection();
             },
             'system.route_loader' => function($c) {
-                return new RouteLoader($c->get('system.route_collection'));
+                return new FileSystemLoader($c->get('system.route_collection'), $c->get('system.config.routes_file'));
             },
             'system.router' => function($c) {
                 $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));
@@ -128,6 +129,9 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
             'system.fast_route.options' => function() {
                 return [];
             },
+            'system.config.routes_file' => function() {
+                return dirname(__DIR__) . '/app/config/routes.php';
+            },
             'system.handler.not_found' => function() {
                 return new NotFoundHandler();
             },
@@ -136,6 +140,9 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
             },
             'system.middleware.router' => function($c) {
                 return new RouterMiddleware($c->get('system.router'));
+            },
+            'system.middleware.response_sender' => function($c) {
+                return new ResponseSenderMiddleware();
             }
         ]);
 
@@ -147,6 +154,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
      */
     protected function loadMiddleware()
     {
-        $this->withMiddleware($this->get('system.middleware.router'));
+        $this->withMiddleware($this->get('system.middleware.router'))
+            ->withMiddleware($this->get('system.middleware.response_sender'));
     }
 }

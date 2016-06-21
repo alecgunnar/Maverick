@@ -187,11 +187,13 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
             $instance->has('system.route_collection')
                 && $instance->has('system.route_loader')
                 && $instance->has('system.router')
+                && $instance->has('system.fast_route.dispatcher')
+                && $instance->has('system.fast_route.options')
                 && $instance->has('system.handler.not_found')
                 && $instance->has('system.handler.not_allowed')
                 && $instance->has('system.middleware.router')
-                && $instance->has('system.fast_route.dispatcher')
-                && $instance->has('system.fast_route.options')
+                && $instance->has('system.middleware.response_sender')
+                && $instance->has('system.config.routes_file')
         );
     }
 
@@ -206,7 +208,8 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $instance->initialize();
 
         $this->assertSame([
-            $instance->get('system.middleware.router')
+            $instance->get('system.middleware.router'),
+            $instance->get('system.middleware.response_sender')
         ], $instance->getMiddleware());
     }
 
