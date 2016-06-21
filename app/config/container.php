@@ -4,6 +4,7 @@ use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\FastRouteRouteCollection;
 use Maverick\Router\Loader\FileSystemRouteLoader;
+use Maverick\Router\Loader\RouteLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
 use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
@@ -18,7 +19,10 @@ return [
         return $collection;
     },
     'system.route_loader' => function($c) {
-        return new FileSystemRouteLoader($c->get('system.config.routes_file'), $c);
+        return new FileSystemRouteLoader(
+            $c->get('system.config.routes_file'),
+            new RouteLoader($c)
+        );
     },
     'system.router' => function($c) {
         $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));

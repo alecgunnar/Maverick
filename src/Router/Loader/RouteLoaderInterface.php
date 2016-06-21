@@ -15,4 +15,10 @@ interface RouteLoaderInterface
      * @param RouteCollectionInterface $collection
      */
     public function loadRoutes(RouteCollectionInterface $collection);
+
+    /**
+     * @param mixed[] $routes
+     * @return RouteLoaderInterface
+     */
+    public function withRoutes(array $routes): RouteLoaderInterface;
 }
