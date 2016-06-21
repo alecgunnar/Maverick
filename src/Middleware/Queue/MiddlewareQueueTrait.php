@@ -43,11 +43,11 @@ trait MiddlewareQueueTrait
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         if ($this->middleware) {
             $handler  = array_shift($this->middleware);
-            $response = $handler($request, $response, $this);
+            $response = $handler($request, $response, [$this, 'run']);
 
             if (!($response instanceof ResponseInterface)) {
                 throw new InvalidMiddlewareException('Middleware did not return an instance of ' . ResponseInterface::class . '.');

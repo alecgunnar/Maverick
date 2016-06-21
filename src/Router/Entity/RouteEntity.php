@@ -13,9 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class RouteEntity implements RouteEntityInterface
 {
-    use MiddlewareQueueTrait {
-        __invoke as runMiddlewares;
-    }
+    use MiddlewareQueueTrait;
 
     /**
      * @var string[]
@@ -47,7 +45,7 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function setMethods(array $methods): RouteEntityInterface
+    public function withMethods(array $methods): RouteEntityInterface
     {
         $this->methods = $methods;
         return $this;
@@ -98,18 +96,12 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         if (is_callable($this->handler)) {
             $this->withMiddleware($this->handler);
         }
 
-        $response = $this->runMiddlewares($request, $response);
-
-        if (is_callable($next)) {
-            $response = $next($request, $response);
-        }
-
-        return $response;
+        return $next($request, $this->run($request, $response));
     }
 }

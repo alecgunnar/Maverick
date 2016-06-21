@@ -32,9 +32,13 @@ class RouterMiddleware implements MiddlewareInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        $queue = $this->router->handleRequest($request);
+        $handler = $this->router->handleRequest($request);
 
-        $response = $queue($request, $response);
+        foreach ($this->router->getParams() as $key => $value) {
+            $request = $request->withAttribute($key, $value);
+        }
+
+        $response = $handler($request, $response, $next);
 
         return $next($request, $response);
     }

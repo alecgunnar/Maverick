@@ -12,11 +12,35 @@ use Maverick\Router\Entity\RouteEntityInterface;
 class RouteCollection implements RouteCollectionInterface
 {
     /**
+     * @var RouteEntityInterface[]
+     */
+    protected $routes = [];
+
+    /**
+     * @var int
+     */
+    protected $position = 0;
+
+    /**
      * @inheritDoc
      */
     public function withRoute(RouteEntityInterface $route, string $name = null): RouteCollectionInterface
     {
+        if ($name) {
+            $this->routes[$name] = $route;
+        } else {
+            $this->routes[] = $route;
+        }
 
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 
     /**
@@ -24,38 +48,13 @@ class RouteCollection implements RouteCollectionInterface
      */
     public function getRoute(string $name): RouteEntityInterface
     {
-
+        return isset($this->routes[$name]) ? $this->routes[$name] : null;
     }
 
     /**
      * @inheritDoc
      */
     public function mergeCollection(RouteCollectionInterface $collection): RouteCollectionInterface
-    {
-
-    }
-
-    public function current()
-    {
-
-    }
-
-    public function key()
-    {
-
-    }
-
-    public function next()
-    {
-
-    }
-
-    public function rewind()
-    {
-
-    }
-
-    public function valid()
     {
 
     }

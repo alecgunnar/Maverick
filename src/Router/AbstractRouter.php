@@ -4,6 +4,7 @@
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
+declare(strict_types=1);
 
 namespace Maverick\Router;
 
@@ -22,6 +23,11 @@ abstract class AbstractRouter
     protected $notAllowedHandler;
 
     /**
+     * @var mixed[]
+     */
+    protected $params = [];
+
+    /**
      * @param callable $handler
      */
     public function setNotFoundHandler(callable $handler): AbstractRouter
@@ -37,6 +43,14 @@ abstract class AbstractRouter
     {
         $this->notAllowedHandler = $handler;
         return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getParams(): array
+    {
+        return (array) $this->params;
     }
 
     /**

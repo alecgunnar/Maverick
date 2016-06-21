@@ -67,7 +67,7 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::__invoke
+     * @covers ::run
      */
     public function testInvokeCallsUpMiddlewareWithRequestResponseAndNext()
     {
@@ -81,16 +81,18 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
 
         $middleware->expects($this->once())
             ->method('__invoke')
-            ->with($request, $response, $instance)
+            ->with($request, $response, [$instance, 'run'])
             ->willReturn($response);
 
         $instance->withMiddleware($middleware);
 
-        $instance($request, $response);
+        $instance->run($request, $response, function() {
+            return new Response();
+        });
     }
 
     /**
-     * @covers ::__invoke
+     * @covers ::run
      * @expectedException Maverick\Middleware\Exception\InvalidMiddlewareException
      * @expectedExceptionMessage Middleware did not return an instance of Psr\Http\Message\ResponseInterface
      */
@@ -106,14 +108,11 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
 
         $instance->withMiddleware($middleware);
 
-        $instance(
-            ServerRequest::fromGlobals(),
-            new Response()
-        );
+        $instance->run(ServerRequest::fromGlobals(), new Response());
     }
 
     /**
-     * @covers ::__invoke
+     * @covers ::run
      */
     public function testSuccessiveCallsToinvokeRemovesMiddlewareInQueuedOrder()
     {
@@ -128,17 +127,17 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
         $instance->withMiddleware($first)
             ->withMiddleware($second);
 
-        $instance($request, $response);
+        $instance->run($request, $response);
 
         $this->assertAttributeEquals([$second], 'middleware', $instance);
 
-        $instance($request, $response);
+        $instance->run($request, $response);
 
         $this->assertAttributeEquals([], 'middleware', $instance);
     }
 
     /**
-     * @covers ::__invoke
+     * @covers ::run
      */
     public function testInvokeReturnsResponseFromMiddleware()
     {
@@ -150,7 +149,7 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
             return $given;
         });
 
-        $this->assertSame($expected, $instance(
+        $this->assertSame($expected, $instance->run(
             ServerRequest::fromGlobals(),
             new Response()
         ));

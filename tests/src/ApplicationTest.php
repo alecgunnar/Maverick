@@ -190,6 +190,8 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
                 && $instance->has('system.handler.not_found')
                 && $instance->has('system.handler.not_allowed')
                 && $instance->has('system.middleware.router')
+                && $instance->has('system.fast_route.dispatcher')
+                && $instance->has('system.fast_route.options')
         );
     }
 

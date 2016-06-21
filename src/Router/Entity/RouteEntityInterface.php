@@ -7,15 +7,16 @@
 
 namespace Maverick\Router\Entity;
 
+use Maverick\Middleware\MiddlewareInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 
-interface RouteEntityInterface extends MiddlewareQueueInterface
+interface RouteEntityInterface extends MiddlewareInterface, MiddlewareQueueInterface
 {
     /**
      * @param string[] $methods
      * @return RouteEntityInterface
      */
-    public function setMethods(array $methods): RouteEntityInterface;
+    public function withMethods(array $methods): RouteEntityInterface;
 
     /**
      * @return string[] $methods

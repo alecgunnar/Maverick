@@ -15,7 +15,7 @@ use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
-use Maverick\Router\Collection\RouteCollection;
+use Maverick\Router\Collection\FastRouteCollection;
 use Maverick\Router\Loader\FileSystemLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
@@ -108,13 +108,25 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
 
         $builder->addDefinitions([
             'system.route_collection' => function() {
-                return new RouteCollection();
+                return new FastRouteCollection();
             },
             'system.route_loader' => function($c) {
                 return new RouteLoader($c->get('system.route_collection'));
             },
             'system.router' => function($c) {
-                return new FastRouteRouter($c->get('system.route_collection'));
+                $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));
+
+                return $instance->setNotFoundHandler($c->get('system.handler.not_found'))
+                    ->setNotAllowedHandler($c->get('system.handler.not_allowed'));
+            },
+            'system.fast_route.dispatcher' => function($c) {
+                return \FastRoute\simpleDispatcher(
+                    $c->get('system.route_collection'),
+                    $c->get('system.fast_route.options')
+                );
+            },
+            'system.fast_route.options' => function() {
+                return [];
             },
             'system.handler.not_found' => function() {
                 return new NotFoundHandler();

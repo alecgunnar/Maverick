@@ -30,5 +30,5 @@ interface MiddlewareQueueInterface
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 }

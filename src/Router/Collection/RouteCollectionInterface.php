@@ -9,7 +9,7 @@ namespace Maverick\Router\Collection;
 
 use Maverick\Router\Entity\RouteEntityInterface;
 
-interface RouteCollectionInterface extends \Iterator
+interface RouteCollectionInterface
 {
     /**
      * Add the given route (with the optional name) to the collection.
@@ -21,6 +21,13 @@ interface RouteCollectionInterface extends \Iterator
      * @return RouteCollectionInterface
      */
     public function withRoute(RouteEntityInterface $route, string $name = null): RouteCollectionInterface;
+
+    /**
+     * Return the list of routes
+     *
+     * @return RouteEntityInterface[]
+     */
+    public function getRoutes(): array;
 
     /**
      * Get a route by name

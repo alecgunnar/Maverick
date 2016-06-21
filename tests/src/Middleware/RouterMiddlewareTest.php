@@ -17,9 +17,9 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    protected function getMockMiddlewareQueue()
+    protected function getMockRouteEntity()
     {
-        return $this->getMockBuilder('Maverick\Middleware\Queue\MiddlewareQueueInterface')
+        return $this->getMockBuilder('Maverick\Router\Entity\RouteEntityInterface')
             ->getMock();
     }
 
@@ -47,7 +47,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router->expects($this->once())
             ->method('handleRequest')
             ->with($expected)
-            ->willReturn($this->getMockMiddlewareQueue());
+            ->willReturn($this->getMockRouteEntity());
 
         $instance = new RouterMiddleware($router);
 
@@ -59,14 +59,14 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__invoke
      */
-    public function testInvokeRunsRouterHandlerQueueWithRequestAndResponse()
+    public function testInvokeRunsRouterHandlerrouteWithRequestAndResponse()
     {
         $request  = ServerRequest::fromGlobals();
         $response = new Response();
 
-        $queue = $this->getMockMiddlewareQueue();
+        $route = $this->getMockRouteEntity();
 
-        $queue->expects($this->once())
+        $route->expects($this->once())
             ->method('__invoke')
             ->with($request, $response);
 
@@ -74,7 +74,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $router->expects($this->once())
             ->method('handleRequest')
-            ->willReturn($queue);
+            ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
 
@@ -86,14 +86,14 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__invoke
      */
-    public function testInvokeCallsNextWithGivenRequestAndResponseReturnedFromQueue()
+    public function testInvokeCallsNextWithGivenRequestAndResponseReturnedFromroute()
     {
         $request  = ServerRequest::fromGlobals();
         $response = new Response();
 
-        $queue = $this->getMockMiddlewareQueue();
+        $route = $this->getMockRouteEntity();
 
-        $queue->expects($this->once())
+        $route->expects($this->once())
             ->method('__invoke')
             ->willReturn($response);
 
@@ -109,7 +109,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $router->expects($this->once())
             ->method('handleRequest')
-            ->willReturn($queue);
+            ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
 
@@ -123,9 +123,9 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     {
         $response = new Response();
 
-        $queue = $this->getMockMiddlewareQueue();
+        $route = $this->getMockRouteEntity();
 
-        $queue->expects($this->once())
+        $route->expects($this->once())
             ->method('__invoke')
             ->willReturn($response);
 
@@ -140,12 +140,59 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $router->expects($this->once())
             ->method('handleRequest')
-            ->willReturn($queue);
+            ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
 
         $ret = $instance(ServerRequest::fromGlobals(), new Response(), $next);
 
         $this->assertSame($response, $ret);
+    }
+
+    /**
+     * @covers ::__invoke
+     */
+    public function testInvokeAddsAttributesToRequest()
+    {
+        $attributes = [
+            'a' => 'b',
+            'c' => 'd',
+            'e' => 'f'
+        ];
+
+        $request  = ServerRequest::fromGlobals();
+        $response = new Response();
+
+        foreach ($attributes as $k => $v) {
+            $request = $request->withAttribute($k, $v);
+        }
+
+        $route = $this->getMockRouteEntity();
+
+        $route->expects($this->once())
+            ->method('__invoke')
+            ->with($request, $this->anything())
+            ->willReturn($response);
+
+        $next = $this->getMockBuilder('Maverick\Testing\Utility\GenericCallable')
+            ->getMock();
+
+        $next->expects($this->once())
+            ->method('__invoke')
+            ->willReturn($response);
+
+        $router = $this->getMockRouter();
+
+        $router->expects($this->once())
+            ->method('handleRequest')
+            ->willReturn($route);
+
+        $router->expects($this->once())
+            ->method('getParams')
+            ->willReturn($attributes);
+
+        $instance = new RouterMiddleware($router);
+
+        $ret = $instance(ServerRequest::fromGlobals(), new Response(), $next);
     }
 }

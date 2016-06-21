@@ -29,27 +29,27 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::setMethods
+     * @covers ::withMethods
      */
-    public function testSetMethodsSetsMethods()
+    public function testWithMethodsSetsMethods()
     {
         $given = $expected = ['GET', 'POST'];
 
         $instance = new RouteEntity();
 
-        $instance->setMethods($given);
+        $instance->withMethods($given);
 
         $this->assertAttributeEquals($expected, 'methods', $instance);
     }
 
     /**
-     * @covers ::setMethods
+     * @covers ::withMethods
      */
-    public function testSetMethodsReturnsSelf()
+    public function testWithMethodsReturnsSelf()
     {
         $instance = new RouteEntity();
 
-        $ret = $instance->setMethods([]);
+        $ret = $instance->withMethods([]);
 
         $this->assertSame($instance, $ret);
     }
@@ -165,7 +165,9 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
 
         $instance->setHandler($handler);
 
-        $instance($request, $response);
+        $instance($request, $response, function() {
+            return new Response();
+        });
     }
 
     /**
