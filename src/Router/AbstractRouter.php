@@ -28,6 +28,11 @@ abstract class AbstractRouter
     protected $params = [];
 
     /**
+     * @var string
+     */
+    const ALLOWED_METHODS_ATTR = 'allowedMethods';
+
+    /**
      * @param callable $handler
      */
     public function setNotFoundHandler(callable $handler): AbstractRouter

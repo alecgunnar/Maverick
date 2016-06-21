@@ -23,7 +23,7 @@ class FastRouteRouter extends AbstractRouter
     /**
      * @param Dispatcher $dispatcher
      */
-    public function __construct(Dispatcher $dispatcher = null)
+    public function __construct(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
     }
@@ -44,6 +44,7 @@ class FastRouteRouter extends AbstractRouter
                 return $this->notFoundHandler;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
+                $this->params[AbstractRouter::ALLOWED_METHODS_ATTR] = $results[1];
                 return $this->notAllowedHandler;
 
             case Dispatcher::FOUND:

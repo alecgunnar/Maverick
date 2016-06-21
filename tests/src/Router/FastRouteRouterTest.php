@@ -54,7 +54,7 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::handleRequest
      */
-    public function testHandleRequestReturnsNotFoundHandleWhenNoRouteFound()
+    public function testHandleRequestReturnsNotFoundHandlerWhenNoRouteFound()
     {
         $method = 'GET';
         $path   = '/hello/world';
@@ -96,7 +96,7 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::handleRequest
      */
-    public function testHandleRequestReturnsNotAllowedHandleWhenMethodNotAllowed()
+    public function testHandleRequestReturnsNotAllowedHandlerWhenMethodNotAllowed()
     {
         $method = 'GET';
         $path   = '/hello/world';
@@ -126,13 +126,58 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
         $dispatcher->expects($this->once())
             ->method('dispatch')
             ->with($method, $path)
-            ->willReturn([Dispatcher::METHOD_NOT_ALLOWED]);
+            ->willReturn([Dispatcher::METHOD_NOT_ALLOWED, []]);
 
         $instance = new FastRouteRouter($dispatcher);
 
         $instance->setNotAllowedHandler($given);
         
         $this->assertEquals($expected, $instance->handleRequest($request));
+    }
+
+    /**
+     * @covers ::handleRequest
+     */
+    public function testHandleRequestSetsAllowedMethodsWhenMethodNotAllowed()
+    {
+        $method = 'GET';
+        $path   = '/hello/world';
+
+        $given    = ['POST', 'PUT', 'PATCH'];
+        $expected = [
+            AbstractRouter::ALLOWED_METHODS_ATTR => $given
+        ];
+
+        $uri = $this->getMockUri();
+
+        $uri->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+
+        $request = $this->getMockRequest();
+
+        $request->expects($this->once())
+            ->method('getMethod')
+            ->willReturn($method);
+
+        $request->expects($this->once())
+            ->method('getUri')
+            ->willReturn($uri);
+
+        $dispatcher = $this->getMockDispatcher();
+
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($method, $path)
+            ->willReturn([Dispatcher::METHOD_NOT_ALLOWED, $given]);
+
+        $instance = new FastRouteRouter($dispatcher);
+
+        $instance->setNotAllowedHandler(function() { });
+
+        $instance->handleRequest($request);
+
+        $this->assertAttributeEquals($expected, 'params', $instance);
     }
 
     /**
@@ -215,6 +260,6 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
         
         $instance->handleRequest($request);
 
-        $this->assertEquals($expected, $instance->getParams());
+        $this->assertAttributeEquals($expected, 'params', $instance);
     }
 }
