@@ -11,14 +11,14 @@ use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 use Maverick\Router\Entity\RouteEntity;
 
-class RouteLoader extends AbstractRouteLoader
+class RouteLoader implements RouteLoaderInterface
 {
     /**
      * @inheritDocs
      */
-    public function loadRoutes(): RouteCollectionInterface
+    public function loadRoutes(RouteCollectionInterface $collection):
     {
-        return $this->collection;
+        
     }
 
     /**
