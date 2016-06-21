@@ -10,7 +10,7 @@ namespace Maverick\Router\Loader;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntity;
 
-class FileSystemLoader extends AbstractRouteLoader
+class FileSystemRouteLoader extends AbstractRouteLoader
 {
     /**
      * @param string $location
@@ -26,12 +26,12 @@ class FileSystemLoader extends AbstractRouteLoader
         $this->location   = $location;
     }
 
-    public function loadRoutes()
+    public function loadRoutes(): RouteCollectionInterface
     {
-        $routes = include($location);
+        $routes = include($this->location);
 
-        foreach ($routes as $name => $route) {var_dump($name);
-            $this->collection->addRoute(
+        foreach ($routes as $name => $route) {
+            $this->collection->withRoute(
                 new RouteEntity(
                     $route['methods'] ?? ['GET'],
                     $route['path'],
@@ -39,5 +39,7 @@ class FileSystemLoader extends AbstractRouteLoader
                 ), $name
             );
         }
+
+        return $this->collection;
     }
 }

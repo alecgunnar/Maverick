@@ -17,7 +17,7 @@ use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Loader\RouteLoader;
+use Maverick\Router\Loader\FileSystemRouteLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
 
@@ -112,7 +112,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
                 return new FastRouteRouteCollection();
             },
             'system.route_loader' => function($c) {
-                return new FileSystemLoader($c->get('system.route_collection'), $c->get('system.config.routes_file'));
+                return new FileSystemRouteLoader($c->get('system.route_collection'), $c->get('system.config.routes_file'));
             },
             'system.router' => function($c) {
                 $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));
@@ -122,7 +122,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
             },
             'system.fast_route.dispatcher' => function($c) {
                 return \FastRoute\simpleDispatcher(
-                    $c->get('system.route_collection'),
+                    $c->get('system.route_loader')->loadRoutes(),
                     $c->get('system.fast_route.options')
                 );
             },

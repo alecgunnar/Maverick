@@ -24,5 +24,5 @@ abstract class AbstractRouteLoader
         $this->collection = $collection;
     }
 
-    abstract public function loadRoutes();
+    abstract public function loadRoutes(): RouteCollectionInterface;
 }

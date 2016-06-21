@@ -7,6 +7,7 @@
 
 namespace Maverick\Router\Loader;
 
+use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 use Maverick\Router\Entity\RouteEntity;
 
@@ -15,8 +16,9 @@ class RouteLoader extends AbstractRouteLoader
     /**
      * @inheritDocs
      */
-    public function loadRoutes()
+    public function loadRoutes(): RouteCollectionInterface
     {
+        return $this->collection;
     }
 
     /**

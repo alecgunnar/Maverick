@@ -4,7 +4,7 @@ return [
     'index' => [
         'path' => '/hello/{name}',
         'handler' => function($req, $res) {
-            $res->getBody()->write('Hello, ' . $reg->getAttribute('name') . '!');
+            $res->getBody()->write('Hello, ' . $req->getAttribute('name') . '!');
             return $res;
         }
     ]
