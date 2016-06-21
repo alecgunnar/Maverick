@@ -10,6 +10,7 @@ namespace Maverick\Handler;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Maverick\Router\AbstractRouter;
 
 class NotAllowedHandler
 {
@@ -21,7 +22,11 @@ class NotAllowedHandler
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         // This needs to respond with the allowed methods too...
-        $response = $response->withStatus(405);
+        $response = $response->withStatus(405)
+            ->withHeader('Allow', implode(
+                ',',
+                $request->getAttribute(AbstractRouter::ALLOWED_METHODS_ATTR, ['GET'])
+            ));
 
         $body = <<<HERE
 <!DOCTYPE html>
