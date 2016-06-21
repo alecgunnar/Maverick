@@ -10,16 +10,9 @@ namespace Maverick;
 
 use Interop\Container\ContainerInterface;
 use DI\ContainerBuilder;
-use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 use Maverick\Container\Exception\NotFoundException;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
-use Maverick\Middleware\RouterMiddleware;
-use Maverick\Router\FastRouteRouter;
-use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Loader\FileSystemRouteLoader;
-use Maverick\Handler\NotFoundHandler;
-use Maverick\Handler\NotAllowedHandler;
 
 class Application implements ContainerInterface, MiddlewareQueueInterface
 {
@@ -107,49 +100,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
         $builder->useAnnotations(false);
         $builder->wrapContainer($this);
 
-        $builder->addDefinitions([
-            'system.route_collection' => function($c) {
-                $collection = new FastRouteRouteCollection();
-
-                $c->get('system.route_loader')
-                    ->loadRoutes($collection);
-
-                return $collection;
-            },
-            'system.route_loader' => function($c) {
-                return new FileSystemRouteLoader($c->get('system.config.routes_file'));
-            },
-            'system.router' => function($c) {
-                $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));
-
-                return $instance->setNotFoundHandler($c->get('system.handler.not_found'))
-                    ->setNotAllowedHandler($c->get('system.handler.not_allowed'));
-            },
-            'system.fast_route.dispatcher' => function($c) {
-                return \FastRoute\simpleDispatcher(
-                    $c->get('system.route_collection'),
-                    $c->get('system.fast_route.options')
-                );
-            },
-            'system.fast_route.options' => function() {
-                return [];
-            },
-            'system.config.routes_file' => function() {
-                return dirname(__DIR__) . '/app/config/routes.php';
-            },
-            'system.handler.not_found' => function() {
-                return new NotFoundHandler();
-            },
-            'system.handler.not_allowed' => function() {
-                return new NotAllowedHandler();
-            },
-            'system.middleware.router' => function($c) {
-                return new RouterMiddleware($c->get('system.router'));
-            },
-            'system.middleware.response_sender' => function($c) {
-                return new ResponseSenderMiddleware();
-            }
-        ]);
+        $builder->addDefinitions(dirname(__DIR__) . '/app/config/container.php');
 
         $this->withContainer($builder->build());
     }
