@@ -96,12 +96,12 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         if (is_callable($this->handler)) {
             $this->withMiddleware($this->handler);
         }
 
-        return $next($request, $this->run($request, $response));
+        return $this->run($request, $response);
     }
 }

@@ -7,10 +7,11 @@
 
 namespace Maverick\Router\Entity;
 
-use Maverick\Middleware\MiddlewareInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 
-interface RouteEntityInterface extends MiddlewareInterface, MiddlewareQueueInterface
+interface RouteEntityInterface extends MiddlewareQueueInterface
 {
     /**
      * @param string[] $methods
@@ -44,4 +45,11 @@ interface RouteEntityInterface extends MiddlewareInterface, MiddlewareQueueInter
      * @return callable
      */
     public function getHandler(): callable;
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 }
