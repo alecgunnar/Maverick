@@ -7,6 +7,7 @@
 
 namespace Maverick\Router\Loader;
 
+use Interop\Container\ContainerInterface;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntity;
 
@@ -18,11 +19,18 @@ class FileSystemRouteLoader implements RouteLoaderInterface
     protected $location;
 
     /**
-     * @param string $location
+     * @var ContainerInterface
      */
-    public function __construct(string $location)
+    protected $container;
+
+    /**
+     * @param string $location
+     * @param ContainerInterface $container
+     */
+    public function __construct(string $location, ContainerInterface $container)
     {
-        $this->location = $location;
+        $this->location  = $location;
+        $this->container = $container;
     }
 
     /**
@@ -37,7 +45,7 @@ class FileSystemRouteLoader implements RouteLoaderInterface
                 new RouteEntity(
                     isset($route['methods']) ? (array) $route['methods'] : ['GET'],
                     $route['path'],
-                    $route['handler']
+                    is_callable($route['handler']) ? $route['handler'] : $this->container->get((string) $route['handler'])
                 ), $name
             );
         }
