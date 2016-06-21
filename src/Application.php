@@ -16,7 +16,7 @@ use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Loader\FileSystemLoader;
+use Maverick\Router\Loader\RouteLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
 
