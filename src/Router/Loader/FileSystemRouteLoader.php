@@ -22,10 +22,14 @@ class FileSystemRouteLoader extends AbstractRouteLoader
      */
     public function __construct(RouteCollectionInterface $collection, string $location)
     {
-        $this->collection = $collection;
-        $this->location   = $location;
+        parent::__construct($collection);
+
+        $this->location = $location;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function loadRoutes(): RouteCollectionInterface
     {
         $routes = include($this->location);
@@ -33,7 +37,7 @@ class FileSystemRouteLoader extends AbstractRouteLoader
         foreach ($routes as $name => $route) {
             $this->collection->withRoute(
                 new RouteEntity(
-                    $route['methods'] ?? ['GET'],
+                    isset($route['methods']) ? (array) $route['methods'] : ['GET'],
                     $route['path'],
                     $route['handler']
                 ), $name
