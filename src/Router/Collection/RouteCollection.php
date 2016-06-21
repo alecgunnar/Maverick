@@ -48,7 +48,11 @@ class RouteCollection implements RouteCollectionInterface
      */
     public function getRoute(string $name)
     {
-        return isset($this->routes[$name]) ? $this->routes[$name] : null;
+        if (isset($this->routes[$name])) {
+            return $this->routes[$name];
+        }
+
+        return null;
     }
 
     /**
