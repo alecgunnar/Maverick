@@ -33,9 +33,9 @@ interface RouteCollectionInterface
      * Get a route by name
      *
      * @param string $name
-     * @return RouteEntityInterface
+     * @return RouteEntityInterface|null
      */
-    public function getRoute(string $name): RouteEntityInterface;
+    public function getRoute(string $name);
 
     /**
      * Take the routes in the given collection, then add them to the

@@ -15,7 +15,7 @@ use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
-use Maverick\Router\Collection\FastRouteCollection;
+use Maverick\Router\Collection\FastRouteRouteCollection;
 use Maverick\Router\Loader\FileSystemLoader;
 use Maverick\Handler\NotFoundHandler;
 use Maverick\Handler\NotAllowedHandler;
@@ -108,7 +108,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
 
         $builder->addDefinitions([
             'system.route_collection' => function() {
-                return new FastRouteCollection();
+                return new FastRouteRouteCollection();
             },
             'system.route_loader' => function($c) {
                 return new RouteLoader($c->get('system.route_collection'));

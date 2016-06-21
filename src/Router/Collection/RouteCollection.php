@@ -46,7 +46,7 @@ class RouteCollection implements RouteCollectionInterface
     /**
      * @inheritDoc
      */
-    public function getRoute(string $name): RouteEntityInterface
+    public function getRoute(string $name)
     {
         return isset($this->routes[$name]) ? $this->routes[$name] : null;
     }
@@ -56,6 +56,8 @@ class RouteCollection implements RouteCollectionInterface
      */
     public function mergeCollection(RouteCollectionInterface $collection): RouteCollectionInterface
     {
+        $this->routes = array_merge($this->routes, $collection->getRoutes());
 
+        return $this;
     }
 }

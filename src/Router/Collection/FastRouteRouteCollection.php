@@ -9,7 +9,7 @@ namespace Maverick\Router\Collection;
 
 use FastRoute\RouteCollector;
 
-class FastRouteCollection extends RouteCollection
+class FastRouteRouteCollection extends RouteCollection
 {
     /**
      * @param RouteCollector $collector
