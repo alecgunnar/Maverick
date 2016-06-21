@@ -1,6 +1,6 @@
 <?php
 /**
- * Maverick Container
+ * Maverick Framework
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */

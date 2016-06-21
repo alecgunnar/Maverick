@@ -1,18 +1,17 @@
 <?php
 /**
- * Maverick Container
+ * Maverick Framework
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
+declare(strict_types=1);
 
 namespace Maverick\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
 use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std as RouteParser;
 use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
-use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 
 class FastRouteRouter extends AbstractRouter
 {
