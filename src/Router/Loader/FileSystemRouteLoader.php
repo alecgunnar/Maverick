@@ -14,7 +14,7 @@ use Maverick\Router\Entity\RouteEntity;
 class FileSystemRouteLoader implements RouteLoaderInterface
 {
     /**
-     * @param string $location
+     * @var string
      */
     protected $location;
 
