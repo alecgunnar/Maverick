@@ -40,18 +40,16 @@ class FastRouteRouter extends AbstractRouter
         );
 
         switch ($results[0]) {
-            case Dispatcher::NOT_FOUND:
-                return self::ROUTE_NOT_FOUND;
+            case Dispatcher::FOUND:
+                $this->matched = $results[1];
+                $this->params  = $results[2];
+                return self::ROUTE_FOUND;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $this->methods = $results[1];
                 return self::ROUTE_NOT_ALLOWED;
-
-            case Dispatcher::FOUND:
-                $this->matched = $results[1];
-                $this->params  = $results[2];
         }
 
-        return self::ROUTE_FOUND;
+        return self::ROUTE_NOT_FOUND;
     }
 }
