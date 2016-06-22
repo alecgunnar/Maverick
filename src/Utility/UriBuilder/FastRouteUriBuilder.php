@@ -83,7 +83,7 @@ class FastRouteUriBuilder implements UriBuilderInterface
         $optional = $parts[count($parts) - 1];
         $built    = $this->processParam($optional, $name, $params, false);
 
-        if ($len = strlen($built)) {
+        if (strlen($built)) {
             $built = '/' . $built;
         }
 
