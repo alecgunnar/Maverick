@@ -5,4 +5,8 @@ php:
 
 install: composer install
 
-script: phpunit
+script: vendor/bin/phpunit
+
+addons:
+    code_climate:
+        repo_token: d7676a983affa275cca3373000f5bdc21c4eb4063542329eaa85053ae23e3f22
