@@ -10,6 +10,9 @@ use Maverick\Controller\NotAllowedController;
 use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 
 return [
+    /*
+     * System dependencies
+     */
     'system.route_collection' => function($c) {
         $collection = new FastRouteRouteCollection();
 
@@ -25,16 +28,7 @@ return [
         );
     },
     'system.router' => function($c) {
-        return new FastRouteRouter($c->get('system.fast_route.dispatcher'));
-    },
-    'system.fast_route.dispatcher' => function($c) {
-        return \FastRoute\simpleDispatcher(
-            $c->get('system.route_collection'),
-            $c->get('system.fast_route.options')
-        );
-    },
-    'system.fast_route.options' => function() {
-        return [];
+        return new FastRouteRouter($c->get('fast_route.dispatcher'));
     },
     'system.config.routes_file' => function() {
         return __DIR__ . '/router.php';
@@ -54,5 +48,19 @@ return [
     },
     'system.middleware.response_sender' => function($c) {
         return new ResponseSenderMiddleware();
-    }
+    },
+
+
+    /*
+     * Fast Route dependencies
+     */
+    'fast_route.dispatcher' => function($c) {
+        return \FastRoute\simpleDispatcher(
+            $c->get('system.route_collection'),
+            $c->get('fast_route.options')
+        );
+    },
+    'fast_route.options' => function() {
+        return [];
+    },
 ];
