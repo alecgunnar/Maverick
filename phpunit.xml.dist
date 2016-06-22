@@ -16,7 +16,7 @@
         <whitelist>
             <directory>./src/</directory>
             <exclude>
-                <directory>./src/Handler</directory>
+                <directory>./src/Controller</directory>
             </exclude>
         </whitelist>
     </filter>

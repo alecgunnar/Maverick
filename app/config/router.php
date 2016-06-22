@@ -3,6 +3,6 @@
 return [
     [
         'path' => '/',
-        'handler' => new Maverick\Handler\WelcomeHandler()
+        'handler' => new Maverick\Controller\WelcomeController()
     ]
 ];

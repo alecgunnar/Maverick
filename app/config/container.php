@@ -5,8 +5,8 @@ use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\FastRouteRouteCollection;
 use Maverick\Router\Loader\FileSystemRouteLoader;
 use Maverick\Router\Loader\RouteLoader;
-use Maverick\Handler\NotFoundHandler;
-use Maverick\Handler\NotAllowedHandler;
+use Maverick\Controller\NotFoundController;
+use Maverick\Controller\NotAllowedController;
 use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 
 return [
@@ -39,17 +39,17 @@ return [
     'system.config.routes_file' => function() {
         return __DIR__ . '/router.php';
     },
-    'system.handler.not_found' => function() {
-        return new NotFoundHandler();
+    'system.controller.not_found' => function() {
+        return new NotFoundController();
     },
-    'system.handler.not_allowed' => function() {
-        return new NotAllowedHandler();
+    'system.controller.not_allowed' => function() {
+        return new NotAllowedController();
     },
     'system.middleware.router' => function($c) {
         return new RouterMiddleware(
             $c->get('system.router'),
-            $c->get('system.handler.not_found'),
-            $c->get('system.handler.not_allowed')
+            $c->get('system.controller.not_found'),
+            $c->get('system.controller.not_allowed')
         );
     },
     'system.middleware.response_sender' => function($c) {
