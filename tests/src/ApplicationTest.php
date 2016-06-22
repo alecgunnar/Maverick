@@ -189,8 +189,6 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
             $instance->has('system.route_collection')
                 && $instance->has('system.route_loader')
                 && $instance->has('system.router')
-                && $instance->has('fast_route.dispatcher')
-                && $instance->has('fast_route.options')
                 && $instance->has('system.controller.not_found')
                 && $instance->has('system.controller.not_allowed')
                 && $instance->has('system.middleware.router')
@@ -199,6 +197,10 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
                 && $instance->has('system.error_handler')
                 && $instance->has('utility.uri_builder')
                 && $instance->has('fast_route.parser')
+                && $instance->has('fast_route.dispatcher')
+                && $instance->has('fast_route.options')
+                && $instance->has('whoops.runner')
+                && $instance->has('whoops.handler')
         );
     }
 
