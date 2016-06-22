@@ -7,14 +7,16 @@ use Maverick\Router\Loader\FileSystemRouteLoader;
 use Maverick\Router\Loader\RouteLoader;
 use Maverick\Controller\NotFoundController;
 use Maverick\Controller\NotAllowedController;
-use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 use Maverick\ErrorHandler\WhoopsErrorHandler;
+use Maverick\Utility\UriBuilder\FastRouteUriBuilder;
+use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 use Whoops\Run as WhoopsRunner;
 use Whoops\Handler\PrettyPageHandler;
+use FastRoute\RouteParser\Std as FastRouteParser;
 
 return [
     /*
-     * System
+     * System - essential services
      */
     'system.route_collection' => function($c) {
         $collection = new FastRouteRouteCollection();
@@ -60,6 +62,16 @@ return [
     },
 
     /*
+     * Utilities - stuff that's helpful
+     */
+    'utility.uri_builder' => function($c) {
+        return new FastRouteUriBuilder(
+            $c->get('fast_route.parser'),
+            $c->get('system.route_collection')
+        );
+    },
+
+    /*
      * Fast Route
      */
     'fast_route.dispatcher' => function($c) {
@@ -67,6 +79,9 @@ return [
             $c->get('system.route_collection'),
             $c->get('fast_route.options')
         );
+    },
+    'fast_route.parser' => function() {
+        return new FastRouteParser();
     },
     'fast_route.options' => function() {
         return [];
