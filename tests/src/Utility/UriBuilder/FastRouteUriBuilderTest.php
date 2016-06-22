@@ -273,4 +273,41 @@ class FastRouteUriBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, (string) $instance->build($name));
     }
+
+    /**
+     * @covers ::build
+     * @covers ::processRequiredParams
+     * @covers ::processOptionalParam
+     * @covers ::processParam
+     */
+    public function testBuildCreatesUriWithDynamicParamPrecedingOptional()
+    {
+        $name     = 'parameterized_route';
+        $optional = 'name';
+        $required = 'message';
+        $pattern  = '/say/{' . $required . '}[/{' . $optional . '}]';
+        $reqVal   = 'hello';
+        $optVal   = 'world';
+        $expected = '/say/' . $reqVal . '/' . $optVal;
+
+        $route = $this->getMockRouteEntity();
+
+        $route->expects($this->once())
+            ->method('getPath')
+            ->willReturn($pattern);
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('getRoute')
+            ->with($name)
+            ->willReturn($route);
+
+        $instance = new FastRouteUriBuilder($this->getParser(), $collection);
+
+        $this->assertEquals($expected, (string) $instance->build($name, [
+            $required => $reqVal,
+            $optional => $optVal
+        ]));
+    }
 }
