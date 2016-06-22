@@ -99,20 +99,20 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     }
 
     /**
-     * Load framework specific middleware
-     */
-    public function loadMiddleware()
-    {
-        $this->withMiddleware($this->get('system.middleware.router'))
-            ->withMiddleware($this->get('system.middleware.response_sender'));
-    }
-
-    /**
      * Loads the error handler found in the container
      */
     public function loadErrorHandler()
     {
         $this->get('system.error_handler');
             ->load();
+    }
+
+    /**
+     * Load framework specific middleware
+     */
+    public function loadMiddleware()
+    {
+        $this->withMiddleware($this->get('system.middleware.router'))
+            ->withMiddleware($this->get('system.middleware.response_sender'));
     }
 }
