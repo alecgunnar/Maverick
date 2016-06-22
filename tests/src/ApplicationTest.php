@@ -194,6 +194,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
                 && $instance->has('system.middleware.router')
                 && $instance->has('system.middleware.response_sender')
                 && $instance->has('system.config.routes_file')
+                && $instance->has('system.error_handler')
         );
     }
 

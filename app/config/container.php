@@ -49,7 +49,11 @@ return [
     'system.middleware.response_sender' => function($c) {
         return new ResponseSenderMiddleware();
     },
-
+    'system.error_handler' => function() {
+        return new class {
+            function load() { }
+        };
+    },
 
     /*
      * Fast Route dependencies
@@ -62,5 +66,5 @@ return [
     },
     'fast_route.options' => function() {
         return [];
-    },
+    }
 ];

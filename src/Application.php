@@ -103,7 +103,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
      */
     public function loadErrorHandler()
     {
-        $this->get('system.error_handler');
+        $this->get('system.error_handler')
             ->load();
     }
 
