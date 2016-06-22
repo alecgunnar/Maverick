@@ -76,6 +76,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     public function initialize(): Application
     {
         $this->loadContainer();
+        $this->loadErrorHandler();
         $this->loadMiddleware();
         return $this;
     }
@@ -104,5 +105,14 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     {
         $this->withMiddleware($this->get('system.middleware.router'))
             ->withMiddleware($this->get('system.middleware.response_sender'));
+    }
+
+    /**
+     * Loads the error handler found in the container
+     */
+    protected function loadErrorHandler()
+    {
+        $this->get('system.error_handler');
+            ->load();
     }
 }
