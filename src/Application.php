@@ -24,11 +24,6 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     protected $containers = [];
 
     /**
-     * @var bool
-     */
-    protected $initialized = false;
-
-    /**
      * @var int
      */
     protected $foundInContainer;
@@ -82,9 +77,6 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     {
         $this->loadContainer();
         $this->loadMiddleware();
-
-        $this->initialized = true;
-
         return $this;
     }
 
@@ -92,7 +84,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
      * Create the system's container with all of
      * the basic dependencies
      */
-    protected function loadContainer()
+    public function loadContainer()
     {
         $builder = new ContainerBuilder();
 
@@ -108,7 +100,7 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     /**
      * Load framework specific middleware
      */
-    protected function loadMiddleware()
+    public function loadMiddleware()
     {
         $this->withMiddleware($this->get('system.middleware.router'))
             ->withMiddleware($this->get('system.middleware.response_sender'));

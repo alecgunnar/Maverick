@@ -216,28 +216,6 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::initialize
      */
-    public function testIntializedStatuesIsFalseByDefault()
-    {
-        $instance = new Application();
-
-        $this->assertAttributeEquals(false, 'initialized', $instance);
-    }
-
-    /**
-     * @covers ::initialize
-     */
-    public function testInitializeUpdatesInitializedStatusToTrue()
-    {
-        $instance = new Application();
-
-        $instance->initialize();
-
-        $this->assertAttributeEquals(true, 'initialized', $instance);
-    }
-
-    /**
-     * @covers ::initialize
-     */
     public function testInitializeReturnsSelf()
     {
         $instance = new Application();
