@@ -20,7 +20,7 @@ class NotAllowedController
      * @param array $methods
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $respons, array $methods): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $methods): ResponseInterface
     {
         // This needs to respond with the allowed methods too...
         $response = $response->withStatus(405)
