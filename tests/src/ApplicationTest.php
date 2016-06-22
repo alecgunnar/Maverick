@@ -3,20 +3,28 @@
 namespace Maverick;
 
 use PHPUnit_Framework_TestCase;
+use Interop\Container\ContainerInterface;
+use DI\ContainerBuilder;
 use Maverick\Middleware\RouterMiddleware;
+use Maverick\ErrorHandler\ErrorHandlerInterface;
 
 /**
  * @coversDefaultClass Maverick\Application
  */
 class ApplicationTest extends PHPUnit_Framework_TestCase
 {
+    protected function getMockContainer()
+    {
+        return $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
+    }
+
     /**
      * @covers ::withContainer
      */
     public function testWithContainerAddsContainer()
     {
-        $given = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $given = $this->getMockContainer();
 
         $expected = [$given];
 
@@ -32,8 +40,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      */
     public function testWithContainerReturnsSelf()
     {
-        $container = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $container = $this->getMockContainer();
 
         $instance = new Application();
 
@@ -49,16 +56,14 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     {
         $service = 'test.service';
 
-        $first = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $first = $this->getMockContainer();
 
         $first->expects($this->once())
             ->method('has')
             ->with($service)
             ->willReturn(true);
 
-        $second = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $second = $this->getMockContainer();
 
         $second->expects($this->never())
             ->method('has');
@@ -90,8 +95,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $expected = 1;
 
         // Not going to find it in the first.... :-(
-        $first = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $first = $this->getMockContainer();
 
         $first->expects($this->once())
             ->method('has')
@@ -99,8 +103,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
             ->willReturn(false);
 
         // Hey, look! It's in the second!
-        $second = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $second = $this->getMockContainer();
 
         $second->expects($this->once())
             ->method('has')
@@ -139,8 +142,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $expected = 'this is the correct return';
 
         // Not going to find it in the first.... :-(
-        $first = $this->getMockBuilder('Interop\Container\ContainerInterface')
-            ->getMock();
+        $first = $this->getMockContainer();
 
         $first->expects($this->once())
             ->method('has')
@@ -212,6 +214,35 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
             $instance->get('system.middleware.router'),
             $instance->get('system.middleware.response_sender')
         ], $instance->getMiddleware());
+    }
+
+    /**
+     * @covers ::initialize
+     * @covers ::loadErrorHandler
+     */
+    public function testInitializeLoadsErrorHandlerFromContainer()
+    {
+        $handler = $this->getMockBuilder(ErrorHandlerInterface::class)
+            ->getMock();
+
+        $handler->expects($this->once())
+            ->method('load');
+
+        $builder = new ContainerBuilder();
+
+        $builder->addDefinitions([
+            'system.error_handler' => function() use($handler) {
+                return $handler;
+            }
+        ]);
+
+        $container = $builder->build();
+
+        $instance = new Application();
+
+        $instance->withContainer($container);
+
+        $instance->initialize();
     }
 
     /**

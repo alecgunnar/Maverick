@@ -14,4 +14,9 @@ interface ErrorHandlerInterface
      * the error handler.
      */
     public function load();
+
+    /**
+     * Unloads the error handler
+     */
+    public function unload();
 }

@@ -8,10 +8,13 @@ use Maverick\Router\Loader\RouteLoader;
 use Maverick\Controller\NotFoundController;
 use Maverick\Controller\NotAllowedController;
 use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
+use Maverick\ErrorHandler\WhoopsErrorHandler;
+use Whoops\Run as WhoopsRunner;
+use Whoops\Handler\PrettyPageHandler;
 
 return [
     /*
-     * System dependencies
+     * System
      */
     'system.route_collection' => function($c) {
         $collection = new FastRouteRouteCollection();
@@ -49,14 +52,15 @@ return [
     'system.middleware.response_sender' => function($c) {
         return new ResponseSenderMiddleware();
     },
-    'system.error_handler' => function() {
-        return new class {
-            function load() { }
-        };
+    'system.error_handler' => function($c) {
+        return new WhoopsErrorHandler(
+            $c->get('whoops.runner'),
+            $c->get('whoops.handler')
+        );
     },
 
     /*
-     * Fast Route dependencies
+     * Fast Route
      */
     'fast_route.dispatcher' => function($c) {
         return \FastRoute\simpleDispatcher(
@@ -66,5 +70,15 @@ return [
     },
     'fast_route.options' => function() {
         return [];
+    },
+
+    /*
+     * Whoops!
+     */
+    'whoops.runner' => function() {
+        return new WhoopsRunner();
+    },
+    'whoops.handler' => function() {
+        return new PrettyPageHandler();
     }
 ];
