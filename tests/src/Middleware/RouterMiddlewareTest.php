@@ -45,7 +45,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
-            ->method('handleRequest')
+            ->method('checkRequest')
             ->with($expected)
             ->willReturn($this->getMockRouteEntity());
 
@@ -59,7 +59,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__invoke
      */
-    public function testInvokeRunsRouterHandlerrouteWithRequestAndResponse()
+    public function testInvokeRunsRouterHandlerWithRequestAndResponse()
     {
         $request  = ServerRequest::fromGlobals();
         $response = new Response();
@@ -73,7 +73,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
-            ->method('handleRequest')
+            ->method('checkRequest')
             ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
@@ -108,7 +108,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
-            ->method('handleRequest')
+            ->method('checkRequest')
             ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
@@ -139,7 +139,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
-            ->method('handleRequest')
+            ->method('checkRequest')
             ->willReturn($route);
 
         $instance = new RouterMiddleware($router);
@@ -184,7 +184,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
-            ->method('handleRequest')
+            ->method('checkRequest')
             ->willReturn($route);
 
         $router->expects($this->once())

@@ -30,9 +30,9 @@ class FastRouteRouter extends AbstractRouter
 
     /**
      * @param ServerRequestInterface $request
-     * @return callable
+     * @return int
      */
-    public function handleRequest(ServerRequestInterface $request): callable
+    public function checkRequest(ServerRequestInterface $request): int
     {
         $results = $this->dispatcher->dispatch(
             $request->getMethod(),
@@ -41,16 +41,17 @@ class FastRouteRouter extends AbstractRouter
 
         switch ($results[0]) {
             case Dispatcher::NOT_FOUND:
-                return $this->notFoundHandler;
+                return self::ROUTE_NOT_FOUND;
 
             case Dispatcher::METHOD_NOT_ALLOWED:
-                $this->params[AbstractRouter::ALLOWED_METHODS_ATTR] = $results[1];
-                return $this->notAllowedHandler;
+                $this->methods = $results[1];
+                return self::ROUTE_NOT_ALLOWED;
 
             case Dispatcher::FOUND:
-                $this->params = $results[2];
+                $this->matched = $results[1];
+                $this->params  = $results[2];
         }
 
-        return $results[1];
+        return self::ROUTE_FOUND;
     }
 }

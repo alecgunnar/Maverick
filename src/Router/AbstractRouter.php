@@ -9,49 +9,50 @@ declare(strict_types=1);
 namespace Maverick\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Maverick\Router\Entity\RouteEntityInterface;
 
 abstract class AbstractRouter
 {
     /**
-     * @var callable
+     * @var RouteEntityInterface
      */
-    protected $notFoundHandler;
+    protected $matched;
 
     /**
-     * @var callable
-     */
-    protected $notAllowedHandler;
-
-    /**
-     * @var mixed[]
+     * @var string[]
      */
     protected $params = [];
 
     /**
-     * @var string
+     * @var string[]
      */
-    const ALLOWED_METHODS_ATTR = 'allowedMethods';
+    protected $methods = [];
 
     /**
-     * @param callable $handler
+     * @var int
      */
-    public function setNotFoundHandler(callable $handler): AbstractRouter
+    const ROUTE_FOUND = 200;
+
+    /**
+     * @var int
+     */
+    const ROUTE_NOT_FOUND = 404;
+
+    /**
+     * @var int
+     */
+    const ROUTE_NOT_ALLOWED = 405;
+
+    /**
+     * @return RouteEntityInterface
+     */
+    public function getMatchedRoute(): RouteEntityInterface
     {
-        $this->notFoundHandler = $handler;
-        return $this;
+        return $this->matched;
     }
 
     /**
-     * @param callable $handler
-     */
-    public function setNotAllowedHandler(callable $handler): AbstractRouter
-    {
-        $this->notAllowedHandler = $handler;
-        return $this;
-    }
-
-    /**
-     * @return mixed[]
+     * @return string[]
      */
     public function getParams(): array
     {
@@ -59,8 +60,16 @@ abstract class AbstractRouter
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @return callable
+     * @return string[]
      */
-    abstract public function handleRequest(ServerRequestInterface $request): callable;
+    public function getAllowedMethods(): array
+    {
+        return (array) $this->methods;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return int
+     */
+    abstract public function checkRequest(ServerRequestInterface $request): int;
 }

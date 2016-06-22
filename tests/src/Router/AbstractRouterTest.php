@@ -4,63 +4,38 @@ namespace Maverick\Router;
 
 use PHPUnit_Framework_TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use Maverick\Router\Entity\RouteEntityInterface;
 
 /**
  * @coversDefaultClass Maverick\Router\AbstractRouter
  */
 class AbstractRouterTest extends PHPUnit_Framework_TestCase
 {
-    protected function getMockAbstractRouter()
+    protected function getMockRouteEntity()
     {
-        return $this->getMockForAbstractClass(AbstractRouter::class);
+        return $this->getMockForAbstractClass(RouteEntityInterface::class);
     }
 
     /**
-     * @covers ::setNotFoundHandler
+     * @covers ::getMatchedRoute
      */
-    public function testSetNotFoundHandlerSetsHandler()
+    public function testGetMatchedRouteReturnsParams()
     {
-        $given = $expected = function() { };
+        $given = $expected = $this->getMockRouteEntity();
 
-        $instance = $this->getMockAbstractRouter();
+        $instance = new class($given) extends AbstractRouter {
+            public function __construct(RouteEntityInterface $entity)
+            {
+                $this->matched = $entity;
+            }
 
-        $instance->setNotFoundHandler($given);
+            public function checkRequest(ServerRequestInterface $request): int
+            {
 
-        $this->assertAttributeEquals($expected, 'notFoundHandler', $instance);
-    }
+            }
+        };
 
-    /**
-     * @covers ::setNotFoundHandler
-     */
-    public function testSetNotFoundHandlerReturnsSelf()
-    {
-        $instance = $this->getMockAbstractRouter();
-
-        $this->assertSame($instance, $instance->setNotFoundHandler(function() { }));
-    }
-
-    /**
-     * @covers ::setNotAllowedHandler
-     */
-    public function testSetNotAllowedHandlerSetsHandler()
-    {
-        $given = $expected = function() { };
-
-        $instance = $this->getMockAbstractRouter();
-
-        $instance->setNotAllowedHandler($given);
-
-        $this->assertAttributeEquals($expected, 'notAllowedHandler', $instance);
-    }
-
-    /**
-     * @covers ::setNotAllowedHandler
-     */
-    public function testSetNotAllowedHandlerReturnsSelf()
-    {
-        $instance = $this->getMockAbstractRouter();
-
-        $this->assertSame($instance, $instance->setNotAllowedHandler(function() { }));
+        $this->assertEquals($expected, $instance->getMatchedRoute());
     }
 
     /**
@@ -79,12 +54,34 @@ class AbstractRouterTest extends PHPUnit_Framework_TestCase
                 $this->params = $params;
             }
 
-            public function handleRequest(ServerRequestInterface $request): callable
+            public function checkRequest(ServerRequestInterface $request): int
             {
 
             }
         };
 
         $this->assertEquals($expected, $instance->getParams());
+    }
+
+    /**
+     * @covers ::getAllowedMethods
+     */
+    public function testgetAllowedMethodsReturnsParams()
+    {
+        $given = $expected = ['GET', 'POST', 'PUT'];
+
+        $instance = new class($given) extends AbstractRouter {
+            public function __construct(array $methods)
+            {
+                $this->methods = $methods;
+            }
+
+            public function checkRequest(ServerRequestInterface $request): int
+            {
+
+            }
+        };
+
+        $this->assertEquals($expected, $instance->getAllowedMethods());
     }
 }

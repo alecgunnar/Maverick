@@ -25,10 +25,7 @@ return [
         );
     },
     'system.router' => function($c) {
-        $instance = new FastRouteRouter($c->get('system.fast_route.dispatcher'));
-
-        return $instance->setNotFoundHandler($c->get('system.handler.not_found'))
-            ->setNotAllowedHandler($c->get('system.handler.not_allowed'));
+        return new FastRouteRouter($c->get('system.fast_route.dispatcher'));
     },
     'system.fast_route.dispatcher' => function($c) {
         return \FastRoute\simpleDispatcher(

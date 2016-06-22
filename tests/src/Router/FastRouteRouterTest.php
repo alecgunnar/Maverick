@@ -52,16 +52,12 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::handleRequest
+     * @covers ::checkRequest
      */
-    public function testHandleRequestReturnsNotFoundHandlerWhenNoRouteFound()
+    public function testCheckRequestReturnsNotFoundWhenNoRouteFound()
     {
         $method = 'GET';
         $path   = '/hello/world';
-
-        $given = $expected = function() {
-            return 'not found!';
-        };
 
         $uri = $this->getMockUri();
 
@@ -87,23 +83,17 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
             ->willReturn([Dispatcher::NOT_FOUND]);
 
         $instance = new FastRouteRouter($dispatcher);
-
-        $instance->setNotFoundHandler($given);
         
-        $this->assertEquals($expected, $instance->handleRequest($request));
+        $this->assertEquals(AbstractRouter::ROUTE_NOT_FOUND, $instance->checkRequest($request));
     }
 
     /**
-     * @covers ::handleRequest
+     * @covers ::checkRequest
      */
-    public function testHandleRequestReturnsNotAllowedHandlerWhenMethodNotAllowed()
+    public function testCheckRequestReturnsNotAllowedWhenMethodNotAllowed()
     {
         $method = 'GET';
         $path   = '/hello/world';
-
-        $given = $expected = function() {
-            return 'not found!';
-        };
 
         $uri = $this->getMockUri();
 
@@ -129,24 +119,19 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
             ->willReturn([Dispatcher::METHOD_NOT_ALLOWED, []]);
 
         $instance = new FastRouteRouter($dispatcher);
-
-        $instance->setNotAllowedHandler($given);
         
-        $this->assertEquals($expected, $instance->handleRequest($request));
+        $this->assertEquals(AbstractRouter::ROUTE_NOT_ALLOWED, $instance->checkRequest($request));
     }
 
     /**
-     * @covers ::handleRequest
+     * @covers ::checkRequest
      */
-    public function testHandleRequestSetsAllowedMethodsWhenMethodNotAllowed()
+    public function testCheckRequestSetsAllowedMethodsWhenMethodNotAllowed()
     {
         $method = 'GET';
         $path   = '/hello/world';
 
-        $given    = ['POST', 'PUT', 'PATCH'];
-        $expected = [
-            AbstractRouter::ALLOWED_METHODS_ATTR => $given
-        ];
+        $given = $expected = ['POST', 'PUT', 'PATCH'];
 
         $uri = $this->getMockUri();
 
@@ -173,24 +158,18 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
 
         $instance = new FastRouteRouter($dispatcher);
 
-        $instance->setNotAllowedHandler(function() { });
+        $instance->checkRequest($request);
 
-        $instance->handleRequest($request);
-
-        $this->assertAttributeEquals($expected, 'params', $instance);
+        $this->assertAttributeEquals($expected, 'methods', $instance);
     }
 
     /**
-     * @covers ::handleRequest
+     * @covers ::checkRequest
      */
-    public function testHandleRequestReturnsHandlerWhenRouteMatched()
+    public function testCheckRequestReturnsRouteFoundWhenRouteMatched()
     {
         $method = 'GET';
         $path   = '/hello/world';
-
-        $given = $expected = function() {
-            return 'not found!';
-        };
 
         $uri = $this->getMockUri();
 
@@ -213,17 +192,17 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
         $dispatcher->expects($this->once())
             ->method('dispatch')
             ->with($method, $path)
-            ->willReturn([Dispatcher::FOUND, $given, []]);
+            ->willReturn([Dispatcher::FOUND, function() { }, []]);
 
         $instance = new FastRouteRouter($dispatcher);
         
-        $this->assertEquals($expected, $instance->handleRequest($request));
+        $this->assertEquals(AbstractRouter::ROUTE_FOUND, $instance->checkRequest($request));
     }
 
     /**
-     * @covers ::handleRequest
+     * @covers ::checkRequest
      */
-    public function testHandleRequestSetsParamsWhenRouteFound()
+    public function testCheckRequestSetsParamsWhenRouteFound()
     {
         $method = 'GET';
         $path   = '/hello/world';
@@ -258,8 +237,48 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
 
         $instance = new FastRouteRouter($dispatcher);
         
-        $instance->handleRequest($request);
+        $instance->checkRequest($request);
 
         $this->assertAttributeEquals($expected, 'params', $instance);
+    }
+
+    /**
+     * @covers ::checkRequest
+     */
+    public function testCheckRequestSetsMatchedRoute()
+    {
+        $method = 'GET';
+        $path   = '/hello/world';
+
+        $given = $expected = $this->getMockRouteEntity();
+
+        $uri = $this->getMockUri();
+
+        $uri->expects($this->once())
+            ->method('getPath')
+            ->willReturn($path);
+
+        $request = $this->getMockRequest();
+
+        $request->expects($this->once())
+            ->method('getMethod')
+            ->willReturn($method);
+
+        $request->expects($this->once())
+            ->method('getUri')
+            ->willReturn($uri);
+
+        $dispatcher = $this->getMockDispatcher();
+
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($method, $path)
+            ->willReturn([Dispatcher::FOUND, $given, $given]);
+
+        $instance = new FastRouteRouter($dispatcher);
+        
+        $instance->checkRequest($request);
+
+        $this->assertAttributeEquals($expected, 'matched', $instance);
     }
 }

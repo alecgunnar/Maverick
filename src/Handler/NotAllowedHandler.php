@@ -25,7 +25,7 @@ class NotAllowedHandler
         $response = $response->withStatus(405)
             ->withHeader('Allow', implode(
                 ',',
-                $request->getAttribute(AbstractRouter::ALLOWED_METHODS_ATTR, ['GET'])
+                $request->getAttribute(AbstractRouter::ALLOWED_METHODS_KEY, ['GET'])
             ));
 
         $body = <<<HERE
