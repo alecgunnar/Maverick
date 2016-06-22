@@ -16,9 +16,10 @@ class WelcomeHandler
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $respose
+     * @param array $params
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $params): ResponseInterface
     {
         $handlerLocation = __FILE__;
 

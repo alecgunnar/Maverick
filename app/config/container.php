@@ -46,7 +46,11 @@ return [
         return new NotAllowedHandler();
     },
     'system.middleware.router' => function($c) {
-        return new RouterMiddleware($c->get('system.router'));
+        return new RouterMiddleware(
+            $c->get('system.router'),
+            $c->get('system.handler.not_found'),
+            $c->get('system.handler.not_allowed')
+        );
     },
     'system.middleware.response_sender' => function($c) {
         return new ResponseSenderMiddleware();

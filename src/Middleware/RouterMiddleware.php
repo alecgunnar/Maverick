@@ -20,11 +20,26 @@ class RouterMiddleware implements MiddlewareInterface
     protected $router;
 
     /**
+     * @var callable
+     */
+    protected $notFoundHandler;
+
+    /**
+     * @var callable
+     */
+    protected $notAllowedHandler;
+
+    /**
      * @param AbstractRouter $router
      */
-    public function __construct(AbstractRouter $router)
-    {
+    public function __construct(
+        AbstractRouter $router,
+        callable $notFoundHandler,
+        callable $notAllowedHandler
+    ) {
         $this->router = $router;
+        $this->notFoundHandler = $notFoundHandler;
+        $this->notAllowedHandler = $notAllowedHandler;
     }
 
     /**
@@ -32,15 +47,26 @@ class RouterMiddleware implements MiddlewareInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        $handler = $this->router->checkRequest($request);
+        $result = $this->router->checkRequest($request);
+        $params = $this->router->getParams();
 
-        foreach ($this->router->getParams() as $key => $value) {
-            $request = $request->withAttribute($key, $value);
+        switch ($result) {
+            case AbstractRouter::ROUTE_FOUND:
+                $handler = $this->router->getMatchedRoute();
+                break;
+
+            case AbstractRouter::ROUTE_NOT_FOUND:
+                $handler = $this->notFoundHandler;
+                break;
+
+            case AbstractRouter::ROUTE_NOT_ALLOWED:
+                $params  = $this->router->getAllowedMethods();
+                $handler = $this->notAllowedHandler;
+                break;
         }
 
-        return $next(
-            $request,
-            $handler($request, $response)
-        );
+        $response = $handler($request, $response, $params);
+
+        return $next($request, $response);
     }
 }

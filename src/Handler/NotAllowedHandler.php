@@ -17,15 +17,16 @@ class NotAllowedHandler
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $respose
+     * @param array $methods
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $respons, array $methods): ResponseInterface
     {
         // This needs to respond with the allowed methods too...
         $response = $response->withStatus(405)
             ->withHeader('Allow', implode(
                 ',',
-                $request->getAttribute(AbstractRouter::ALLOWED_METHODS_KEY, ['GET'])
+                $methods
             ));
 
         $body = <<<HERE
