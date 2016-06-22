@@ -55,7 +55,7 @@ class WelcomeHandler
         </div>
         <div class="container">
             <h2>Ready to start developing?</h2>
-            <p>To begin, start by editing this handler. You can find this handler in the following file: <code>$handlerLocation</code>. From there, you may begin changing the look and feel of this page.</p>
+            <p>To begin, start by editing this handler. You can find this handler in the following file: <code style="word-break: break-all;">$handlerLocation</code>. From there, you may begin changing the look and feel of this page.</p>
         </div>
     </body>
 </html>
