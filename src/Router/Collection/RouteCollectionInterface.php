@@ -23,6 +23,12 @@ interface RouteCollectionInterface
     public function withRoute(RouteEntityInterface $route, string $name = null): RouteCollectionInterface;
 
     /**
+     * @param RouteEntityInterface[] $route
+     * @return RouteCollectionInterface
+     */
+    public function withRoutes(array $routes): RouteCollectionInterface;
+
+    /**
      * Prefix all routes in the collection with this
      *
      * @param string $prefix

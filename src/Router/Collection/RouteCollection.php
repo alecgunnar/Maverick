@@ -41,6 +41,19 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
+     * @param RouteEntityInterface[] $route
+     * @return RouteCollectionInterface
+     */
+    public function withRoutes(array $routes): RouteCollectionInterface
+    {
+        foreach ($routes as $name => $route) {
+            $this->withRoute($route, is_string($name) ? $name : null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Prefix all routes in the collection with this
      *
      * @param string $prefix
