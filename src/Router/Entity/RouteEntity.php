@@ -43,7 +43,9 @@ class RouteEntity implements RouteEntityInterface
     public function __construct(array $methods = [], string $path = '', callable $handler = null)
     {
         $this->methods = $methods;
-        $this->path = $this->cleanPath($path);
+        
+        $this->setPath($path);
+
         $this->handler = $handler;
     }
 
@@ -69,7 +71,8 @@ class RouteEntity implements RouteEntityInterface
      */
     public function setPath(string $path): RouteEntityInterface
     {
-        $this->path = $this->cleanPath($path);
+        $this->path = self::SLASH . $this->cleanPath($path);
+
         return $this;
     }
 
@@ -103,8 +106,7 @@ class RouteEntity implements RouteEntityInterface
      */
     public function withPrefix(string $prefix): RouteEntityInterface
     {
-        $this->path = $this->cleanPath($prefix) . $this->path;
-        return $this;
+        return $this->setPath($this->cleanPath($prefix) . $this->path);
     }
 
     /**
@@ -117,7 +119,7 @@ class RouteEntity implements RouteEntityInterface
             return '';
         }
 
-        return self::SLASH . trim($path, self::SLASH);
+        return trim($path, self::SLASH);
     }
 
     /**

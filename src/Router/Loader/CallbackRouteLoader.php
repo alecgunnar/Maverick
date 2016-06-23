@@ -10,7 +10,9 @@ namespace Maverick\Router\Loader;
 use Maverick\Middleware\Queue\MiddlewareQueueInterface;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Maverick\Router\Collection\Factory\RouteCollectionFactory;
+use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\Factory\RouteEntityFactory;
+use Maverick\Router\Entity\RouteEntityInterface;
 use Interop\Container\ContainerInterface;
 
 class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterface
@@ -18,7 +20,7 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
     use MiddlewareQueueTrait;
 
     /**
-     * @var callback
+     * @var callable
      */
     protected $builder;
 
@@ -53,11 +55,11 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
     protected $loaders = [];
 
     /**
-     * @param callback $builder
+     * @param callable $builder
      * @param ContainerInterface $container
      */
     public function __construct(
-        callback $builder,
+        callable $builder,
         RouteCollectionFactory $collectionFactory,
         RouteEntityFactory $entityFactory,
         ContainerInterface $container,
@@ -75,8 +77,19 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      */
     public function loadRoutes(RouteCollectionInterface $collection)
     {
-        $collection->setPrefix($this->prefix)
-            ->withRoutes($this->routes);
+        call_user_func_array($this->builder, [$this]);
+
+        if (count($this->middleware)) {
+            foreach ($this->routes as $route) {
+                $route->withMiddlewares($this->middleware);
+            }
+        }
+
+        if ($this->prefix) {
+            $collection->setPrefix($this->prefix);
+        }
+
+        $collection->withRoutes($this->routes);
 
         foreach ($this->loaders as $loader) {
             $loaderCollection = $this->collectionFactory->build();
@@ -99,9 +112,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function get(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function get(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['GET'], $path, $handler, $name);
     }
 
     /**
@@ -110,9 +123,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function post(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function post(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['POST'], $path, $handler, $name);
     }
 
     /**
@@ -121,9 +134,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function put(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function put(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['PUT'], $path, $handler, $name);
     }
 
     /**
@@ -132,9 +145,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function patch(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function patch(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['PATCH'], $path, $handler, $name);
     }
 
     /**
@@ -143,9 +156,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function delete(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function delete(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['DELETE'], $path, $handler, $name);
     }
 
     /**
@@ -154,9 +167,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function head(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function head(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['HEAD'], $path, $handler, $name);
     }
 
     /**
@@ -165,9 +178,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function options(string $path, $handler, string $name = null): CallbackRouteLoader
+    public function options(string $path, $handler, string $name = null): RouteEntityInterface
     {
-        return $this->match([__METHOD__], $path, $handler, $name);
+        return $this->match(['OPTIONS'], $path, $handler, $name);
     }
 
     /**
@@ -177,7 +190,7 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function match(array $methods, string $path, $handler, string $name = null): CallbackRouteLoader
+    public function match(array $methods, string $path, $handler, string $name = null): RouteEntityInterface
     {
         if (!is_callable($handler)) {
             $handler = $this->container->get($handler);
@@ -199,7 +212,7 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param callable $builder
      * @return MiddlewareQueueInterface
      */
-    public function group(string $prefix, callable $builder)
+    public function group(string $prefix, callable $builder): MiddlewareQueueInterface
     {
         $loader = new self(
             $builder,

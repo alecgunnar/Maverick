@@ -43,6 +43,19 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::cleanPath
+     */
+    public function testConstructorPermitsLoneSlash()
+    {
+        $given = $expected = '/';
+
+        $instance = new RouteEntity([], $given, function() { });
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
      * @covers ::withMethods
      */
     public function testWithMethodsSetsMethods()
@@ -103,6 +116,21 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     {
         $given = '/hello/world/';
         $expected = '/hello/world';
+
+        $instance = new RouteEntity();
+
+        $instance->setPath($given);
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
+     * @covers ::setPath
+     * @covers ::cleanPath
+     */
+    public function testSetPathPermitsLoneSlash()
+    {
+        $given = $expected = '/';
 
         $instance = new RouteEntity();
 

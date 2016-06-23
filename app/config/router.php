@@ -1,8 +1,5 @@
 <?php
 
-return [
-    [
-        'path' => '/',
-        'handler' => new Maverick\Controller\WelcomeController()
-    ]
-];
+return function($loader) {
+    $loader->get('/', new Maverick\Controller\WelcomeController());
+};

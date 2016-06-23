@@ -3,8 +3,10 @@
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
 use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Loader\FileSystemRouteLoader;
+use Maverick\Router\Loader\CallbackRouteLoader;
 use Maverick\Router\Loader\RouteLoader;
+use Maverick\Router\Collection\Factory\RouteCollectionFactory;
+use Maverick\Router\Entity\Factory\RouteEntityFactory;
 use Maverick\Controller\NotFoundController;
 use Maverick\Controller\NotAllowedController;
 use Maverick\ErrorHandler\WhoopsErrorHandler;
@@ -27,13 +29,24 @@ return [
         return $collection;
     },
     'system.route_loader' => function($c) {
-        return new FileSystemRouteLoader($c, $c->get('system.config.routes_file'));
+        return new CallbackRouteLoader(
+            $c->get('system.config.routes'),
+            $c->get('system.router.collection.factory'),
+            $c->get('system.router.entity.factory'),
+            $c
+        );
     },
     'system.router' => function($c) {
         return new FastRouteRouter($c->get('fast_route.dispatcher'));
     },
-    'system.config.routes_file' => function() {
-        return __DIR__ . '/router.php';
+    'system.router.collection.factory' => function() {
+        return new RouteCollectionFactory();
+    },
+    'system.router.entity.factory' => function() {
+        return new RouteEntityFactory();
+    },
+    'system.config.routes' => function() {
+        return require(__DIR__ . '/router.php');
     },
     'system.controller.not_found' => function() {
         return new NotFoundController();
