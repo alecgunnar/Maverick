@@ -10,6 +10,38 @@ use Maverick\Router\Entity\RouteEntity;
  */
 class RouteCollectionTest extends PHPUnit_Framework_TestCase
 {
+    protected function getMockRouteEntity()
+    {
+        return $this->getMockBuilder(RouteEntity::class)
+            ->getMock();
+    }
+
+    /**
+     * @covers ::setPrefix
+     */
+    public function testSetPrefixSetsPrefix()
+    {
+        $given = $expected = '/prefix';
+
+        $instance = new RouteCollection();
+
+        $instance->setPrefix($given);
+
+        $this->assertAttributeEquals($expected, 'prefix', $instance);
+    }
+
+    /**
+     * @covers ::setPrefix
+     */
+    public function testSetPrefixReturnsSelf()
+    {
+        $instance = new RouteCollection();
+
+        $ret = $instance->setPrefix('/');
+
+        $this->assertSame($instance, $ret);
+    }
+
     /**
      * @covers ::withRoute
      */
@@ -39,6 +71,28 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
         $instance->withRoute($entity, $name);
 
         $this->assertAttributeEquals($expected, 'routes', $instance);
+    }
+
+    /**
+     * @covers ::withRoute
+     * @depends testSetPrefixSetsPrefix
+     */
+    public function testWithRouteAddsPrefix()
+    {
+        $given = $expected = '/prefix';
+
+        $entity = $this->getMockRouteEntity();
+
+        $entity->expects($this->once())
+            ->method('withPrefix')
+            ->with($expected)
+            ->willReturn($entity);
+
+        $instance = new RouteCollection();
+
+        $instance->setPrefix($given);
+
+        $instance->withRoute($entity);
     }
 
     /**
