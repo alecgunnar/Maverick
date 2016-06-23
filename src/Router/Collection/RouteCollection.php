@@ -4,6 +4,7 @@
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
+declare(strict_types=1);
 
 namespace Maverick\Router\Collection;
 
