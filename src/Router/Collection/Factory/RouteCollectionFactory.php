@@ -11,19 +11,19 @@ namespace Maverick\Router\Collection\Factory;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Collection\RouteCollection;
 use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Collection\ConfigurableRouteCollection;
+use Maverick\Router\Collection\CallbackRouteCollection;
 
 class RouteCollectionFactory
 {
     /**
      * @var string
      */
-    const FAST_ROUTE = 'FastRoute';
+    const FAST_ROUTE = 'FAST_ROUTE';
 
     /**
      * @var string
      */
-    const CONFIGURABLE = 'Configurable';
+    const CALLBACK = 'CALLBACK';
 
     /**
      * @param string $type = null
@@ -39,8 +39,8 @@ class RouteCollectionFactory
             case self::FAST_ROUTE:
                 return new FastRouteRouteCollection();
 
-            case self::CONFIGURABLE:
-                return new ConfigurableRouteCollection(...$args);
+            case self::CALLBACK:
+                return new CallbackRouteCollection(...$args);
         }
 
         return new RouteCollection();

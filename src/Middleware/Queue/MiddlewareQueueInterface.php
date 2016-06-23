@@ -20,6 +20,12 @@ interface MiddlewareQueueInterface
     public function withMiddleware(callable $handler): MiddlewareQueueInterface;
 
     /**
+     * @param callable[] $handler
+     * @return MiddlewareQueueInterface
+     */
+    public function withMiddlewares(array $handlers): MiddlewareQueueInterface;
+
+    /**
      * @return callable[]
      */
     public function getMiddleware(): array;

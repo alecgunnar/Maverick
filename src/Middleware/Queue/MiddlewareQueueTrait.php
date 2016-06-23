@@ -30,6 +30,19 @@ trait MiddlewareQueueTrait
     }
 
     /**
+     * @param callable[] $handler
+     * @return MiddlewareQueueInterface
+     */
+    public function withMiddlewares(array $handlers): MiddlewareQueueInterface
+    {
+        foreach ($handlers as $handler) {
+            $this->withMiddleware($handler);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return callable[]
      */
     public function getMiddleware(): array

@@ -49,6 +49,34 @@ class MiddlewarwQueueTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::withMiddlewares
+     */
+    public function testWithMiddlewaresAddsMiddleware()
+    {
+        $first = function() { return new Response(); };
+        $second = function() { return new Response(); };
+        $given = $expected = [$first, $second];
+
+        $instance = $this->getInstance();
+
+        $instance->withMiddlewares($given);
+
+        $this->assertAttributeEquals($expected, 'middleware', $instance);
+    }
+
+    /**
+     * @covers ::withMiddlewares
+     */
+    public function testWithMiddlewaresReturnsSelf()
+    {
+        $instance = $this->getInstance();
+
+        $ret = $instance->withMiddlewares([function() { }]);
+
+        $this->assertSame($instance, $ret);
+    }
+
+    /**
      * @covers ::getMiddleware
      * @depends testWithMiddlewareAddsMiddleware
      */
