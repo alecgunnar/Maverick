@@ -253,4 +253,92 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $instance->withRoutes($data)
             ->loadRoutes($collection);
     }
+
+    /**
+     * @covers ::loadRoutes
+     * @covers ::processRoute
+     */
+    public function testLoadRoutesGetsMiddlewareFromContainer()
+    {
+        $name = 'route';
+        $methods = ['GET'];
+        $path = '/hello';
+        $service = 'test.middleware';
+        $middleware = function() { };
+        $handler = function() { };
+
+        $data = [
+            $name => [
+                'methods' => $methods,
+                'path' => $path,
+                'handler' => $handler,
+                'middleware' => [
+                    $service
+                ]
+            ]
+        ];
+
+        $entity = new RouteEntity($methods, $path, $handler);
+
+        $entity->withMiddleware($middleware);
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('withRoute')
+            ->with($entity, $name);
+
+        $container = $this->getMockContainer();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with($service)
+            ->willReturn($middleware);
+
+        $instance = new RouteLoader($container);
+
+        $instance->withRoutes($data)
+            ->loadRoutes($collection);
+    }
+
+    /**
+     * @covers ::loadRoutes
+     * @covers ::processRoute
+     */
+    public function testLoadRoutesAddsCallableMiddleware()
+    {
+        $name = 'route';
+        $methods = ['GET'];
+        $path = '/hello';
+        $middleware = function() { };
+        $handler = function() { };
+
+        $data = [
+            $name => [
+                'methods' => $methods,
+                'path' => $path,
+                'handler' => $handler,
+                'middleware' => [
+                    $middleware
+                ]
+            ]
+        ];
+
+        $entity = new RouteEntity($methods, $path, $handler);
+
+        $entity->withMiddleware($middleware);
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('withRoute')
+            ->with($entity, $name);
+
+        $container = $this->getMockContainer();
+
+        $instance = new RouteLoader($container);
+
+        $instance->withRoutes($data)
+            ->loadRoutes($collection);
+    }
 }

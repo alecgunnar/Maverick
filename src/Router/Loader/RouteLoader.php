@@ -93,6 +93,18 @@ class RouteLoader implements RouteLoaderInterface
             $handler = $this->container->get((string) $handler);
         }
 
-        return new RouteEntity($methods, $path, $handler);
+        $entity = new RouteEntity($methods, $path, $handler);
+
+        if (isset($data['middleware'])) {
+            foreach ($data['middleware'] as $middleware) {
+                if (!is_callable($middleware)) {
+                    $middleware = $this->container->get($middleware);
+                }
+
+                $entity->withMiddleware($middleware);
+            }
+        }
+
+        return $entity;
     }
 }
