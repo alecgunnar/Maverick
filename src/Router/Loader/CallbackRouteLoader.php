@@ -14,6 +14,7 @@ use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\Factory\RouteEntityFactory;
 use Maverick\Router\Entity\RouteEntityInterface;
 use Interop\Container\ContainerInterface;
+use RuntimeException;
 
 class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterface
 {
@@ -103,7 +104,8 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      */
     public function withRoutes(array $routes): RouteLoaderInterface
     {
-        throw new RuntimeException('A callback route loader does not accept routes via withRoutes...');
+        throw new RuntimeException('A callback route loader does not accept routes via withRoutes.'
+            . ' You must use one of the HTTP request method specific methods, match, or group!');
     }
 
     /**
@@ -210,7 +212,7 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param callable $builder
      * @return MiddlewareQueueInterface
      */
-    public function group(string $prefix, callable $builder): MiddlewareQueueInterface
+    public function group(string $prefix, callable $builder): CallbackRouteLoader
     {
         $loader = new self(
             $builder,
