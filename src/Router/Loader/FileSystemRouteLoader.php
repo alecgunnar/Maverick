@@ -7,41 +7,17 @@
 
 namespace Maverick\Router\Loader;
 
-use Maverick\Router\Collection\RouteCollectionInterface;
-use Maverick\Router\Loader\RouteLoaderInterface;
+use Interop\Container\ContainerInterface;
 
-class FileSystemRouteLoader implements RouteLoaderInterface
+class FileSystemRouteLoader extends RouteLoader
 {
     /**
-     * @var RouteLoaderInterface $loader
-     */
-    protected $loader;
-
-    /**
+     * @param ContainerInterface $container
      * @param string $location
-     * @param RouteLoaderInterface $container
      */
-    public function __construct(string $location, RouteLoaderInterface $loader)
+    public function __construct(ContainerInterface $container, string $location)
     {
-        $this->loader = $loader;
-
-        $this->loader->withRoutes(include($location));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function loadRoutes(RouteCollectionInterface $collection)
-    {
-        $this->loader->loadRoutes($collection);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withRoutes(array $routes): RouteLoaderInterface
-    {
-        $this->loader->withRoutes($routes);
-        return $this;
+        $routes = require($location);
+        parent::__construct($container, $routes);
     }
 }

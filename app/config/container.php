@@ -27,10 +27,7 @@ return [
         return $collection;
     },
     'system.route_loader' => function($c) {
-        return new FileSystemRouteLoader(
-            $c->get('system.config.routes_file'),
-            new RouteLoader($c)
-        );
+        return new FileSystemRouteLoader($c, $c->get('system.config.routes_file'));
     },
     'system.router' => function($c) {
         return new FastRouteRouter($c->get('fast_route.dispatcher'));
