@@ -199,12 +199,10 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
         $entity = $this->entityFactory->build($methods, $path, $handler);
 
         if ($name) {
-            $this->routes[$name] = $entity;
-        } else {
-            $this->routes[] = $entity;
+            return ($this->routes[$name] = $entity);
         }
 
-        return $entity;
+        return ($this->routes[] = $entity);
     }
 
     /**
