@@ -31,6 +31,11 @@ class RouteEntity implements RouteEntityInterface
     protected $handler;
 
     /**
+     * @var string
+     */
+    const SLASH = '/';
+
+    /**
      * @param string[] $methods = []
      * @param string $path = ''
      * @param callable $handler = null
@@ -38,7 +43,7 @@ class RouteEntity implements RouteEntityInterface
     public function __construct(array $methods = [], string $path = '', callable $handler = null)
     {
         $this->methods = $methods;
-        $this->path = $path;
+        $this->path = $this->cleanPath($path);
         $this->handler = $handler;
     }
 
@@ -64,7 +69,7 @@ class RouteEntity implements RouteEntityInterface
      */
     public function setPath(string $path): RouteEntityInterface
     {
-        $this->path = $path;
+        $this->path = $this->cleanPath($path);
         return $this;
     }
 
@@ -98,8 +103,21 @@ class RouteEntity implements RouteEntityInterface
      */
     public function withPrefix(string $prefix): RouteEntityInterface
     {
-        $this->path = $prefix . $this->path;
+        $this->path = $this->cleanPath($prefix) . $this->path;
         return $this;
+    }
+
+    /**
+     * @param string $path = null
+     * @return string
+     */
+    protected function cleanPath(string $path = null): string
+    {
+        if (!$path || $path == self::SLASH) {
+            return '';
+        }
+
+        return self::SLASH . trim($path, self::SLASH);
     }
 
     /**

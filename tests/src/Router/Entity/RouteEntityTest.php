@@ -29,6 +29,20 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::cleanPath
+     */
+    public function testConstructorCleansPath()
+    {
+        $given = '/hello/world/';
+        $expected = '/hello/world';
+
+        $instance = new RouteEntity([], $given, function() { });
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
      * @covers ::withMethods
      */
     public function testWithMethodsSetsMethods()
@@ -73,6 +87,22 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     public function testSetPathSetsPath()
     {
         $given = $expected = '/journey/to/mars';
+
+        $instance = new RouteEntity();
+
+        $instance->setPath($given);
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
+     * @covers ::setPath
+     * @covers ::cleanPath
+     */
+    public function testSetPathCleansPath()
+    {
+        $given = '/hello/world/';
+        $expected = '/hello/world';
 
         $instance = new RouteEntity();
 
@@ -146,6 +176,73 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::withPrefix
+     * @depends testConstructorSetsAttributes
+     */
+    public function testWithPrefixPrependsStringToPath()
+    {
+        $path = '/world';
+        $prefix = '/hello';
+        $expected = $prefix . $path;
+
+        $instance = new RouteEntity([], $path, function() { });
+
+        $instance->withPrefix($prefix);
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
+     * @covers ::withPrefix
+     * @covers ::cleanPath
+     * @depends testConstructorSetsAttributes
+     */
+    public function testWithPrefixDoesNotPrependLoneSlash()
+    {
+        $path = '/world';
+        $prefix = '/';
+        $expected = $path;
+
+        $instance = new RouteEntity([], $path, function() { });
+
+        $instance->withPrefix($prefix);
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
+     * @covers ::withPrefix
+     * @covers ::cleanPath
+     * @depends testConstructorSetsAttributes
+     */
+    public function testWithPrefixDoesNotAddEndingSlash()
+    {
+        $path = '/world';
+        $prefix = '/hello';
+        $expected = $prefix . $path;
+        $prefix .= '/';
+
+        $instance = new RouteEntity([], $path, function() { });
+
+        $instance->withPrefix($prefix);
+
+        $this->assertAttributeEquals($expected, 'path', $instance);
+    }
+
+    /**
+     * @covers ::withPrefix
+     * @covers ::cleanPath
+     */
+    public function testWithPrefixReturnsSelf()
+    {
+        $instance = new RouteEntity([], '/', function() { });
+
+        $ret = $instance->withPrefix('/');
+
+        $this->assertSame($instance, $ret);
+    }
+
+    /**
      * @covers ::__invoke
      */
     public function testRouteHandlerIsCalledAsMiddleware()
@@ -175,8 +272,23 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
      */
     public function testMiddlewareAreCalled()
     {
+        $request  = ServerRequest::fromGlobals();
+        $response = new Response();
 
+        $handler = $this->getMockBuilder(GenericCallable::class)
+            ->getMock();
+
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with($request, $response)
+            ->willReturn($response);
+
+        $instance = new RouteEntity();
+
+        $instance->withMiddleware($handler);
+
+        $instance($request, $response, function() {
+            return new Response();
+        });
     }
-
-    
 }
