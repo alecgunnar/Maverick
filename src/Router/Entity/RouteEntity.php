@@ -43,10 +43,9 @@ class RouteEntity implements RouteEntityInterface
     public function __construct(array $methods = [], string $path = '', callable $handler = null)
     {
         $this->methods = $methods;
-        
-        $this->setPath($path);
-
         $this->handler = $handler;
+
+        $this->setPath($path);
     }
 
     /**
