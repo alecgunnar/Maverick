@@ -41,8 +41,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param RouteEntityInterface[] $route
-     * @return RouteCollectionInterface
+     * @inheritDoc
      */
     public function withRoutes(array $routes): RouteCollectionInterface
     {
@@ -54,10 +53,7 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * Prefix all routes in the collection with this
-     *
-     * @param string $prefix
-     * @return RouteCollectionInterface
+     * @inheritDoc
      */
     public function setPrefix(string $prefix): RouteCollectionInterface
     {
