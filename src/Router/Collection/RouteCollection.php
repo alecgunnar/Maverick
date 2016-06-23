@@ -18,21 +18,37 @@ class RouteCollection implements RouteCollectionInterface
     protected $routes = [];
 
     /**
-     * @var int
+     * @var string
      */
-    protected $position = 0;
+    protected $prefix;
 
     /**
      * @inheritDoc
      */
     public function withRoute(RouteEntityInterface $route, string $name = null): RouteCollectionInterface
     {
+        if ($this->prefix) {
+            $route->withPrefix($this->prefix);
+        }
+
         if ($name) {
             $this->routes[$name] = $route;
         } else {
             $this->routes[] = $route;
         }
 
+        return $this;
+    }
+
+    /**
+     * Prefix all routes in the collection with this
+     *
+     * @param string $prefix
+     * @return RouteCollectionInterface
+     */
+    public function setPrefix(string $prefix): RouteCollectionInterface
+    {
+        $this->prefix = $prefix;
         return $this;
     }
 

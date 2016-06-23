@@ -96,6 +96,15 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
+    public function withPrefix(string $prefix): RouteEntityInterface
+    {
+        $this->path = $prefix . $this->path;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         if (is_callable($this->handler)) {

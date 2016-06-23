@@ -47,6 +47,12 @@ interface RouteEntityInterface extends MiddlewareQueueInterface
     public function getHandler(): callable;
 
     /**
+     * @param string $prefix
+     * @return RouteEntityInterface
+     */
+    public function withPrefix(string $prefix): RouteEntityInterface;
+
+    /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
