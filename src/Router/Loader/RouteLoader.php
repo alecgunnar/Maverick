@@ -65,10 +65,12 @@ class RouteLoader implements RouteLoaderInterface
      */
     protected function processRoute(array $data, string $name = null)
     {
-        $execptionMsg = function($field) use($name) {
-            return 'A ' . $field . ' was not provided for route: '
+        $execption = function($field) use($name) {
+            throw new RuntimeException(
+                'A ' . $field . ' was not provided for route: '
                     . ($name ? $name : 'no name provided')
-                    . '.';
+                    . '.'
+            );
         };
 
         $methods = ['GET'];
@@ -78,13 +80,13 @@ class RouteLoader implements RouteLoaderInterface
         }
 
         if (!isset($data['path'])) {
-            throw new RuntimeException($execptionMsg('path'));
+            $execption('path');
         }
 
         $path = $data['path'];
 
         if (!isset($data['handler'])) {
-            throw new RuntimeException($execptionMsg('handler'));
+            $execption('handler');
         }
 
         $handler = $data['handler'];
