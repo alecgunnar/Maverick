@@ -108,6 +108,35 @@ class RouteCollectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::withRoutes
+     */
+    public function testWithRoutesAddsRoutes()
+    {
+        $given = $expected = [
+            'named' => $this->getMockRouteEntity(),
+            $this->getMockRouteEntity()
+        ];
+
+        $instance = new RouteCollection();
+
+        $instance->withRoutes($given);
+
+        $this->assertAttributeEquals($expected, 'routes', $instance);
+    }
+
+    /**
+     * @covers ::withRoutes
+     */
+    public function testWithRoutesReturnsSelf()
+    {
+        $instance = new RouteCollection();
+
+        $ret = $instance->withRoutes([]);
+
+        $this->assertSame($instance, $ret);
+    }
+
+    /**
      * @covers ::getRoutes
      */
     public function testGetRoutesReturnsRoutes()
