@@ -10,13 +10,10 @@ namespace Maverick\Router\Collection\Factory;
 
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Collection\RouteCollection;
-use Maverick\Router\Collection\FastRouteRouteCollection;
-use Maverick\Router\Collection\ConfigurableRouteCollection;
 
 class RouteCollectionFactory
 {
     /**
-     * @param string $type = null
      * @return RouteCollectionInterface
      */
     public function build(): RouteCollectionInterface
