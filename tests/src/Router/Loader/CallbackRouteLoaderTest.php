@@ -5,8 +5,12 @@ namespace Maverick\Router\Loader;
 use PHPUnit_Framework_TestCase;
 use Interop\Container\ContainerInterface;
 use Maverick\Router\Collection\Factory\RouteCollectionFactory;
+use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\Factory\RouteEntityFactory;
+use Maverick\Router\Entity\RouteEntityInterface;
 use Maverick\Router\Entity\RouteEntity;
+use Maverick\Middleware\MiddlewareInterface;
+use Maverick\Testing\Utility\GenericCallable;
 
 /**
  * @coversDefaultClass Maverick\Router\Loader\CallbackRouteLoader
@@ -25,9 +29,33 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
+    protected function getMockRouteCollection()
+    {
+        return $this->getMockBuilder(RouteCollectionInterface::class)
+            ->getMock();
+    }
+
     protected function getMockRouteEntityFactory()
     {
         return $this->getMockBuilder(RouteEntityFactory::class)
+            ->getMock();
+    }
+
+    protected function getMockRouteEntity()
+    {
+        return $this->getMockBuilder(RouteEntityInterface::class)
+            ->getMock();
+    }
+
+    protected function getMockMiddleware()
+    {
+        return $this->getMockBuilder(MiddlewareInterface::class)
+            ->getMock();
+    }
+
+    protected function getMockCallable()
+    {
+        return $this->getMockBuilder(GenericCallable::class)
             ->getMock();
     }
 
@@ -418,7 +446,17 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoadRoutesCallsBuilder()
     {
-        $this->markTestIncomplete();
+        $builder = $this->getMockCallable();
+
+        $instance = $this->getInstance($builder);
+
+        $builder->expects($this->once())
+            ->method('__invoke')
+            ->with($instance);
+
+        $collection = $this->getMockRouteCollection();
+
+        $instance->loadRoutes($collection);
     }
 
     /**
@@ -426,15 +464,54 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoadRoutesAddsMiddlewareToRoutes()
     {
-        $this->markTestIncomplete();
+        $methods = ['GET'];
+        $path = '/path';
+        $handler = function() { };
+        $name = 'route.name';
+        $middleware = $this->getMockMiddleware();
+
+        $route = $this->getMockRouteEntity();
+
+        $route->expects($this->once())
+            ->method('withMiddlewares')
+            ->with([$middleware]);
+
+        $collection = $this->getMockRouteCollection();
+
+        $entity = $this->getMockRouteEntityFactory();
+
+        $entity->expects($this->once())
+            ->method('build')
+            ->willReturn($route);
+
+        $builder = function($loader) {
+            $loader->match(['GET'], '/', function() { });
+        };
+
+        $instance = $this->getInstance($builder, null, $entity);
+
+        $instance->withMiddleware($middleware);
+
+        $instance->loadRoutes($collection);
     }
 
     /**
      * @covers ::loadRoutes
      */
-    public function testLoadRoutesAddsPrefixToRoutes()
+    public function testLoadRoutesAddsPrefixToCollection()
     {
-        $this->markTestIncomplete();
+        $prefix = '/prefix';
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('setPrefix')
+            ->with($prefix)
+            ->willReturn($collection);
+
+        $instance = $this->getInstance(null, null, null, null, $prefix);
+
+        $instance->loadRoutes($collection);
     }
 
     /**
@@ -442,7 +519,35 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoadRoutesAddsRoutesToCollection()
     {
-        $this->markTestIncomplete();
+        $methods = ['GET'];
+        $path = '/path';
+        $handler = function() { };
+        $name = 'route.name';
+
+        $route = new RouteEntity($methods, $path, $handler);
+
+        $expected = [$name => $route];
+
+        $builder = function($loader) use($methods, $path, $handler, $name) {
+            $loader->match($methods, $path, $handler, $name);
+        };
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('withRoutes')
+            ->with($expected)
+            ->willReturn($collection);
+
+        $entity = $this->getMockRouteEntityFactory();
+
+        $entity->expects($this->once())
+            ->method('build')
+            ->willReturn($route);
+
+        $instance = $this->getInstance($builder, null, $entity);
+
+        $instance->loadRoutes($collection);
     }
 
     /**
@@ -450,6 +555,25 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoadRunsOtherCollectionsAndMergesNewCollection()
     {
-        $this->markTestIncomplete();
+        $groupCollection = $this->getMockRouteCollection();
+
+        $collection = $this->getMockRouteCollection();
+
+        $collection->expects($this->once())
+            ->method('mergeCollection')
+            ->with($groupCollection)
+            ->willReturn($collection);
+
+        $factory = $this->getMockRouteCollectionFactory();
+
+        $factory->expects($this->once())
+            ->method('build')
+            ->willReturn($groupCollection);
+
+        $instance = $this->getInstance(null, $factory);
+
+        $instance->group('/prefix', function() { });
+
+        $instance->loadRoutes($collection);
     }
 }
