@@ -8,9 +8,9 @@ use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 
 /**
- * @coversDefaultClass Maverick\Router\Collection\Decorator\RouteCollectionDecorator
+ * @coversDefaultClass Maverick\Router\Collection\Decorator\AbstractRouteCollectionDecorator
  */
-class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
+class AbstractRouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
 {
     protected function getMockRouteCollection()
     {
@@ -26,7 +26,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
 
     protected function getInstance($collection)
     {
-        return new class($collection) extends RouteCollectionDecorator { };
+        return new class($collection) extends AbstractRouteCollectionDecorator { };
     }
 
     /**

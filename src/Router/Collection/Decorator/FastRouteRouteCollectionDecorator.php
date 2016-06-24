@@ -12,7 +12,7 @@ use FastRoute\RouteCollector;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 
-class FastRouteRouteCollectionDecorator extends RouteCollectionDecorator
+class FastRouteRouteCollectionDecorator extends AbstractRouteCollectionDecorator
 {
     /**
      * @param RouteCollector $collector
