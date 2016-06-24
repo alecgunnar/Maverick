@@ -41,14 +41,4 @@ class RouteCollectionFactoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(RouteCollection::class, $instance->build());
     }
-
-    /**
-     * @covers ::build
-     */
-    public function testBuildCreatesFastRouteCollection()
-    {
-        $instance = new RouteCollectionFactory();
-
-        $this->assertInstanceOf(FastRouteRouteCollection::class, $instance->build(RouteCollectionFactory::FAST_ROUTE));
-    }
 }

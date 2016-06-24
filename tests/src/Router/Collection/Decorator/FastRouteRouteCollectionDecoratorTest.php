@@ -1,20 +1,21 @@
 <?php
 
-namespace Maverick\Router\Collection;
+namespace Maverick\Router\Collection\Decorator;
 
 use PHPUnit_Framework_TestCase;
 use FastRoute\RouteCollector;
+use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 
 /**
- * @coversDefaultClass Maverick\Router\Collection\FastRouteRouteCollection
+ * @coversDefaultClass Maverick\Router\Collection\Decorator\FastRouteRouteCollectionDecorator
  */
-class FastRouteRouteCollectionTest extends PHPUnit_Framework_TestCase
+class FastRouteRouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__invoke
      */
-    public function testInvokeAddsRoutesFromCollectionToCollector()
+    public function testInvokeAddsRoutesFromCollectionDecoratorToCollector()
     {
         $method  = ['GET'];
         $path    = '/hello/world';
@@ -30,6 +31,13 @@ class FastRouteRouteCollectionTest extends PHPUnit_Framework_TestCase
             ->method('getPath')
             ->willReturn($path);
 
+        $collection = $this->getMockBuilder(RouteCollectionInterface::class)
+            ->getMock();
+
+        $collection->expects($this->once())
+            ->method('getRoutes')
+            ->willReturn([$entity]);
+
         $collector = $this->getMockBuilder(RouteCollector::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -38,7 +46,7 @@ class FastRouteRouteCollectionTest extends PHPUnit_Framework_TestCase
             ->method('addRoute')
             ->with($method, $path, $entity);
 
-        $instance = new FastRouteRouteCollection();
+        $instance = new FastRouteRouteCollectionDecorator($collection);
 
         $instance->withRoute($entity);
 
