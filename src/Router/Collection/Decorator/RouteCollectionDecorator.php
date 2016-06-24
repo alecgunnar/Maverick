@@ -11,7 +11,7 @@ namespace Maverick\Router\Collection\Decorator;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntityInterface;
 
-abstract class AbstractRouteCollectionDecorator implements RouteCollectionInterface
+class RouteCollectionDecorator implements RouteCollectionInterface
 {
     /**
      * @var RouteCollectionInterface
