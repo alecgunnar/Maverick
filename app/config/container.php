@@ -45,9 +45,10 @@ return [
     'system.router.entity.factory' => function() {
         return new RouteEntityFactory();
     },
-    'system.config.routes' => function() {
-        return require(__DIR__ . '/router.php');
+    'system.config.routes' => function($c) {
+        return require($c->get('system.config.routes_file'));
     },
+    'system.config.routes_file' => __DIR__ . '/router.php',
     'system.controller.not_found' => function() {
         return new NotFoundController();
     },
