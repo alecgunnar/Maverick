@@ -2,7 +2,8 @@
 
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\Router\FastRouteRouter;
-use Maverick\Router\Collection\FastRouteRouteCollection;
+use Maverick\Router\Collection\RouteCollection;
+use Maverick\Router\Collection\Decorator\FastRouteRouteCollectionDecorator;
 use Maverick\Router\Loader\CallbackRouteLoader;
 use Maverick\Router\Loader\RouteLoader;
 use Maverick\Router\Collection\Factory\RouteCollectionFactory;
@@ -21,7 +22,7 @@ return [
      * System - essential services
      */
     'system.route_collection' => function($c) {
-        $collection = new FastRouteRouteCollection();
+        $collection = new RouteCollection();
 
         $c->get('system.route_loader')
             ->loadRoutes($collection);
@@ -85,9 +86,12 @@ return [
     /*
      * Fast Route
      */
+    'fast_route.collection' => function($c) {
+        return new FastRouteRouteCollectionDecorator($c->get('system.route_collection'));
+    },
     'fast_route.dispatcher' => function($c) {
         return \FastRoute\simpleDispatcher(
-            $c->get('system.route_collection'),
+            $c->get('fast_route.collection'),
             $c->get('fast_route.options')
         );
     },
