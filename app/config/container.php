@@ -86,12 +86,12 @@ return [
     /*
      * Fast Route
      */
-    'fast_route.collection' => function($c) {
+    'fast_route.definitions' => function($c) {
         return new FastRouteRouteCollectionDecorator($c->get('system.route_collection'));
     },
     'fast_route.dispatcher' => function($c) {
         return \FastRoute\simpleDispatcher(
-            $c->get('fast_route.collection'),
+            $c->get('fast_route.definitions'),
             $c->get('fast_route.options')
         );
     },

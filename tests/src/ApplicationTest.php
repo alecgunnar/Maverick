@@ -200,6 +200,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
                 && $instance->has('system.error_handler')
                 && $instance->has('utility.uri_builder')
                 && $instance->has('fast_route.parser')
+                && $instance->has('fast_route.definitions')
                 && $instance->has('fast_route.dispatcher')
                 && $instance->has('fast_route.options')
                 && $instance->has('whoops.runner')
