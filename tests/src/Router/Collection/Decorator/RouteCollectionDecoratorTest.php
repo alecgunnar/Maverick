@@ -24,6 +24,11 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
+    protected function getInstance($collection)
+    {
+        return new class($collection) extends RouteCollectionDecorator { };
+    }
+
     /**
      * @covers ::__construct
      */
@@ -31,7 +36,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
     {
         $given = $expected = $this->getMockRouteCollection();
 
-        $instance = new RouteCollectionDecorator($given);
+        $instance = $this->getInstance($given);
 
         $this->assertAttributeEquals($expected, 'collection', $instance);
     }
@@ -50,7 +55,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->with($entity)
             ->willReturn($collection);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $instance->withRoute($entity);
     }
@@ -60,7 +65,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
      */
     public function testWithRouteReturnsSelf()
     {
-        $instance = new RouteCollectionDecorator($this->getMockRouteCollection());
+        $instance = $this->getInstance($this->getMockRouteCollection());
 
         $ret = $instance->withRoute($this->getMockRouteEntity());
 
@@ -81,7 +86,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->with([$entity])
             ->willReturn($collection);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $instance->withRoutes([$entity]);
     }
@@ -91,7 +96,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
      */
     public function testWithRoutesReturnsSelf()
     {
-        $instance = new RouteCollectionDecorator($this->getMockRouteCollection());
+        $instance = $this->getInstance($this->getMockRouteCollection());
 
         $ret = $instance->withRoutes([$this->getMockRouteEntity()]);
 
@@ -112,7 +117,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->with($expected)
             ->willReturn($collection);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $instance->setPrefix($given);
     }
@@ -122,7 +127,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
      */
     public function testSetPrefixReturnsSelf()
     {
-        $instance = new RouteCollectionDecorator($this->getMockRouteCollection());
+        $instance = $this->getInstance($this->getMockRouteCollection());
 
         $ret = $instance->setPrefix('/prefix');
 
@@ -142,7 +147,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->method('getRoutes')
             ->willReturn($given);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $this->assertSame($expected, $instance->getRoutes());
     }
@@ -162,7 +167,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->with($name)
             ->willReturn($entity);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $this->assertSame($entity, $instance->getRoute($name));
     }
@@ -181,7 +186,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
             ->with($expected)
             ->willReturn($collection);
 
-        $instance = new RouteCollectionDecorator($collection);
+        $instance = $this->getInstance($collection);
 
         $instance->mergeCollection($given);
     }
@@ -191,7 +196,7 @@ class RouteCollectionDecoratorTest extends PHPUnit_Framework_TestCase
      */
     public function testMergeCollectionReturnsSelf()
     {
-        $instance = new RouteCollectionDecorator($this->getMockRouteCollection());
+        $instance = $this->getInstance($this->getMockRouteCollection());
 
         $ret = $instance->mergeCollection($this->getMockRouteCollection());
 
