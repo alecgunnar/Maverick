@@ -6,18 +6,22 @@
  */
 declare(strict_types=1);
 
-namespace Maverick\Router\Collection;
+namespace Maverick\Router\Collection\Decorator;
 
 use FastRoute\RouteCollector;
+use Maverick\Router\Collection\RouteCollectionInterface;
+use Maverick\Router\Entity\RouteEntityInterface;
 
-class FastRouteRouteCollection extends RouteCollection
+class FastRouteRouteCollectionDecorator extends AbstractRouteCollectionDecorator
 {
     /**
      * @param RouteCollector $collector
      */
     public function __invoke(RouteCollector $collector)
     {
-        foreach ($this->routes as $route) {
+        $routes = $this->collection->getRoutes();
+
+        foreach ($routes as $route) {
             $collector->addRoute(
                 $route->getMethods(),
                 $route->getPath(),
