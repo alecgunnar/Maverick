@@ -10,7 +10,6 @@ namespace Maverick\Resolver;
 interface ResolverInterface
 {
     /**
-     * @throws RuntimeException
      * @param mixed $given
      * @return callable
      */

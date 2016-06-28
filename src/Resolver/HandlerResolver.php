@@ -4,6 +4,7 @@
  *
  * @author Alec Carpenter <alecgunnar@gmail.com>
  */
+declare(strict_types=1);
 
 namespace Maverick\Resolver;
 
@@ -25,6 +26,7 @@ class HandlerResolver implements ResolverInterface
     }
 
     /**
+     * @todo Add support for handlers defined like: service.name->methodName
      * @inheritDoc
      */
     public function resolve($given): callable
