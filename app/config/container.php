@@ -12,6 +12,7 @@ use Maverick\Controller\NotFoundController;
 use Maverick\Controller\NotAllowedController;
 use Maverick\ErrorHandler\WhoopsErrorHandler;
 use Maverick\Utility\UriBuilder\FastRouteUriBuilder;
+use Maverick\Resolver\HandlerResolver;
 use Relay\Middleware\ResponseSender as ResponseSenderMiddleware;
 use Whoops\Run as WhoopsRunner;
 use Whoops\Handler\PrettyPageHandler;
@@ -59,7 +60,8 @@ return [
         return new RouterMiddleware(
             $c->get('system.router'),
             $c->get('system.controller.not_found'),
-            $c->get('system.controller.not_allowed')
+            $c->get('system.controller.not_allowed'),
+            $c->get('system.resolver')
         );
     },
     'system.middleware.response_sender' => function($c) {
@@ -70,6 +72,9 @@ return [
             $c->get('whoops.runner'),
             $c->get('whoops.handler')
         );
+    },
+    'system.resolver' => function($c) {
+        return new HandlerResolver($c);
     },
 
     /*

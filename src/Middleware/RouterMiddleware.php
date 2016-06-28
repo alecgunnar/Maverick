@@ -11,6 +11,7 @@ namespace Maverick\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Maverick\Router\AbstractRouter;
+use Maverick\Resolver\ResolverInterface;
 
 class RouterMiddleware implements MiddlewareInterface
 {
@@ -30,16 +31,23 @@ class RouterMiddleware implements MiddlewareInterface
     protected $notAllowedHandler;
 
     /**
+     * @var ResolverInterface
+     */
+    protected $resolver;
+
+    /**
      * @param AbstractRouter $router
      */
     public function __construct(
         AbstractRouter $router,
         callable $notFoundHandler,
-        callable $notAllowedHandler
+        callable $notAllowedHandler,
+        ResolverInterface $resolver
     ) {
         $this->router = $router;
         $this->notFoundHandler = $notFoundHandler;
         $this->notAllowedHandler = $notAllowedHandler;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -52,7 +60,13 @@ class RouterMiddleware implements MiddlewareInterface
 
         switch ($result) {
             case AbstractRouter::ROUTE_FOUND:
-                $handler = $this->router->getMatchedRoute();
+                $handler = $this->router->getMatchedRoute()
+                    ->getHandler();
+
+                if (!is_callable($handler)) {
+                    $handler = $this->resolver->resolve($handler);
+                }
+
                 break;
 
             case AbstractRouter::ROUTE_NOT_FOUND:
