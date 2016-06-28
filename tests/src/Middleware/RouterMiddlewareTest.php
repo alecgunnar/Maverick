@@ -14,11 +14,13 @@ use Maverick\Resolver\ResolverInterface;
  */
 class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 {
-    protected $dumyHandler;
+    protected $dummyHandler;
 
     public function __construct()
     {
-        $this->dummyHandler = function() { };
+        $this->dummyHandler = function($request, $response) {
+            return $response;
+        };
     }
 
     protected function getMockRouter()
@@ -45,6 +47,16 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
+    protected function getInstance($router = null, $notFound = null, $notAllowed = null, $resolver = null)
+    {
+        return new RouterMiddleware(
+            $router ?? $this->getMockRouter(),
+            $notFound ?? $this->dummyHandler,
+            $notAllowed ?? $this->dummyHandler,
+            $resolver ?? $this->getMockResolver()
+        );
+    }
+
     /**
      * @covers ::__construct
      */
@@ -55,6 +67,30 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $instance = new RouterMiddleware($given, $this->dummyHandler, $this->dummyHandler, $this->getMockResolver());
 
         $this->assertAttributeSame($expected, 'router', $instance);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructSetsNotFoundHandler()
+    {
+        $given = $expected = function() { return 'handler'; };
+
+        $instance = new RouterMiddleware($this->getMockRouter(), $given, $this->dummyHandler, $this->getMockResolver());
+
+        $this->assertAttributeSame($expected, 'notFoundHandler', $instance);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructSetsNotAllowedHandler()
+    {
+        $given = $expected = function() { return 'handler'; };
+
+        $instance = new RouterMiddleware($this->getMockRouter(), $this->dummyHandler, $given, $this->getMockResolver());
+
+        $this->assertAttributeSame($expected, 'notAllowedHandler', $instance);
     }
 
     /**
@@ -72,42 +108,80 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__invoke
      */
-    public function testInvokeSendsRequestToRouter()
+    public function testInvokeCallsNotFoundHandler()
     {
-        $given = $expected = ServerRequest::fromGlobals();
+        $request = ServerRequest::fromGlobals();
+        $response = new Response();
 
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
             ->method('checkRequest')
-            ->with($expected)
-            ->willReturn(AbstractRouter::ROUTE_FOUND);
-
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $this->dummyHandler, $this->getMockResolver());
-
-        $instance($given, new Response(), function() {
-            return new Response();
-        });
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeRunsMatchedRouteCallableHandlerWithRequestResponseAndParams()
-    {
-        $params = [
-            'hello' => 'world'
-        ];
-
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
+            ->with($request)
+            ->willReturn(AbstractRouter::ROUTE_NOT_FOUND);
 
         $handler = $this->getMockCallable();
 
         $handler->expects($this->once())
             ->method('__invoke')
-            ->with($request, $response, $params)
+            ->with($request, $response)
             ->willReturn($response);
+
+        $instance = $this->getInstance($router, $handler);
+
+        $instance($request, $response, $this->dummyHandler);
+    }
+
+    /**
+     * @covers ::__invoke
+     */
+    public function testInvokeCallsNotAllowedHandlerWithAllowedMethods()
+    {
+        $methods = ['GET', 'POST'];
+
+        $request = ServerRequest::fromGlobals();
+        $response = new Response();
+
+        $router = $this->getMockRouter();
+
+        $router->expects($this->once())
+            ->method('checkRequest')
+            ->with($request)
+            ->willReturn(AbstractRouter::ROUTE_NOT_ALLOWED);
+
+        $router->expects($this->once())
+            ->method('getAllowedMethods')
+            ->willReturn($methods);
+
+        $handler = $this->getMockCallable();
+
+        $requestWithMethods = $request->withAttribute(RouterMiddleware::ALLOWED_METHODS, $methods);
+
+        $handler->expects($this->once())
+            ->method('__invoke')
+            ->with($requestWithMethods, $response)
+            ->willReturn($response);
+
+        $instance = $this->getInstance($router, null, $handler);
+
+        $instance($request, $response, $this->dummyHandler);
+    }
+
+    /**
+     * @covers ::__invoke
+     */
+    public function testInvokeCallsRouteHandlerAsMiddlewareWithParams()
+    {
+        $request = ServerRequest::fromGlobals();
+        $response = new Response();
+
+        $params = [
+            'hello' => 'world'
+        ];
+
+        $handler = $this->dummyHandler;
+
+        $requestWithParams = $request->withAttribute(RouterMiddleware::REQUEST_ATTRS, $params);
 
         $route = $this->getMockRouteEntity();
 
@@ -115,58 +189,21 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
             ->method('getHandler')
             ->willReturn($handler);
 
-        $router = $this->getMockRouter();
-
-        $router->expects($this->once())
-            ->method('checkRequest')
-            ->willReturn(AbstractRouter::ROUTE_FOUND);
-
-        $router->expects($this->once())
-            ->method('getParams')
-            ->willReturn($params);
-
-        $router->expects($this->once())
-            ->method('getMatchedRoute')
+        $route->expects($this->once())
+            ->method('setHandler')
+            ->with($handler)
             ->willReturn($route);
 
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $this->dummyHandler, $this->getMockResolver());
-
-        $instance($request, $response, function() {
-            return new Response();
-        });
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeRunsMatchedRouteServiceHandlerFromResolverWithRequestResponseAndParams()
-    {
-        $given = $expected = 'service.name';
-
-        $params = [
-            'hello' => 'world'
-        ];
-
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $handler = $this->getMockCallable();
-
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response, $params)
-            ->willReturn($response);
-
-        $route = $this->getMockRouteEntity();
-
         $route->expects($this->once())
-            ->method('getHandler')
-            ->willReturn($given);
+            ->method('__invoke')
+            ->with($requestWithParams, $response)
+            ->willReturn($response);
 
         $router = $this->getMockRouter();
 
         $router->expects($this->once())
             ->method('checkRequest')
+            ->with($request)
             ->willReturn(AbstractRouter::ROUTE_FOUND);
 
         $router->expects($this->once())
@@ -181,146 +218,11 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $resolver->expects($this->once())
             ->method('resolve')
-            ->with($expected)
+            ->with($handler)
             ->willReturn($handler);
 
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $this->dummyHandler, $resolver);
+        $instance = $this->getInstance($router, null, null, $resolver);
 
-        $instance($request, $response, function() {
-            return new Response();
-        });
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeCallsNextWithGivenRequestResponse()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $route = $this->getMockRouteEntity();
-
-        $route->expects($this->once())
-            ->method('getHandler')
-            ->willReturn(function($request, $response) { return $response; });
-
-        $next = $this->getMockCallable();
-
-        $next->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response)
-            ->willReturn($response);
-
-        $router = $this->getMockRouter();
-
-        $router->expects($this->once())
-            ->method('checkRequest')
-            ->willReturn(AbstractRouter::ROUTE_FOUND);
-
-        $router->expects($this->once())
-            ->method('getMatchedRoute')
-            ->willReturn($route);
-
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $this->dummyHandler, $this->getMockResolver());
-
-        $instance($request, new Response(), $next);
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeReturnsResponseFromNextMiddleware()
-    {
-        $response = new Response();
-
-        $route = $this->getMockRouteEntity();
-
-        $route->expects($this->once())
-            ->method('getHandler')
-            ->willReturn(function() { });
-
-        $next = $this->getMockBuilder('Maverick\Testing\Utility\GenericCallable')
-            ->getMock();
-
-        $next->expects($this->once())
-            ->method('__invoke')
-            ->willReturn($response);
-
-        $router = $this->getMockRouter();
-
-        $router->expects($this->once())
-            ->method('checkRequest')
-            ->willReturn(AbstractRouter::ROUTE_FOUND);
-
-        $router->expects($this->once())
-            ->method('getMatchedRoute')
-            ->willReturn($route);
-
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $this->dummyHandler, $this->getMockResolver());
-
-        $ret = $instance(ServerRequest::fromGlobals(), new Response(), $next);
-
-        $this->assertSame($response, $ret);
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeRunsNotFoundHandlerWithRequestAndResponse()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $router = $this->getMockRouter();
-
-        $router->expects($this->once())
-            ->method('checkRequest')
-            ->willReturn(AbstractRouter::ROUTE_NOT_FOUND);
-
-        $handler = $this->getMockCallable();
-
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response);
-
-        $instance = new RouterMiddleware($router, $handler, $this->dummyHandler, $this->getMockResolver());
-
-        $instance($request, $response, function() {
-            return new Response();
-        });
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testInvokeRunsNotAllowedHandlerWithRequestResponseAndAllowedMethods()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $methods = ['GET', 'POST', 'PUT'];
-
-        $router = $this->getMockRouter();
-
-        $router->expects($this->once())
-            ->method('checkRequest')
-            ->willReturn(AbstractRouter::ROUTE_NOT_ALLOWED);
-
-        $router->expects($this->once())
-            ->method('getAllowedMethods')
-            ->willReturn($methods);
-
-        $handler = $this->getMockCallable();
-
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response, $methods);
-
-        $instance = new RouterMiddleware($router, $this->dummyHandler, $handler, $this->getMockResolver());
-
-        $instance($request, $response, function() {
-            return new Response();
-        });
+        $instance($request, $response, $this->dummyHandler);
     }
 }

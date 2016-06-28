@@ -10,6 +10,7 @@ namespace Maverick\Router\Entity;
 use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 class RouteEntity implements RouteEntityInterface
 {
@@ -109,6 +110,20 @@ class RouteEntity implements RouteEntityInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        if (!is_callable($this->handler)) {
+            throw new RuntimeException('You cannot __invoke a RouteEntity without first setting a callable handler.');
+        }
+
+        $this->withMiddleware($this->handler);
+
+        return $this->run($request, $response);
+    }
+
+    /**
      * @param string $path = null
      * @return string
      */
@@ -119,17 +134,5 @@ class RouteEntity implements RouteEntityInterface
         }
 
         return trim($path, self::SLASH);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        if (is_callable($this->handler)) {
-            $this->withMiddleware($this->handler);
-        }
-
-        return $this->run($request, $response);
     }
 }

@@ -290,9 +290,7 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
 
         $instance->setHandler($handler);
 
-        $instance($request, $response, function() {
-            return new Response();
-        });
+        $instance($request, $response);
     }
 
     /**
@@ -313,10 +311,23 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
 
         $instance = new RouteEntity();
 
-        $instance->withMiddleware($handler);
+        $instance->setHandler(function($req, $res) { return $res; })
+            ->withMiddleware($handler);
 
-        $instance($request, $response, function() {
-            return new Response();
-        });
+        $instance($request, $response);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     * @covers ::__invoke
+     */
+    public function testInvokeThrowsExceptionWithoutCallableHandler()
+    {
+        $request  = ServerRequest::fromGlobals();
+        $response = new Response();
+
+        $instance = new RouteEntity();
+
+        $instance($request, $response);
     }
 }

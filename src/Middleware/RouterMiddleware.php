@@ -36,7 +36,20 @@ class RouterMiddleware implements MiddlewareInterface
     protected $resolver;
 
     /**
+     * @var string
+     */
+    const REQUEST_ATTRS = 'REQUEST_ATTRIBUTES';
+
+    /**
+     * @var string
+     */
+    const ALLOWED_METHODS = 'ALLOWED_METHODS';
+
+    /**
      * @param AbstractRouter $router
+     * @param callable $notFoundHandler
+     * @param callable $notAllowedHandler
+     * @param ResolverInterface $resolver
      */
     public function __construct(
         AbstractRouter $router,
@@ -60,13 +73,8 @@ class RouterMiddleware implements MiddlewareInterface
 
         switch ($result) {
             case AbstractRouter::ROUTE_FOUND:
-                $handler = $this->router->getMatchedRoute()
-                    ->getHandler();
-
-                if (!is_callable($handler)) {
-                    $handler = $this->resolver->resolve($handler);
-                }
-
+                $route   = $this->router->getMatchedRoute();
+                $handler = $this->resolver->resolve($route->getHandler());
                 break;
 
             case AbstractRouter::ROUTE_NOT_FOUND:
@@ -74,12 +82,22 @@ class RouterMiddleware implements MiddlewareInterface
                 break;
 
             case AbstractRouter::ROUTE_NOT_ALLOWED:
-                $params  = $this->router->getAllowedMethods();
+                $methods = $this->router->getAllowedMethods();
                 $handler = $this->notAllowedHandler;
                 break;
         }
 
-        $response = $handler($request, $response, $params);
+        if (isset($route)) {
+            $request = $request->withAttribute(self::REQUEST_ATTRS, $params);
+
+            $route->setHandler($handler);
+
+            $handler = $route;
+        } else if (isset($methods)) {
+            $request = $request->withAttribute(self::ALLOWED_METHODS, $methods);
+        }
+
+        $response = $handler($request, $response);
 
         return $next($request, $response);
     }

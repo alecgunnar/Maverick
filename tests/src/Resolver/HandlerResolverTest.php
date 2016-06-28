@@ -5,6 +5,9 @@ namespace Maverick\Resolver;
 use PHPUnit_Framework_TestCase;
 use Interop\Container\ContainerInterface;
 
+/**
+ * @coversDefaultClass Maverick\Resolver\HandlerResolver
+ */
 class HandlerResolverTest extends PHPUnit_Framework_TestCase
 {
     protected function getMockContainer()
@@ -13,11 +16,14 @@ class HandlerResolverTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    public function getInstance($container = null)
+    protected function getInstance($container = null)
     {
         return new HandlerResolver($container ?? $this->getMockContainer());
     }
 
+    /**
+     * @covers ::__construct
+     */
     public function testConstructorSetsContainer()
     {
         $given = $expected = $this->getMockContainer();
@@ -27,6 +33,9 @@ class HandlerResolverTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($expected, 'container', $instance);
     }
 
+    /**
+     * @covers ::resolve
+     */
     public function testCallablesAreImmediatelyReturned()
     {
         $given = $expected = function() { return 'Call me maybe!?'; };
@@ -38,6 +47,9 @@ class HandlerResolverTest extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $given);
     }
 
+    /**
+     * @covers ::resolve
+     */
     public function testServicesAreLoadedFromContainer()
     {
         $name    = 'service.name';
