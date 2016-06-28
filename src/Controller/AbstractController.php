@@ -25,11 +25,6 @@ abstract class AbstractController
     protected $response;
 
     /**
-     * @var string[]
-     */
-    protected $params;
-
-    /**
      * @var RendererInterface
      */
     protected $renderer;
@@ -43,15 +38,16 @@ abstract class AbstractController
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        array $params
+        callable $next
     ): ResponseInterface {
         $this->request  = $request;
         $this->response = $response;
-        $this->params   = $params;
 
         $ret = $this->doAction();
 
-        return ($ret instanceof ResponseInterface) ? $ret : $this->response;
+        $response = ($ret instanceof ResponseInterface) ? $ret : $this->response;
+
+        return $next($request, $response);
     }
 
     /**

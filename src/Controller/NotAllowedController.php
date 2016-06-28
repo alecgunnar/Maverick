@@ -11,6 +11,7 @@ namespace Maverick\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Maverick\Router\AbstractRouter;
+use Maverick\Middleware\RouterMiddleware;
 
 class NotAllowedController
 {
@@ -20,13 +21,13 @@ class NotAllowedController
      * @param array $methods
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $methods): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         // This needs to respond with the allowed methods too...
         $response = $response->withStatus(405)
             ->withHeader('Allow', implode(
                 ',',
-                $methods
+                $request->getAttribute(RouterMiddleware::ALLOWED_METHODS, [])
             ));
 
         $body = <<<HERE
