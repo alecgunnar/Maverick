@@ -33,8 +33,7 @@ return [
         return new CallbackRouteLoader(
             $c->get('system.config.routes'),
             $c->get('system.router.collection.factory'),
-            $c->get('system.router.entity.factory'),
-            $c
+            $c->get('system.router.entity.factory')
         );
     },
     'system.router' => function($c) {

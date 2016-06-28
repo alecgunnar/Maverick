@@ -13,7 +13,6 @@ use Maverick\Router\Collection\Factory\RouteCollectionFactory;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\Factory\RouteEntityFactory;
 use Maverick\Router\Entity\RouteEntityInterface;
-use Interop\Container\ContainerInterface;
 use RuntimeException;
 
 class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterface
@@ -34,11 +33,6 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @var RouteEntityFactory
      */
     protected $entityFactory;
-
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
 
     /**
      * @var string
@@ -63,13 +57,11 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
         callable $builder,
         RouteCollectionFactory $collectionFactory,
         RouteEntityFactory $entityFactory,
-        ContainerInterface $container,
         string $prefix = null
     ) {
         $this->builder = $builder;
         $this->collectionFactory = $collectionFactory;
         $this->entityFactory = $entityFactory;
-        $this->container = $container;
         $this->prefix = $prefix;
     }
 
@@ -194,10 +186,6 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      */
     public function match(array $methods, string $path, $handler, string $name = null): RouteEntityInterface
     {
-        if (!is_callable($handler)) {
-            $handler = $this->container->get($handler);
-        }
-
         $entity = $this->entityFactory->build($methods, $path, $handler);
 
         if ($name) {
@@ -214,11 +202,13 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      */
     public function group(string $prefix, callable $builder): CallbackRouteLoader
     {
+        /*
+         * @todo Factory-ize this
+         */
         $loader = new self(
             $builder,
             $this->collectionFactory,
             $this->entityFactory,
-            $this->container,
             $prefix
         );
 

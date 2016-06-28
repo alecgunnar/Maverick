@@ -7,17 +7,14 @@
 
 namespace Maverick\Router\Loader;
 
-use Interop\Container\ContainerInterface;
-
 class FileSystemRouteLoader extends RouteLoader
 {
     /**
-     * @param ContainerInterface $container
      * @param string $location
      */
-    public function __construct(ContainerInterface $container, string $location)
+    public function __construct(string $location)
     {
         $routes = require($location);
-        parent::__construct($container, $routes);
+        parent::__construct($routes);
     }
 }

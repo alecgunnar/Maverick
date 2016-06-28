@@ -5,7 +5,6 @@ namespace Maverick\Router\Loader;
 use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use Interop\Container\ContainerInterface;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntity;
 
@@ -14,12 +13,6 @@ use Maverick\Router\Entity\RouteEntity;
  */
 class RouterLoaderTest extends PHPUnit_Framework_TestCase
 {
-    protected function getMockContainer()
-    {
-        return $this->getMockBuilder(ContainerInterface::class)
-            ->getMock();
-    }
-
     protected function getMockRouteCollection()
     {
         return $this->getMockBuilder(RouteCollectionInterface::class)
@@ -39,21 +32,9 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $instance = new RouteLoader($this->getMockContainer(), $given);
+        $instance = new RouteLoader($given);
 
         $this->assertAttributeEquals($expected, 'routes', $instance);
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstructSetsContainer()
-    {
-        $given = $expected = $this->getMockContainer();
-
-        $instance = new RouteLoader($given, []);
-
-        $this->assertAttributeSame($expected, 'container', $instance);
     }
 
     /**
@@ -69,9 +50,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-    $container = $this->getMockContainer();
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($given);
 
@@ -83,9 +62,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
      */
     public function testWithRoutesReturnsSelf()
     {
-    $container = $this->getMockContainer();
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $ret = $instance->withRoutes([]);
 
@@ -119,9 +96,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
             ->method('withRoute')
             ->with($entity, $name);
 
-        $container = $this->getMockContainer();
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($data)
             ->loadRoutes($collection);
@@ -153,9 +128,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
             ->method('withRoute')
             ->with($entity, $name);
 
-        $container = $this->getMockContainer();
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($data)
             ->loadRoutes($collection);
@@ -179,9 +152,8 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         ];
 
         $collection = $this->getMockRouteCollection();
-        $container  = $this->getMockContainer();
 
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($data)
             ->loadRoutes($collection);
@@ -205,97 +177,8 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         ];
 
         $collection = $this->getMockRouteCollection();
-        $container  = $this->getMockContainer();
 
-        $instance = new RouteLoader($container);
-
-        $instance->withRoutes($data)
-            ->loadRoutes($collection);
-    }
-
-    /**
-     * @covers ::loadRoutes
-     * @covers ::processRoute
-     */
-    public function testLoadRoutesGetsHandlerFromContainerWhenServiceNameProvided()
-    {
-        $name = 'route';
-        $methods = ['GET'];
-        $path = '/hello';
-        $service = 'test.service';
-        $handler = function() { };
-
-        $data = [
-            $name => [
-                'methods' => $methods,
-                'path' => $path,
-                'handler' => $service
-            ]
-        ];
-
-        $entity = new RouteEntity($methods, $path, $handler);
-
-        $collection = $this->getMockRouteCollection();
-
-        $collection->expects($this->once())
-            ->method('withRoute')
-            ->with($entity, $name);
-
-        $container = $this->getMockContainer();
-
-        $container->expects($this->once())
-            ->method('get')
-            ->with($service)
-            ->willReturn($handler);
-
-        $instance = new RouteLoader($container);
-
-        $instance->withRoutes($data)
-            ->loadRoutes($collection);
-    }
-
-    /**
-     * @covers ::loadRoutes
-     * @covers ::processRoute
-     */
-    public function testLoadRoutesGetsMiddlewareFromContainer()
-    {
-        $name = 'route';
-        $methods = ['GET'];
-        $path = '/hello';
-        $service = 'test.middleware';
-        $middleware = function() { };
-        $handler = function() { };
-
-        $data = [
-            $name => [
-                'methods' => $methods,
-                'path' => $path,
-                'handler' => $handler,
-                'middleware' => [
-                    $service
-                ]
-            ]
-        ];
-
-        $entity = new RouteEntity($methods, $path, $handler);
-
-        $entity->withMiddleware($middleware);
-
-        $collection = $this->getMockRouteCollection();
-
-        $collection->expects($this->once())
-            ->method('withRoute')
-            ->with($entity, $name);
-
-        $container = $this->getMockContainer();
-
-        $container->expects($this->once())
-            ->method('get')
-            ->with($service)
-            ->willReturn($middleware);
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($data)
             ->loadRoutes($collection);
@@ -334,9 +217,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
             ->method('withRoute')
             ->with($entity, $name);
 
-        $container = $this->getMockContainer();
-
-        $instance = new RouteLoader($container);
+        $instance = new RouteLoader();
 
         $instance->withRoutes($data)
             ->loadRoutes($collection);

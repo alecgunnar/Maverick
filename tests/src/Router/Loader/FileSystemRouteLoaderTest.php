@@ -29,26 +29,6 @@ CODE;
             ->url();
     }
 
-    protected function getMockContainer()
-    {
-        return $this->getMockBuilder(ContainerInterface::class)
-            ->getMock();
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstructorSetsContainer()
-    {
-        $given = $expected = $this->getMockContainer();
-
-        $location = $this->getMockFilePath();
-
-        $instance = new FileSystemRouteLoader($given, $location);
-
-        $this->assertAttributeSame($expected, 'container', $instance);
-    }
-
     /**
      * @covers ::__construct
      */
@@ -64,7 +44,7 @@ CODE;
 
         $location = $this->getMockFilePath($data);
 
-        $instance = new FileSystemRouteLoader($this->getMockContainer(), $location);
+        $instance = new FileSystemRouteLoader($location);
 
         $this->assertAttributeEquals($data, 'routes', $instance);
     }

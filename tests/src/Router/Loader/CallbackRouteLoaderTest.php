@@ -3,7 +3,6 @@
 namespace Maverick\Router\Loader;
 
 use PHPUnit_Framework_TestCase;
-use Interop\Container\ContainerInterface;
 use Maverick\Router\Collection\Factory\RouteCollectionFactory;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\Factory\RouteEntityFactory;
@@ -17,12 +16,6 @@ use Maverick\Testing\Utility\GenericCallable;
  */
 class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
 {
-    protected function getMockContainer()
-    {
-        return $this->getMockBuilder(ContainerInterface::class)
-            ->getMock();
-    }
-
     protected function getMockRouteCollectionFactory()
     {
         return $this->getMockBuilder(RouteCollectionFactory::class)
@@ -63,14 +56,12 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
         callable $builder = null,
         RouteCollectionFactory $collection = null,
         RouteEntityFactory $entity = null,
-        ContainerInterface $container = null,
         string $prefix = null
     ) {
         return new CallbackRouteLoader(
             $builder ?? function() { },
             $collection ?? $this->getMockRouteCollectionFactory(),
             $entity ?? $this->getMockRouteEntityFactory(),
-            $container ?? $this->getMockContainer(),
             $prefix
         );
     }
@@ -85,8 +76,7 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
         $instance = new CallbackRouteLoader(
             $given,
             $this->getMockRouteCollectionFactory(),
-            $this->getMockRouteEntityFactory(),
-            $this->getMockContainer()
+            $this->getMockRouteEntityFactory()
         );
 
         $this->assertAttributeEquals($expected, 'builder', $instance);
@@ -102,8 +92,7 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
         $instance = new CallbackRouteLoader(
             function() { },
             $given,
-            $this->getMockRouteEntityFactory(),
-            $this->getMockContainer()
+            $this->getMockRouteEntityFactory()
         );
 
         $this->assertAttributeEquals($expected, 'collectionFactory', $instance);
@@ -119,28 +108,10 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
         $instance = new CallbackRouteLoader(
             function() { },
             $this->getMockRouteCollectionFactory(),
-            $given,
-            $this->getMockContainer()
-        );
-
-        $this->assertAttributeEquals($expected, 'entityFactory', $instance);
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstructorSetsContainer()
-    {
-        $given = $expected = $this->getMockContainer();
-
-        $instance = new CallbackRouteLoader(
-            function() { },
-            $this->getMockRouteCollectionFactory(),
-            $this->getMockRouteEntityFactory(),
             $given
         );
 
-        $this->assertAttributeEquals($expected, 'container', $instance);
+        $this->assertAttributeEquals($expected, 'entityFactory', $instance);
     }
 
     /**
@@ -154,7 +125,6 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
             function() { },
             $this->getMockRouteCollectionFactory(),
             $this->getMockRouteEntityFactory(),
-            $this->getMockContainer(),
             $given
         );
 
@@ -350,40 +320,6 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::match
      */
-    public function testMatchPullsHandlerFromContainerIfNotAString()
-    {
-        $methods = ['GET'];
-        $path    = '/hello/world';
-        $service = 'test.service';
-        $handler = function() { };
-
-        $expected = new RouteEntity($methods, $path, $handler);
-
-        $container = $this->getMockContainer();
-
-        $container->expects($this->once())
-            ->method('get')
-            ->with($service)
-            ->willReturn($handler);
-
-        $entity = $this->getMockRouteEntityFactory();
-
-        $entity->expects($this->once())
-            ->method('build')
-            ->with($methods, $path, $handler)
-            ->willReturn($expected);
-
-        $instance = $this->getInstance(null, null, $entity, $container);
-
-        $ret = $instance->match($methods, $path, $service);
-
-        $this->assertAttributeEquals([$expected], 'routes', $instance);
-        $this->assertSame($expected, $ret);
-    }
-
-    /**
-     * @covers ::match
-     */
     public function testMatchAddsRouteWithName()
     {
         $name    = 'route.name';
@@ -410,6 +346,33 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::match
+     */
+    public function testMatchAddsRouteWithoutName()
+    {
+        $methods = ['GET'];
+        $path    = '/hello/world';
+        $service = 'test.service';
+        $handler = function() { };
+
+        $expected = new RouteEntity($methods, $path, $handler);
+
+        $entity = $this->getMockRouteEntityFactory();
+
+        $entity->expects($this->once())
+            ->method('build')
+            ->with($methods, $path, $handler)
+            ->willReturn($expected);
+
+        $instance = $this->getInstance(null, null, $entity);
+
+        $ret = $instance->match($methods, $path, $handler);
+
+        $this->assertAttributeEquals([$expected], 'routes', $instance);
+        $this->assertSame($expected, $ret);
+    }
+
+    /**
      * @covers ::group
      */
     public function testGroupCreatesAndAddsLoader()
@@ -417,14 +380,12 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
         $builder = function() { };
         $collection = $this->getMockRouteCollectionFactory();
         $entity = $this->getMockRouteEntityFactory();
-        $container = $this->getMockContainer();
         $prefix = '/this/is/a/prefix';
 
         $expected = $this->getInstance(
             $builder,
             $collection,
             $entity,
-            $container,
             $prefix
         );
 
@@ -432,7 +393,6 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
             null,
             $collection,
             $entity,
-            $container,
             $prefix
         );
 
@@ -509,7 +469,7 @@ class CallbackRouterLoaderTest extends PHPUnit_Framework_TestCase
             ->with($prefix)
             ->willReturn($collection);
 
-        $instance = $this->getInstance(null, null, null, null, $prefix);
+        $instance = $this->getInstance(null, null, null, $prefix);
 
         $instance->loadRoutes($collection);
     }

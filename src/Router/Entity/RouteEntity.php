@@ -26,7 +26,7 @@ class RouteEntity implements RouteEntityInterface
     protected $path;
 
     /**
-     * @var callable
+     * @var mixed
      */
     protected $handler;
 
@@ -38,9 +38,9 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @param string[] $methods = []
      * @param string $path = ''
-     * @param callable $handler = null
+     * @param mixed $handler = null
      */
-    public function __construct(array $methods = [], string $path = '', callable $handler = null)
+    public function __construct(array $methods = [], string $path = '', $handler = null)
     {
         $this->methods = $methods;
         $this->handler = $handler;
@@ -86,7 +86,7 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function setHandler(callable $handler): RouteEntityInterface
+    public function setHandler($handler): RouteEntityInterface
     {
         $this->handler = $handler;
         return $this;
@@ -95,7 +95,7 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function getHandler(): callable
+    public function getHandler()
     {
         return $this->handler;
     }

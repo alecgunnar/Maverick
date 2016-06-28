@@ -7,7 +7,6 @@
 
 namespace Maverick\Router\Loader;
 
-use Interop\Container\ContainerInterface;
 use RuntimeException;
 use Maverick\Router\Collection\RouteCollectionInterface;
 use Maverick\Router\Entity\RouteEntity;
@@ -15,22 +14,15 @@ use Maverick\Router\Entity\RouteEntity;
 class RouteLoader implements RouteLoaderInterface
 {
     /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
      * @var mixed[]
      */
     protected $routes = [];
 
     /**
-     * @param ContainerInterface $container
      * @param array $routes
      */
-    public function __construct(ContainerInterface $container, array $routes = [])
+    public function __construct(array $routes = [])
     {
-        $this->container = $container;
         $this->routes    = $routes;
     }
 
@@ -91,20 +83,10 @@ class RouteLoader implements RouteLoaderInterface
 
         $handler = $data['handler'];
 
-        if (!is_callable($handler)) {
-            $handler = $this->container->get((string) $handler);
-        }
-
         $entity = new RouteEntity($methods, $path, $handler);
 
-        if (isset($data['middleware'])) {
-            foreach ($data['middleware'] as $middleware) {
-                if (!is_callable($middleware)) {
-                    $middleware = $this->container->get($middleware);
-                }
-
-                $entity->withMiddleware($middleware);
-            }
+        if (isset($data['middleware']) && is_array($data['middleware'])) {
+            $entity->withMiddlewares($data['middleware']);
         }
 
         return $entity;
