@@ -41,6 +41,14 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     }
 
     /**
+     * @return ContainerInterface[]
+     */
+    public function getContainers()
+    {
+        return $this->containers;
+    }
+
+    /**
      * @inheritDoc
      */
     public function has($id): bool
@@ -84,6 +92,8 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
     /**
      * Create the system's container with all of
      * the basic dependencies
+     *
+     * @return Application
      */
     public function loadContainer()
     {
@@ -96,23 +106,33 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
         $builder->addDefinitions(dirname(__DIR__) . '/app/config/container.php');
 
         $this->withContainer($builder->build());
+
+        return $this;
     }
 
     /**
      * Loads the error handler found in the container
+     *
+     * @return Application
      */
     public function loadErrorHandler()
     {
         $this->get('system.error_handler')
             ->load();
+
+        return $this;
     }
 
     /**
      * Load framework specific middleware
+     *
+     * @return Application
      */
     public function loadMiddleware()
     {
         $this->withMiddleware($this->get('system.middleware.router'))
             ->withMiddleware($this->get('system.middleware.response_sender'));
+
+        return $this;
     }
 }

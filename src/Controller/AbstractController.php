@@ -69,6 +69,24 @@ abstract class AbstractController
     }
 
     /**
+     * @param string $location
+     */
+    protected function seeOther(string $location)
+    {
+        $this->response = $this->response->setStatus(303)
+            ->withHeader('Location', $location);
+    }
+
+    /**
+     * @param string $location
+     */
+    protected function movedPermanently(string $location)
+    {
+        $this->response = $this->response->setStatus(301)
+            ->withHeader('Location', $location);
+    }
+
+    /**
      * The action of the controller
      *
      * @return ResponseInterface|null

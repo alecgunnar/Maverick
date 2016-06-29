@@ -5,8 +5,10 @@ namespace Maverick;
 use PHPUnit_Framework_TestCase;
 use Interop\Container\ContainerInterface;
 use DI\ContainerBuilder;
+use DI\Container;
 use Maverick\Middleware\RouterMiddleware;
 use Maverick\ErrorHandler\ErrorHandlerInterface;
+use Maverick\Testing\Middleware\SampleMiddleware;
 
 /**
  * @coversDefaultClass Maverick\Application
@@ -16,6 +18,12 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     protected function getMockContainer()
     {
         return $this->getMockBuilder(ContainerInterface::class)
+            ->getMock();
+    }
+
+    protected function getSampleMiddleware()
+    {
+        return $this->getMockBuilder(SampleMiddleware::class)
             ->getMock();
     }
 
@@ -47,6 +55,27 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $ret = $instance->withContainer($container);
 
         $this->assertSame($instance, $ret);
+    }
+
+    /**
+     * @covers ::getContainers
+     */
+    public function testGetContainersReturnsListOfContainers()
+    {
+        $container1 = $this->getMockContainer();
+        $container2 = $this->getMockContainer();
+
+        $expected = [
+            $container1,
+            $container2
+        ];
+
+        $instance = new Application();
+
+        $instance->withContainer($container1)
+            ->withContainer($container2);
+
+        $this->assertSame($expected, $instance->getContainers());
     }
 
     /**
@@ -175,26 +204,66 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::initialize
-     * @covers ::loadMiddleware
+     * @covers ::loadContainer
      */
-    public function testInitializeAddsRequiredMiddlewareFromContainer()
+    public function testLoadContainerCreatesContainer()
     {
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $expected = [$container];
+
         $instance = new Application();
 
-        $instance->initialize();
+        $ret = $instance->loadContainer();
 
-        $this->assertSame([
-            $instance->get('system.middleware.router'),
-            $instance->get('system.middleware.response_sender')
-        ], $instance->getMiddleware());
+        $this->assertContainsOnlyInstancesOf(ContainerInterface::class, $instance->getContainers());
+        $this->assertSame($instance, $ret);
     }
 
     /**
-     * @covers ::initialize
+     * @covers ::loadMiddleware
+     */
+    public function testLoadMiddlewareAddsRequiredMiddlewareFromContainer()
+    {
+        $routerMiddleware = $this->getSampleMiddleware();
+        $responderMiddleware = $this->getSampleMiddleware();
+
+        $expected = [
+            $routerMiddleware,
+            $responderMiddleware
+        ];
+
+        $container = $this->getMockContainer();
+
+        $container->expects($this->any())
+            ->method('has')
+            ->willReturn(true);
+
+        $container->expects($this->at(1))
+            ->method('get')
+            ->with('system.middleware.router')
+            ->willReturn($routerMiddleware);
+
+        $container->expects($this->at(3))
+            ->method('get')
+            ->with('system.middleware.response_sender')
+            ->willReturn($responderMiddleware);
+
+        $instance = new Application();
+
+        $ret = $instance->withContainer($container)
+            ->loadMiddleware();
+
+        $this->assertAttributeSame($expected, 'middleware', $instance);
+        $this->assertSame($instance, $ret);
+    }
+
+    /**
      * @covers ::loadErrorHandler
      */
-    public function testInitializeLoadsErrorHandlerFromContainer()
+    public function testLoadsErrorHandlerLoadsErrorHandlerFromContainer()
     {
         $handler = $this->getMockBuilder(ErrorHandlerInterface::class)
             ->getMock();
@@ -214,9 +283,10 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 
         $instance = new Application();
 
-        $instance->withContainer($container);
+        $ret = $instance->withContainer($container)
+            ->loadErrorHandler();
 
-        $instance->initialize();
+        $this->assertSame($instance, $ret);
     }
 
     /**
