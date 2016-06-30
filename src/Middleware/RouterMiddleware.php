@@ -84,7 +84,7 @@ class RouterMiddleware implements MiddlewareInterface
 
         if (isset($route)) {
             foreach ($params as $key => $value) {
-                $request->withAttribute($key, $value);
+                $request = $request->withAttribute($key, $value);
             }
 
             $route->setHandler($handler);
