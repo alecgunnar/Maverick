@@ -38,11 +38,6 @@ class RouterMiddleware implements MiddlewareInterface
     /**
      * @var string
      */
-    const REQUEST_ATTRS = 'REQUEST_ATTRIBUTES';
-
-    /**
-     * @var string
-     */
     const ALLOWED_METHODS = 'ALLOWED_METHODS';
 
     /**
@@ -88,7 +83,9 @@ class RouterMiddleware implements MiddlewareInterface
         }
 
         if (isset($route)) {
-            $request = $request->withAttribute(self::REQUEST_ATTRS, $params);
+            foreach ($params as $key => $value) {
+                $request->withAttribute($key, $value);
+            }
 
             $route->setHandler($handler);
 

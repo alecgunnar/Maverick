@@ -5,6 +5,7 @@ namespace Maverick\Middleware;
 use PHPUnit_Framework_TestCase;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ServerRequestInterface;
 use Maverick\Router\AbstractRouter;
 use Maverick\Testing\Utility\GenericCallable;
 use Maverick\Resolver\ResolverInterface;
@@ -44,6 +45,12 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     protected function getMockResolver()
     {
         return $this->getMockBuilder(ResolverInterface::class)
+            ->getMock();
+    }
+
+    protected function getMockRequest()
+    {
+        return $this->getMockBuilder(ServerRequestInterface::class)
             ->getMock();
     }
 
@@ -172,16 +179,23 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
      */
     public function testInvokeCallsRouteHandlerAsMiddlewareWithParams()
     {
-        $request = ServerRequest::fromGlobals();
         $response = new Response();
 
+        $key = 'hello';
+        $value = 'world';
+
         $params = [
-            'hello' => 'world'
+            $key => $value
         ];
 
         $handler = $this->dummyHandler;
 
-        $requestWithParams = $request->withAttribute(RouterMiddleware::REQUEST_ATTRS, $params);
+        $request = $this->getMockRequest();
+
+        $request->expects($this->once())
+            ->method('withAttribute')
+            ->with($key, $value)
+            ->willReturn($request);
 
         $route = $this->getMockRouteEntity();
 
@@ -196,7 +210,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $route->expects($this->once())
             ->method('__invoke')
-            ->with($requestWithParams, $response)
+            ->with($request, $response)
             ->willReturn($response);
 
         $router = $this->getMockRouter();
