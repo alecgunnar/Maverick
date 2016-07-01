@@ -11,15 +11,12 @@ namespace Maverick\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class WelcomeController
+class WelcomeController extends AbstractController
 {
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $respose
-     * @param array $params
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    protected function beforeNext()
     {
         $handlerLocation = __FILE__;
 
@@ -62,8 +59,6 @@ class WelcomeController
 </html>
 HERE;
 
-        $response->getBody()->write($body);
-
-        return $response;
+        $this->print($body);
     }
 }

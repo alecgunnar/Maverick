@@ -11,17 +11,14 @@ namespace Maverick\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class NotFoundController
+class NotFoundController extends AbstractController
 {
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $respose
-     * @param array $params
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    protected function beforeNext()
     {
-        $response = $response->withStatus(404);
+        $this->response = $this->response->withStatus(404);
 
         $body = <<<HERE
 <!DOCTYPE html>
@@ -40,8 +37,6 @@ class NotFoundController
 </html>
 HERE;
 
-        $response->getBody()->write($body);
-
-        return $response;
+        $this->print($body);
     }
 }

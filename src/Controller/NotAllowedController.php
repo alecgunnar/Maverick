@@ -13,21 +13,18 @@ use Psr\Http\Message\ResponseInterface;
 use Maverick\Router\AbstractRouter;
 use Maverick\Middleware\RouterMiddleware;
 
-class NotAllowedController
+class NotAllowedController extends AbstractController
 {
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $respose
-     * @param array $methods
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    protected function beforeNext()
     {
         // This needs to respond with the allowed methods too...
-        $response = $response->withStatus(405)
+        $this->response = $this->response->withStatus(405)
             ->withHeader('Allow', implode(
                 ',',
-                $request->getAttribute(RouterMiddleware::ALLOWED_METHODS, [])
+                $this->request->getAttribute(RouterMiddleware::ALLOWED_METHODS, [])
             ));
 
         $body = <<<HERE
@@ -47,8 +44,6 @@ class NotAllowedController
 </html>
 HERE;
 
-        $response->getBody()->write($body);
-
-        return $response;
+        $this->print($body);
     }
 }

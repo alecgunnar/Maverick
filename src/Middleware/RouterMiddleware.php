@@ -82,8 +82,6 @@ class RouterMiddleware implements MiddlewareInterface
             $request = $request->withAttribute(self::ALLOWED_METHODS, $methods);
         }
 
-        $response = $controller($request, $response);
-
-        return $next($request, $response);
+        return $controller($request, $response, $next);
     }
 }

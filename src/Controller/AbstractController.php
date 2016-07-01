@@ -32,7 +32,7 @@ abstract class AbstractController
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $respose
-     * @param string[] $params
+     * @param callable $next
      * @return ResponseInterface
      */
     public function __invoke(
@@ -43,11 +43,16 @@ abstract class AbstractController
         $this->request  = $request;
         $this->response = $response;
 
-        $ret = $this->doAction();
+        $callAction = function ($which) {
+            $ret = $this->{$which . 'Next'}();
+            return ($ret instanceof ResponseInterface) ? $ret : $this->response;
+        };
 
-        $response = ($ret instanceof ResponseInterface) ? $ret : $this->response;
+        $response = $callAction('before');
+        $response = $next($request, $response);
+        $response = $callAction('after');
 
-        return $next($request, $response);
+        return $response;
     }
 
     /**
@@ -65,7 +70,19 @@ abstract class AbstractController
     protected function render(string $template, array $variables = [])
     {
         $rendered = $this->renderer->render($template, $variables);
-        $this->response->getBody()->write($rendered);
+
+        $this->response->getBody()
+            ->write($rendered);
+    }
+
+    /**
+     * @param string $output
+     * @param mixed[] $variables
+     */
+    protected function print(string $output)
+    {
+        $this->response->getBody()
+            ->write($output);
     }
 
     /**
@@ -87,9 +104,18 @@ abstract class AbstractController
     }
 
     /**
-     * The action of the controller
-     *
      * @return ResponseInterface|null
      */
-    abstract protected function doAction();
+    protected function beforeNext()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @return ResponseInterface|null
+     */
+    protected function afterNext()
+    {
+        return $this->response;
+    }
 }
