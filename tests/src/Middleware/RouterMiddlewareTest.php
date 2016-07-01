@@ -85,7 +85,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $instance = new RouterMiddleware($this->getMockRouter(), $given, $this->dummyHandler, $this->getMockResolver());
 
-        $this->assertAttributeSame($expected, 'notFoundHandler', $instance);
+        $this->assertAttributeSame($expected, 'notFoundController', $instance);
     }
 
     /**
@@ -97,7 +97,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $instance = new RouterMiddleware($this->getMockRouter(), $this->dummyHandler, $given, $this->getMockResolver());
 
-        $this->assertAttributeSame($expected, 'notAllowedHandler', $instance);
+        $this->assertAttributeSame($expected, 'notAllowedController', $instance);
     }
 
     /**
