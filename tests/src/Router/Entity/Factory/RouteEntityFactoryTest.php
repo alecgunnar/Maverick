@@ -17,12 +17,11 @@ class RouteEntityFactoryTest extends PHPUnit_Framework_TestCase
     {
         $methods = ['GET', 'POST'];
         $path = '/hello';
-        $handler = function() { };
 
-        $expected = new RouteEntity($methods, $path, $handler);
+        $expected = new RouteEntity($methods, $path);
 
         $instance = new RouteEntityFactory();
 
-        $this->assertEquals($expected, $instance->build($methods, $path, $handler));
+        $this->assertEquals($expected, $instance->build($methods, $path));
     }
 }

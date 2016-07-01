@@ -11,7 +11,6 @@ namespace Maverick\Middleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Maverick\Router\AbstractRouter;
-use Maverick\Resolver\ResolverInterface;
 
 class RouterMiddleware implements MiddlewareInterface
 {
@@ -23,17 +22,12 @@ class RouterMiddleware implements MiddlewareInterface
     /**
      * @var callable
      */
-    protected $notFoundHandler;
+    protected $notFoundController;
 
     /**
      * @var callable
      */
-    protected $notAllowedHandler;
-
-    /**
-     * @var ResolverInterface
-     */
-    protected $resolver;
+    protected $notAllowedController;
 
     /**
      * @var string
@@ -42,20 +36,17 @@ class RouterMiddleware implements MiddlewareInterface
 
     /**
      * @param AbstractRouter $router
-     * @param callable $notFoundHandler
-     * @param callable $notAllowedHandler
-     * @param ResolverInterface $resolver
+     * @param callable $notFoundController
+     * @param callable $notAllowedController
      */
     public function __construct(
         AbstractRouter $router,
-        callable $notFoundHandler,
-        callable $notAllowedHandler,
-        ResolverInterface $resolver
+        callable $notFoundController,
+        callable $notAllowedController
     ) {
         $this->router = $router;
-        $this->notFoundHandler = $notFoundHandler;
-        $this->notAllowedHandler = $notAllowedHandler;
-        $this->resolver = $resolver;
+        $this->notFoundController = $notFoundController;
+        $this->notAllowedController = $notAllowedController;
     }
 
     /**
@@ -69,16 +60,15 @@ class RouterMiddleware implements MiddlewareInterface
         switch ($result) {
             case AbstractRouter::ROUTE_FOUND:
                 $route   = $this->router->getMatchedRoute();
-                $handler = $this->resolver->resolve($route->getHandler());
                 break;
 
             case AbstractRouter::ROUTE_NOT_FOUND:
-                $handler = $this->notFoundHandler;
+                $controller = $this->notFoundController;
                 break;
 
             case AbstractRouter::ROUTE_NOT_ALLOWED:
                 $methods = $this->router->getAllowedMethods();
-                $handler = $this->notAllowedHandler;
+                $controller = $this->notAllowedController;
                 break;
         }
 
@@ -87,14 +77,12 @@ class RouterMiddleware implements MiddlewareInterface
                 $request = $request->withAttribute($key, $value);
             }
 
-            $route->setHandler($handler);
-
-            $handler = $route;
+            $controller = $route;
         } else if (isset($methods)) {
             $request = $request->withAttribute(self::ALLOWED_METHODS, $methods);
         }
 
-        $response = $handler($request, $response);
+        $response = $controller($request, $response);
 
         return $next($request, $response);
     }

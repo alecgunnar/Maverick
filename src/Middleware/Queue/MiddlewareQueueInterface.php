@@ -9,21 +9,16 @@ namespace Maverick\Middleware\Queue;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Maverick\Middleware\MiddlewareInterface;
 use Maverick\Middleware\Exception\InvalidMiddlewareException;
 
-interface MiddlewareQueueInterface
+interface MiddlewareQueueInterface extends MiddlewareInterface
 {
     /**
      * @param callable $handler
      * @return MiddlewareQueueInterface
      */
-    public function withMiddleware(callable $handler): MiddlewareQueueInterface;
-
-    /**
-     * @param callable[] $handler
-     * @return MiddlewareQueueInterface
-     */
-    public function withMiddlewares(array $handlers): MiddlewareQueueInterface;
+    public function with(callable $handler): MiddlewareQueueInterface;
 
     /**
      * @return callable[]
@@ -31,10 +26,10 @@ interface MiddlewareQueueInterface
     public function getMiddleware(): array;
 
     /**
-     * @throws InvalidMiddlewareException If a middleware does not return a response
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
+     * @param callable $next = null
      * @return ResponseInterface
      */
-    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface;
 }

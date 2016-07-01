@@ -1,5 +1,6 @@
 <?php
 
 return function($loader) {
-    $loader->get('/', new Maverick\Controller\WelcomeController());
+    $loader->get('/')
+        ->with(new Maverick\Controller\WelcomeController());
 };

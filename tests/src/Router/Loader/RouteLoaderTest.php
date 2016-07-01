@@ -27,8 +27,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $given = $expected = [
             'route' => [
                 'methods' => ['GET'],
-                'path' => '/hello',
-                'handler' => function() { }
+                'path' => '/hello'
             ]
         ];
 
@@ -45,8 +44,7 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $given = $expected = [
             'route' => [
                 'methods' => ['GET'],
-                'path' => '/hello',
-                'handler' => function() { }
+                'path' => '/hello'
             ]
         ];
 
@@ -78,17 +76,15 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $name = 'route';
         $methods = ['GET'];
         $path = '/hello';
-        $handler = function() { };
 
         $data = [
             $name => [
                 'methods' => $methods,
-                'path' => $path,
-                'handler' => $handler
+                'path' => $path
             ]
         ];
 
-        $entity = new RouteEntity($methods, $path, $handler);
+        $entity = new RouteEntity($methods, $path);
 
         $collection = $this->getMockRouteCollection();
 
@@ -111,16 +107,14 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $name = 'route';
         $methods = ['GET'];
         $path = '/hello';
-        $handler = function() { };
 
         $data = [
             $name => [
-                'path' => $path,
-                'handler' => $handler
+                'path' => $path
             ]
         ];
 
-        $entity = new RouteEntity($methods, $path, $handler);
+        $entity = new RouteEntity($methods, $path);
 
         $collection = $this->getMockRouteCollection();
 
@@ -143,37 +137,9 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
     public function testLoadRoutesThrowsExceptionWhenPathNotSet()
     {
         $name = 'route';
-        $handler = function() { };
 
         $data = [
-            $name => [
-                'handler' => $handler
-            ]
-        ];
-
-        $collection = $this->getMockRouteCollection();
-
-        $instance = new RouteLoader();
-
-        $instance->withRoutes($data)
-            ->loadRoutes($collection);
-    }
-
-    /**
-     * @covers ::loadRoutes
-     * @covers ::processRoute
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage A handler was not provided for route: route.
-     */
-    public function testLoadRoutesThrowsExceptionWhenHandlerNotSet()
-    {
-        $name = 'route';
-        $path = '/hello';
-
-        $data = [
-            $name => [
-                'path' => $path
-            ]
+            $name => []
         ];
 
         $collection = $this->getMockRouteCollection();
@@ -194,22 +160,20 @@ class RouterLoaderTest extends PHPUnit_Framework_TestCase
         $methods = ['GET'];
         $path = '/hello';
         $middleware = function() { };
-        $handler = function() { };
 
         $data = [
             $name => [
                 'methods' => $methods,
                 'path' => $path,
-                'handler' => $handler,
                 'middleware' => [
                     $middleware
                 ]
             ]
         ];
 
-        $entity = new RouteEntity($methods, $path, $handler);
+        $entity = new RouteEntity($methods, $path);
 
-        $entity->withMiddleware($middleware);
+        $entity->with($middleware);
 
         $collection = $this->getMockRouteCollection();
 

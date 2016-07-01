@@ -36,26 +36,8 @@ interface RouteEntityInterface extends MiddlewareQueueInterface
     public function getPath(): string;
 
     /**
-     * @param mixed $handler
-     * @return RouteEntityInterface
-     */
-    public function setHandler($handler): RouteEntityInterface;
-
-    /**
-     * @return mixed
-     */
-    public function getHandler();
-
-    /**
      * @param string $prefix
      * @return RouteEntityInterface
      */
     public function withPrefix(string $prefix): RouteEntityInterface;
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface;
 }

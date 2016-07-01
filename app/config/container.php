@@ -60,8 +60,7 @@ return [
         return new RouterMiddleware(
             $c->get('system.router'),
             $c->get('system.controller.not_found'),
-            $c->get('system.controller.not_allowed'),
-            $c->get('system.resolver')
+            $c->get('system.controller.not_allowed')
         );
     },
     'system.middleware.response_sender' => function($c) {

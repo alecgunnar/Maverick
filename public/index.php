@@ -8,5 +8,6 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $app = new Maverick\Application();
 
-$app->initialize()
-    ->run(ServerRequest::fromGlobals(), new Response());
+$app->initialize();
+
+$app(ServerRequest::fromGlobals(), new Response());

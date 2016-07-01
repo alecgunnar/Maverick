@@ -130,8 +130,8 @@ class Application implements ContainerInterface, MiddlewareQueueInterface
      */
     public function loadMiddleware()
     {
-        $this->withMiddleware($this->get('system.middleware.router'))
-            ->withMiddleware($this->get('system.middleware.response_sender'));
+        $this->with($this->get('system.middleware.router'))
+            ->with($this->get('system.middleware.response_sender'));
 
         return $this;
     }

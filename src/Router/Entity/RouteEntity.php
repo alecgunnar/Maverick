@@ -27,11 +27,6 @@ class RouteEntity implements RouteEntityInterface
     protected $path;
 
     /**
-     * @var mixed
-     */
-    protected $handler;
-
-    /**
      * @var string
      */
     const SLASH = '/';
@@ -39,12 +34,10 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @param string[] $methods = []
      * @param string $path = ''
-     * @param mixed $handler = null
      */
-    public function __construct(array $methods = [], string $path = '', $handler = null)
+    public function __construct(array $methods = [], string $path = '')
     {
         $this->methods = $methods;
-        $this->handler = $handler;
 
         $this->setPath($path);
     }
@@ -87,40 +80,9 @@ class RouteEntity implements RouteEntityInterface
     /**
      * @inheritDoc
      */
-    public function setHandler($handler): RouteEntityInterface
-    {
-        $this->handler = $handler;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHandler()
-    {
-        return $this->handler;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function withPrefix(string $prefix): RouteEntityInterface
     {
         return $this->setPath($this->cleanPath($prefix) . $this->path);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        if (!is_callable($this->handler)) {
-            throw new RuntimeException('You cannot __invoke a RouteEntity without first setting a callable handler.');
-        }
-
-        $this->withMiddleware($this->handler);
-
-        return $this->run($request, $response);
     }
 
     /**

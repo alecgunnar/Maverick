@@ -19,13 +19,11 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     {
         $methods = ['GET', 'POST'];
         $path = '/journey/to/mars';
-        $handler = function() { return 'MARS'; };
 
-        $instance = new RouteEntity($methods, $path, $handler);
+        $instance = new RouteEntity($methods, $path);
 
         $this->assertAttributeEquals($methods, 'methods', $instance);
         $this->assertAttributeEquals($path, 'path', $instance);
-        $this->assertAttributeEquals($handler, 'handler', $instance);
     }
 
     /**
@@ -165,45 +163,6 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::setHandler
-     */
-    public function testSetHandlerSetsHandler()
-    {
-        $given = $expected = function() { return 'MARS'; };
-
-        $instance = new RouteEntity();
-
-        $instance->setHandler($given);
-
-        $this->assertAttributeEquals($expected, 'handler', $instance);
-    }
-
-    /**
-     * @covers ::setHandler
-     */
-    public function testSetHandlerReturnsSelf()
-    {
-        $instance = new RouteEntity();
-
-        $ret = $instance->setHandler(function() { });
-
-        $this->assertSame($instance, $ret);
-    }
-
-    /**
-     * @covers ::getHandler
-     * @depends testConstructorSetsAttributes
-     */
-    public function testGetHandlerReturnsHandler()
-    {
-        $given = $expected = function() { return 'MARS'; };
-
-        $instance = new RouteEntity([], '/', $given);
-
-        $this->assertEquals($expected, $instance->getHandler());
-    }
-
-    /**
      * @covers ::withPrefix
      * @depends testConstructorSetsAttributes
      */
@@ -213,7 +172,7 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
         $prefix = '/hello';
         $expected = $prefix . $path;
 
-        $instance = new RouteEntity([], $path, function() { });
+        $instance = new RouteEntity([], $path);
 
         $instance->withPrefix($prefix);
 
@@ -231,7 +190,7 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
         $prefix = '/';
         $expected = $path;
 
-        $instance = new RouteEntity([], $path, function() { });
+        $instance = new RouteEntity([], $path);
 
         $instance->withPrefix($prefix);
 
@@ -250,7 +209,7 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
         $expected = $prefix . $path;
         $prefix .= '/';
 
-        $instance = new RouteEntity([], $path, function() { });
+        $instance = new RouteEntity([], $path);
 
         $instance->withPrefix($prefix);
 
@@ -268,66 +227,5 @@ class RouteEntityTest extends PHPUnit_Framework_TestCase
         $ret = $instance->withPrefix('/');
 
         $this->assertSame($instance, $ret);
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testRouteHandlerIsCalledAsMiddleware()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $handler = $this->getMockBuilder(GenericCallable::class)
-            ->getMock();
-
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response)
-            ->willReturn($response);
-
-        $instance = new RouteEntity();
-
-        $instance->setHandler($handler);
-
-        $instance($request, $response);
-    }
-
-    /**
-     * @covers ::__invoke
-     */
-    public function testMiddlewareAreCalled()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $handler = $this->getMockBuilder(GenericCallable::class)
-            ->getMock();
-
-        $handler->expects($this->once())
-            ->method('__invoke')
-            ->with($request, $response)
-            ->willReturn($response);
-
-        $instance = new RouteEntity();
-
-        $instance->setHandler(function($req, $res) { return $res; })
-            ->withMiddleware($handler);
-
-        $instance($request, $response);
-    }
-
-    /**
-     * @expectedException RuntimeException
-     * @covers ::__invoke
-     */
-    public function testInvokeThrowsExceptionWithoutCallableHandler()
-    {
-        $request  = ServerRequest::fromGlobals();
-        $response = new Response();
-
-        $instance = new RouteEntity();
-
-        $instance($request, $response);
     }
 }

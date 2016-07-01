@@ -101,18 +101,6 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::__construct
-     */
-    public function testConstructSetsResolver()
-    {
-        $given = $expected = $this->getMockResolver();
-
-        $instance = new RouterMiddleware($this->getMockRouter(), $this->dummyHandler, $this->dummyHandler, $given);
-
-        $this->assertAttributeSame($expected, 'resolver', $instance);
-    }
-
-    /**
      * @covers ::__invoke
      */
     public function testInvokeCallsNotFoundHandler()
@@ -183,6 +171,7 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
 
         $key = 'hello';
         $value = 'world';
+        $next = $this->dummyHandler;
 
         $params = [
             $key => $value
@@ -200,17 +189,8 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
         $route = $this->getMockRouteEntity();
 
         $route->expects($this->once())
-            ->method('getHandler')
-            ->willReturn($handler);
-
-        $route->expects($this->once())
-            ->method('setHandler')
-            ->with($handler)
-            ->willReturn($route);
-
-        $route->expects($this->once())
             ->method('__invoke')
-            ->with($request, $response)
+            ->with($request, $response, $next)
             ->willReturn($response);
 
         $router = $this->getMockRouter();
@@ -228,15 +208,8 @@ class RouterMiddlewareTest extends PHPUnit_Framework_TestCase
             ->method('getMatchedRoute')
             ->willReturn($route);
 
-        $resolver = $this->getMockResolver();
+        $instance = $this->getInstance($router, null, null);
 
-        $resolver->expects($this->once())
-            ->method('resolve')
-            ->with($handler)
-            ->willReturn($handler);
-
-        $instance = $this->getInstance($router, null, null, $resolver);
-
-        $instance($request, $response, $this->dummyHandler);
+        $instance($request, $response, $next);
     }
 }

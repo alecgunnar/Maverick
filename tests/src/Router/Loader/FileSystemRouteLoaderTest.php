@@ -37,8 +37,7 @@ CODE;
         $data = [
             'route' => [
                 'methods' => ['GET'],
-                'path' => '/hello',
-                'handler' => 'test.handler'
+                'path' => '/hello'
             ]
         ];
 

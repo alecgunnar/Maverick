@@ -23,22 +23,9 @@ trait MiddlewareQueueTrait
      * @param callable $handler
      * @return self
      */
-    public function withMiddleware(callable $handler): MiddlewareQueueInterface
+    public function with(callable $handler): MiddlewareQueueInterface
     {
         $this->middleware[] = $handler;
-        return $this;
-    }
-
-    /**
-     * @param callable[] $handler
-     * @return MiddlewareQueueInterface
-     */
-    public function withMiddlewares(array $handlers): MiddlewareQueueInterface
-    {
-        foreach ($handlers as $handler) {
-            $this->withMiddleware($handler);
-        }
-
         return $this;
     }
 
@@ -51,22 +38,19 @@ trait MiddlewareQueueTrait
     }
 
     /**
-     * @throws InvalidMiddlewareException
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function run(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null): ResponseInterface
     {
         if ($this->middleware) {
             $handler  = array_shift($this->middleware);
-            $response = $handler($request, $response, [$this, 'run']);
+            $response = $handler($request, $response, $this);
 
             if (!($response instanceof ResponseInterface)) {
                 throw new InvalidMiddlewareException('Middleware did not return an instance of ' . ResponseInterface::class . '.');
             }
         }
 
-        return $response;
+        return is_callable($next) ? $next($request, $response) : $response;
     }
 }

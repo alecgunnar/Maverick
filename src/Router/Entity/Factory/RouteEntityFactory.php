@@ -16,10 +16,9 @@ class RouteEntityFactory
     /**
      * @param string[] $methods = []
      * @param string $path = ''
-     * @param mixed $handler = null
      */
-    public function build(array $methods = [], string $path = '', $handler = null): RouteEntityInterface
+    public function build(array $methods = [], string $path = ''): RouteEntityInterface
     {
-        return new RouteEntity($methods, $path, $handler);
+        return new RouteEntity($methods, $path);
     }
 }

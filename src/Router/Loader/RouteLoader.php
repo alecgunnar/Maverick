@@ -77,16 +77,14 @@ class RouteLoader implements RouteLoaderInterface
 
         $path = $data['path'];
 
-        if (!isset($data['handler'])) {
-            $execption('handler');
-        }
-
-        $handler = $data['handler'];
-
-        $entity = new RouteEntity($methods, $path, $handler);
+        $entity = new RouteEntity($methods, $path);
 
         if (isset($data['middleware']) && is_array($data['middleware'])) {
-            $entity->withMiddlewares($data['middleware']);
+            foreach($data['middleware'] as $callable) {
+                if (is_callable($callable)) {
+                    $entity->with($callable);
+                }
+            }
         }
 
         return $entity;

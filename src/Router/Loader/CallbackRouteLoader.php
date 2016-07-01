@@ -74,7 +74,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
 
         if (count($this->middleware)) {
             foreach ($this->routes as $route) {
-                $route->withMiddlewares($this->middleware);
+                foreach ($this->middleware as $middleware) {
+                    $route->with($middleware);
+                }
             }
         }
 
@@ -106,9 +108,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function get(string $path, $handler, string $name = null): RouteEntityInterface
+    public function get(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['GET'], $path, $handler, $name);
+        return $this->match(['GET'], $path, $name);
     }
 
     /**
@@ -117,9 +119,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function post(string $path, $handler, string $name = null): RouteEntityInterface
+    public function post(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['POST'], $path, $handler, $name);
+        return $this->match(['POST'], $path, $name);
     }
 
     /**
@@ -128,9 +130,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function put(string $path, $handler, string $name = null): RouteEntityInterface
+    public function put(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['PUT'], $path, $handler, $name);
+        return $this->match(['PUT'], $path, $name);
     }
 
     /**
@@ -139,9 +141,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function patch(string $path, $handler, string $name = null): RouteEntityInterface
+    public function patch(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['PATCH'], $path, $handler, $name);
+        return $this->match(['PATCH'], $path, $name);
     }
 
     /**
@@ -150,9 +152,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function delete(string $path, $handler, string $name = null): RouteEntityInterface
+    public function delete(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['DELETE'], $path, $handler, $name);
+        return $this->match(['DELETE'], $path, $name);
     }
 
     /**
@@ -161,9 +163,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function head(string $path, $handler, string $name = null): RouteEntityInterface
+    public function head(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['HEAD'], $path, $handler, $name);
+        return $this->match(['HEAD'], $path, $name);
     }
 
     /**
@@ -172,9 +174,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function options(string $path, $handler, string $name = null): RouteEntityInterface
+    public function options(string $path, string $name = null): RouteEntityInterface
     {
-        return $this->match(['OPTIONS'], $path, $handler, $name);
+        return $this->match(['OPTIONS'], $path, $name);
     }
 
     /**
@@ -184,9 +186,9 @@ class CallbackRouteLoader implements RouteLoaderInterface, MiddlewareQueueInterf
      * @param string $name = null
      * @return RouteEntityInterface
      */
-    public function match(array $methods, string $path, $handler, string $name = null): RouteEntityInterface
+    public function match(array $methods, string $path, string $name = null): RouteEntityInterface
     {
-        $entity = $this->entityFactory->build($methods, $path, $handler);
+        $entity = $this->entityFactory->build($methods, $path);
 
         if ($name) {
             return ($this->routes[$name] = $entity);
