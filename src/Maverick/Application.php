@@ -17,6 +17,7 @@ use Maverick\Http\Request,
     Maverick\Exception\InvalidValueException,
     Maverick\Exception\NoRouteException,
     Exception,
+    Throwable,
     Maverick\DataStructure\ReadOnlyMap,
     Maverick\Http\ResponseInstruction\ErrorResponseInstruction;
 
@@ -26,7 +27,7 @@ class Application {
      *
      * @var string
      */
-    const VERSION = '0.4.5';
+    const VERSION = '0.4.6';
 
     /**
      * Debug level for the app
@@ -249,7 +250,7 @@ class Application {
 
         ini_set('display_errors', '0');
 
-        $shutdown = function(Exception $exception) {
+        $shutdown = function(Throwable $exception) {
             $code = 500;
 
             if(get_class($exception) == 'Maverick\Exception\NoRouteException') {
