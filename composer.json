@@ -1,6 +1,5 @@
 {
     "name": "alecgunnar/maverick",
-    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -25,7 +24,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^5.5.0",
-        "mikey179/vfsStream": "^1.6.4"
+        "mikey179/vfsStream": "^1.6.4",
+        "codeclimate/php-test-reporter": "dev-master"
     },
     "autoload": {
         "psr-4": {
