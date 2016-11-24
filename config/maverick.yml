@@ -5,8 +5,8 @@ parameters:
   config_dir: 'config'
   cache_dir: 'cache'
 
-  container_cache_file: 'container.php'
-  router_cache_file: 'routes.php'
+  container_cache_file: 'Container.php'
+  router_cache_file: 'Routes.php'
 
   routes:
     welcome:
