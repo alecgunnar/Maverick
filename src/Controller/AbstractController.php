@@ -33,6 +33,7 @@ abstract class AbstractController
      * @param ServerRequestInterface $request
      * @param ResponseInterface $respose
      * @param callable $next
+     *
      * @return ResponseInterface
      */
     public function __invoke(

@@ -33,6 +33,7 @@ interface CollectionInterface extends Countable
      * Get the route matching the given name
      *
      * @throws Exception
+     *
      * @return Route
      */
     public function getRoute(string $name): Route;

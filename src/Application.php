@@ -34,10 +34,12 @@ class Application
 
     /**
      * @param ServerRequestInterface $request = null
+     *
      * @throws HttpException
      * @throws NotFoundException
      * @throws NotAllowedException
      * @throws UnexpectedValueException
+     *
      * @return ResponseInterface $response
      */
     public function handleRequest(ServerRequestInterface $request = null): ResponseInterface
@@ -68,6 +70,7 @@ class Application
 
     /**
      * @param ResponseInterface $response
+     *
      * @throws RuntimeException
      */
     public function sendResponse(ResponseInterface $response)

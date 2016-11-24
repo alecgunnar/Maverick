@@ -27,6 +27,7 @@ interface RouterInterface
      * of the routing attempt
      *
      * @param ServerRequestInterface $request
+     *
      * @return int
      */
     public function processRequest(ServerRequestInterface $request): int;
