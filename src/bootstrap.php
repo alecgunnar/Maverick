@@ -4,9 +4,8 @@ namespace Maverick;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
-use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use CachedContainer;
@@ -34,7 +33,7 @@ function bootstrap(string $root = null): ContainerInterface
      * Build it from the config files
      */
 
-    if (!($container instanceof Container)) {
+    if (!($container instanceof ContainerInterface)) {
         $container = new ContainerBuilder();
         $container->setParameter('root_dir', $root);
 
@@ -42,5 +41,5 @@ function bootstrap(string $root = null): ContainerInterface
         $loader->load('config.yml');
     }
 
-    return $container->get('container');
+    return $container;
 }

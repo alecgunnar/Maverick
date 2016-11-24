@@ -1,12 +1,12 @@
 parameters:
   is_debug: false
 
-  app_dir: '%root_dir%/app'
-  config_dir: '%root_dir%/config'
-  cache_dir: '%root_dir%/cache'
+  app_dir: 'app'
+  config_dir: 'config'
+  cache_dir: 'cache'
 
-  routes_cache_file: '%cache_dir%/routes.php'
-  container_cache_file: '%cache_dir%/container.php'
+  container_cache_file: 'container.php'
+  router_cache_file: 'routes.php'
 
   routes:
     welcome:
@@ -132,7 +132,7 @@ services:
     factory: 'FastRoute\cachedDispatcher'
     arguments:
       - '@maverick.router.dispatcher.utility.collection_processor'
-      - {cacheFile: '%routes_cache_file%'}
+      - {cacheFile: '%root_dir%/%cache_dir%/%router_cache_file%'}
 
   fast_route.dispatcher:
     alias: 'fast_route.cached_dispatcher'
