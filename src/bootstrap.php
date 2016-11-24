@@ -7,7 +7,6 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Config\FileLocator;
 use Interop\Container\ContainerInterface;
-use Acclimate\Container\ContainerAcclimator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use CachedContainer;
@@ -16,7 +15,7 @@ use CachedContainer;
  * @param string $root = null
  * @param bool $debug = false
  */
-function bootstrap(string $root = null, bool $debug = false): ContainerInterface
+function bootstrap(string $root = null): ContainerInterface
 {
     $container = null;
 
@@ -26,7 +25,7 @@ function bootstrap(string $root = null, bool $debug = false): ContainerInterface
      * Try to load the container from the cache
      */
 
-    if (!$debug && class_exists(CachedContainer::class)) {
+    if (class_exists(CachedContainer::class)) {
         $container = new CachedContainer();
     }
 
@@ -38,7 +37,6 @@ function bootstrap(string $root = null, bool $debug = false): ContainerInterface
     if (!($container instanceof Container)) {
         $container = new ContainerBuilder();
         $container->setParameter('root_dir', $root);
-        $container->setParameter('is_debug', $debug);
 
         $loader = new YamlFileLoader($container, new FileLocator($root . '/config'));
         $loader->load('config.yml');

@@ -1,4 +1,6 @@
 parameters:
+  is_debug: false
+
   app_dir: '%root_dir%/app'
   config_dir: '%root_dir%/config'
   cache_dir: '%root_dir%/cache'
@@ -35,13 +37,9 @@ services:
   ##################################################
 
   container:
-    class: 'Interop\Container\ContainerInterface'
-    factory: ['@acclimate.container.container_acclimator', 'acclimate']
+    class: 'Maverick\Container\SymfonyContainerAdapter'
     arguments:
       - '@service_container'
-
-  acclimate.container.container_acclimator:
-    class: 'Acclimate\Container\ContainerAcclimator'
 
   ##################################################
   # Router and Routes
