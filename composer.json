@@ -37,7 +37,7 @@
         ]
     },
     "bin": [
-        "bin/build"
+        "bin/maverick"
     ],
     "suggest": {
         "twig/twig": "Enables the use of the Twig renderer."
