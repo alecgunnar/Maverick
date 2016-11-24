@@ -39,11 +39,17 @@ class BuildCommand extends Command
         $configFrom = sprintf('%s/config/environment/%s.yml', $root, $environment);
         $configTo = sprintf('%s/config/environment.yml', $root);
         $output->writeln('Copying environment config');
+
+        $this->assertFileExists($configFrom);
+
         copy($configFrom, $configTo);
 
         $indexFrom = sprintf('%s/app/%s.php', $root, $environment);
         $indexTo = sprintf('%s/public/index.php', $root);
         $output->writeln('Copying environment index');
+
+        $this->assertFileExists($indexFrom);
+
         copy($indexFrom, $indexTo);
 
         $this->container = \Maverick\bootstrap($root);
@@ -101,6 +107,14 @@ class BuildCommand extends Command
     {
         if (!$this->container->has($name)) {
             $message = sprintf('The parameter `%s` is not defined within the container, it must be defined!', $name);
+            throw new Exception($message);
+        }
+    }
+
+    protected function assertFileExists(string $file)
+    {
+        if (!file_exists($file)) {
+            $message = sprintf('The file %s does not exist.', $file);
             throw new Exception($message);
         }
     }
