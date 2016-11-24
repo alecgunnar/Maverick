@@ -13,10 +13,13 @@ use Exception;
 class SymfonyContainerAdapter implements ContainerInterface
 {
     /**
-     * @param SymfonyContainerInterface
+     * @var SymfonyContainerInterface
      */
     protected $container;
 
+    /**
+     * @param SymfonyContainerInterface $container
+     */
     public function __construct(SymfonyContainerInterface $container)
     {
         $this->container = $container;
