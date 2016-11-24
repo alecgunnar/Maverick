@@ -78,7 +78,7 @@ class BuildCommand extends Command
 
             $dumper = new PhpDumper($cachableContainer);
             $cached = $dumper->dump([
-                'class' => 'CachedContainer'
+                'class' => 'Cache\CachedContainer'
             ]);
 
             file_put_contents($containerCacheFile, $cached);
