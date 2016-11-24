@@ -4,6 +4,11 @@ namespace Maverick\Container;
 
 use Interop\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Maverick\Container\Exception\RetrievalException;
+use Maverick\Container\Exception\NotFoundException;
+use InvalidArgumentException;
+use Exception;
 
 class SymfonyContainerAdapter implements ContainerInterface
 {
@@ -19,15 +24,17 @@ class SymfonyContainerAdapter implements ContainerInterface
 
     public function get($name)
     {
-        if ($this->container->has($name)) {
-            return $this->container->get($name);
+        try {
+            try {
+                return $this->container->get($name);
+            } catch (ServiceNotFoundException $exception) {
+                return $this->container->getParameter($name);
+            }
+        } catch (InvalidArgumentException $exception) {
+            throw new NotFoundException($name);
+        } catch (Exception $exception) {
+            throw new RetrievalException($name, $exception->getMessage());
         }
-
-        if ($this->container->hasParameter($name)) {
-            return $this->container->getParameter($name);
-        }
-
-        throw \Exception('Service/parameter does not exist');
     }
 
     public function has($name)
