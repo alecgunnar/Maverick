@@ -1,0 +1,135 @@
+parameters:
+  app_dir: '%root_dir%/app'
+  config_dir: '%root_dir%/config'
+  cache_dir: '%root_dir%/cache'
+
+  routes_cache_file: '%cache_dir%/routes.php'
+  container_cache_file: '%cache_dir%/container.php'
+
+services:
+
+  ##################################################
+  # Application
+  ##################################################
+
+  application:
+    class: 'Maverick\Application'
+    arguments:
+      - '@container'
+
+  ##################################################
+  # HTTP Request
+  ##################################################
+
+  server_request:
+    class: 'Psr\Http\Message\ServerRequestInterface'
+    factory: ['GuzzleHttp\Psr7\ServerRequest', 'fromGlobals']
+
+  ##################################################
+  # Container
+  ##################################################
+
+  container:
+    class: 'Interop\Container\ContainerInterface'
+    factory: ['@acclimate.container.container_acclimator', 'acclimate']
+    arguments:
+      - '@service_container'
+
+  acclimate.container.container_acclimator:
+    class: 'Acclimate\Container\ContainerAcclimator'
+
+  ##################################################
+  # Router and Routes
+  ##################################################
+
+  router:
+    class: 'Maverick\Http\Router\FastRouteRouter'
+    arguments:
+      - '@fast_route.dispatcher'
+      - '@route_collection'
+
+  route_collection:
+    class: 'Maverick\Http\Router\Route\Collection\Collection'
+    configurator: ['@maverick.router.route.collection.configurator', 'configure']
+
+  maverick.router.route.collection.configurator:
+    class: 'Maverick\Http\Router\Route\Collection\Configurator\Configurator'
+    arguments:
+      - '@maverick.router.route.collection.loader'
+
+  maverick.router.route.collection.loader:
+    class: 'Maverick\Http\Router\Route\Collection\Loader\ConfigLoader'
+    arguments:
+      - '%routes%'
+
+  maverick.router.dispatcher.utility.collection_processor:
+    class: 'Maverick\Http\Router\Dispatcher\Utility\CollectionProcessor'
+    arguments:
+      - '@route_collection'
+
+  ##################################################
+  # Controllers
+  ##################################################
+
+  controller.welcome:
+    class: Maverick\Controller\RenderableController
+    arguments:
+      - '@maverick.view.welcome'
+
+  ##################################################
+  # Views
+  ##################################################
+
+  maverick.view.welcome:
+    class: 'Maverick\View\WelcomeView'
+
+  not_found_view:
+    class: 'Maverick\View\NotFoundView'
+
+  not_allowed_view:
+    class: 'Maverick\View\NotAllowedView'
+
+  fatal_error_view:
+    class: 'Maverick\View\FatalErrorView'
+
+  ##################################################
+  # Error Handlers
+  ##################################################
+
+  maverick.handler.http_exception:
+    class: 'Maverick\Handler\HttpExceptionHandler'
+
+  maverick.handler.safe_render:
+    class: 'Maverick\Handler\SafeRenderHandler'
+    arguments:
+      - '@fatal_error_view'
+    calls:
+      - ['addView', [404, '@not_found_view']]
+      - ['addView', [405, '@not_allowed_view']]
+
+  ##################################################
+  # Whoops
+  ##################################################
+
+  whoops.run:
+    class: 'Whoops\Run'
+    calls:
+      - ['pushHandler', ['@whoops.handler.pretty']]
+      - ['pushHandler', ['@maverick.handler.http_exception']]
+
+  whoops.handler.pretty:
+    class: 'Whoops\Handler\PrettyPageHandler'
+
+  ##################################################
+  # Fast route
+  ##################################################
+
+  fast_route.cached_dispatcher:
+    class: 'FastRoute\Dispatcher'
+    factory: 'FastRoute\cachedDispatcher'
+    arguments:
+      - '@maverick.router.dispatcher.utility.collection_processor'
+      - {cacheFile: '%routes_cache_file%'}
+
+  fast_route.dispatcher:
+    alias: 'fast_route.cached_dispatcher'
