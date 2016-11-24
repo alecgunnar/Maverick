@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Application;
+use Maverick\Console\Command\BuildCommand;
+
+$autoloader = getcwd() . '/vendor/autoload.php';
+
+if (!file_exists($autoloader)) {
+    die('Could not find autoloader, please make sure you have installed the' . "\n"
+        . 'Composer dependencies and are running this script from your project\'s' . "\n"
+        . 'root directory (where vendor/ is).' . "\n");
+}
+
+require($autoloader);
+
+$application = new Application();
+
+$application->add(new BuildCommand());
+
+$application->run();
