@@ -52,7 +52,8 @@ class BuildCommand extends Command
 
         copy($indexFrom, $indexTo);
 
-        $this->container = \Maverick\bootstrap($root);
+        $cachableContainer = \Maverick\bootstrap($root);
+        $this->container = $cachableContainer->get('container');
 
         $this->assertContainerHasParameter('is_debug');
         $this->assertContainerHasParameter('cache_dir');
