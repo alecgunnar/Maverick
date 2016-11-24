@@ -1,7 +1,11 @@
-composer.lock
-phpunit.xml
-
 vendor/
+test/coverage/
+cache/
+.vagrant/
+log/
 
-tests/coverage
-build/
+phpunit.xml
+composer.lock
+*.log
+config/environment.yml
+public/index.php

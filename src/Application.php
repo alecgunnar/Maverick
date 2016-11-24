@@ -1,138 +1,81 @@
 <?php
-/**
- * Maverick Framework
- *
- * @author Alec Carpenter <alecgunnar@gmail.com>
- */
-declare(strict_types=1);
 
 namespace Maverick;
 
+use Maverick\Http\Router\RouterInterface;
+use Maverick\Http\Exception\NotFoundException;
+use Maverick\Http\Exception\NotAllowedException;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Interop\Container\ContainerInterface;
-use DI\ContainerBuilder;
-use Maverick\Container\Exception\NotFoundException;
-use Maverick\Middleware\Queue\MiddlewareQueueInterface;
-use Maverick\Middleware\Queue\MiddlewareQueueTrait;
 
-class Application implements ContainerInterface, MiddlewareQueueInterface
+class Application
 {
-    use MiddlewareQueueTrait;
-
     /**
-     * @var ContainerInterface[]
+     * @var ContainerInterface
      */
-    protected $containers = [];
+    protected $container;
 
     /**
-     * @var int
+     * @var string
      */
-    protected $foundInContainer;
+    const RESPONSE_NOT_RETURNED_MESSAGE = 'Route action did not return an instance of %s.';
 
     /**
-     * Add a new container
-     *
      * @param ContainerInterface $container
-     * @return Application
      */
-    public function withContainer(ContainerInterface $container): Application
+    public function __construct(ContainerInterface $container)
     {
-        $this->containers[] = $container;
-        return $this;
+        $this->container = $container;
+
+        $this->container->get('whoops.run')
+            ->register();
     }
 
     /**
-     * @return ContainerInterface[]
+     * @param ServerRequestInterface $request = null
+     * @throws HttpException
+     * @throws NotFoundException
+     * @throws NotAllowedException
+     * @throws UnexpectedValueException
+     * @return ResponseInterface $response
      */
-    public function getContainers()
+    public function handleRequest(ServerRequestInterface $request = null): ResponseInterface
     {
-        return $this->containers;
-    }
+        $request = $request ?? $this->container->get('server_request');
+        $router = $this->container->get('router');
+        $status = $router->processRequest($request);
 
-    /**
-     * @inheritDoc
-     */
-    public function has($id): bool
-    {
-        foreach ($this->containers as $index => $container) {
-            if ($container->has($id)) {
-                $this->foundInContainer = $index;
-                return true;
-            }
+        switch ($status) {
+            case RouterInterface::STATUS_NOT_FOUND:
+                throw new NotFoundException($request);
+            case RouterInterface::STATUS_NOT_ALLOWED:
+                throw new NotAllowedException($request);
+            case RouterInterface::STATUS_FOUND:
+                $route = $router->getRoute();
         }
 
-        return false;
-    }
+        $callable = $this->container->get($route->getService());
+        $response = $callable($request);
 
-    /**
-     * @inheritDoc
-     */
-    public function get($id)
-    {
-        if (!$this->has($id)) {
-            throw new NotFoundException('The service ' . $id . ' does not exist.');
+        if (!($response instanceof ResponseInterface)) {
+            $msg = sprintf(self::RESPONSE_NOT_RETURNED_MESSAGE, ResponseInterface::class);
+            throw new \UnexpectedValueException($msg);
         }
 
-        return $this->containers[$this->foundInContainer]
-            ->get($id);
+        return $response;
     }
 
     /**
-     * Perform generic setup tasks
-     *
-     * @return Application
+     * @param ResponseInterface $response
+     * @throws RuntimeException
      */
-    public function initialize(): Application
+    public function sendResponse(ResponseInterface $response)
     {
-        $this->loadContainer();
-        $this->loadErrorHandler();
-        $this->loadMiddleware();
-        return $this;
-    }
+        if (headers_sent()) {
+            throw new \RuntimeException('A response has already been sent, you cannot send another.');
+        }
 
-    /**
-     * Create the system's container with all of
-     * the basic dependencies
-     *
-     * @return Application
-     */
-    public function loadContainer()
-    {
-        $builder = new ContainerBuilder();
-
-        $builder->useAutowiring(false);
-        $builder->useAnnotations(false);
-        $builder->wrapContainer($this);
-
-        $builder->addDefinitions(dirname(__DIR__) . '/app/config/container.php');
-
-        $this->withContainer($builder->build());
-
-        return $this;
-    }
-
-    /**
-     * Loads the error handler found in the container
-     *
-     * @return Application
-     */
-    public function loadErrorHandler()
-    {
-        $this->get('system.error_handler')
-            ->load();
-
-        return $this;
-    }
-
-    /**
-     * Load framework specific middleware
-     *
-     * @return Application
-     */
-    public function loadMiddleware()
-    {
-        $this->with($this->get('system.middleware.router'))
-            ->with($this->get('system.middleware.response_sender'));
-
-        return $this;
+        echo (string) $response->getBody();
     }
 }
