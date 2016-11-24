@@ -6,7 +6,7 @@ parameters:
   cache_dir: 'cache'
 
   container_cache_file: 'CachedContainer.php'
-  router_cache_file: 'Routes.php'
+  router_cache_file: 'Router.php'
 
   routes:
     welcome:
