@@ -80,7 +80,6 @@ class BuildCommand extends Command
 
             $containerCacheFile = sprintf('%s/%s', $cacheDir, $this->container->get('container_cache_file'));
 
-            $cachableContainer = $this->container->get('service_container');
             $cachableContainer->compile();
 
             $dumper = new PhpDumper($cachableContainer);

@@ -1,4 +1,5 @@
 parameters:
+
   is_debug: false
 
   app_dir: 'app'
@@ -23,6 +24,18 @@ services:
     class: 'Maverick\Application'
     arguments:
       - '@container'
+
+  ##################################################
+  # Console Application
+  ##################################################  
+
+  console_application:
+    class: 'Symfony\Component\Console\Application'
+    calls:
+      - ['add', ['@maverick.console.command.build']]
+
+  maverick.console.command.build:
+    class: 'Maverick\Console\Command\BuildCommand'
 
   ##################################################
   # HTTP Request

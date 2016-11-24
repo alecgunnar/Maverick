@@ -4,7 +4,8 @@
 use Symfony\Component\Console\Application;
 use Maverick\Console\Command\BuildCommand;
 
-$autoloader = getcwd() . '/vendor/autoload.php';
+$root = getcwd();
+$autoloader = $root . '/vendor/autoload.php';
 
 if (!file_exists($autoloader)) {
     die('Could not find autoloader, please make sure you have installed the' . "\n"
@@ -14,8 +15,7 @@ if (!file_exists($autoloader)) {
 
 require($autoloader);
 
-$application = new Application();
-
-$application->add(new BuildCommand());
-
+$container = \Maverick\bootstrap($root, true);
+$application = $container->get('console_application');
 $application->run();
+
