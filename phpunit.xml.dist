@@ -8,7 +8,7 @@
          
     <testsuites>
         <testsuite name="Test Suite">
-            <directory>./test/src</directory>
+            <!-- <directory>./test/src</directory> -->
         </testsuite>=
     </testsuites>
 
