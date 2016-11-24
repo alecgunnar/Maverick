@@ -3,6 +3,7 @@ test/coverage/
 cache/
 .vagrant/
 log/
+build/
 
 phpunit.xml
 composer.lock
