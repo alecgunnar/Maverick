@@ -6,6 +6,11 @@ parameters:
   routes_cache_file: '%cache_dir%/routes.php'
   container_cache_file: '%cache_dir%/container.php'
 
+  routes:
+    welcome:
+      path: '/'
+      call: 'controller.welcome'
+
 services:
 
   ##################################################
