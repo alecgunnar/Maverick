@@ -8,13 +8,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Cache\Container as CachedContainer;
+use Cached\Container as CachedContainer;
 
 /**
  * @param string $root = null
  * @param bool $debug = false
  */
-function bootstrap(string $root = null): ContainerInterface
+function bootstrap(string $root = null, bool $debug = false): ContainerInterface
 {
     $container = null;
 
@@ -24,7 +24,7 @@ function bootstrap(string $root = null): ContainerInterface
      * Try to load the container from the cache
      */
 
-    if (class_exists(CachedContainer::class)) {
+    if (!$debug && class_exists(CachedContainer::class)) {
         $container = new CachedContainer();
     }
 

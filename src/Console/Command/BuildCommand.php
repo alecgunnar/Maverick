@@ -52,7 +52,7 @@ class BuildCommand extends Command
 
         copy($indexFrom, $indexTo);
 
-        $cachableContainer = \Maverick\bootstrap($root);
+        $cachableContainer = \Maverick\bootstrap($root, true);
         $this->container = $cachableContainer->get('container');
 
         $this->assertContainerHasParameter('is_debug');
@@ -79,7 +79,8 @@ class BuildCommand extends Command
 
             $dumper = new PhpDumper($cachableContainer);
             $cached = $dumper->dump([
-                'class' => 'Cache\Container'
+                'namespace' => 'Cached',
+                'class' => 'Container'
             ]);
 
             file_put_contents($containerCacheFile, $cached);
