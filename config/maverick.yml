@@ -5,7 +5,7 @@ parameters:
   config_dir: 'config'
   cache_dir: 'cache'
 
-  container_cache_file: 'Container.php'
+  container_cache_file: 'CachedContainer.php'
   router_cache_file: 'Routes.php'
 
   routes:

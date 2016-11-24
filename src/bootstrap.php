@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Cached\Container as CachedContainer;
+use Cached\CachedContainer;
 
 /**
  * @param string $root = null
@@ -25,7 +25,7 @@ function bootstrap(string $root = null, bool $debug = false): ContainerInterface
      */
 
     if (!$debug && class_exists(CachedContainer::class)) {
-        $container = new CachedContainer();
+        return new CachedContainer();
     }
 
     /*
@@ -33,13 +33,11 @@ function bootstrap(string $root = null, bool $debug = false): ContainerInterface
      * Build it from the config files
      */
 
-    if (!($container instanceof ContainerInterface)) {
-        $container = new ContainerBuilder();
-        $container->setParameter('root_dir', $root);
+    $container = new ContainerBuilder();
+    $container->setParameter('root_dir', $root);
 
-        $loader = new YamlFileLoader($container, new FileLocator($root . '/config'));
-        $loader->load('config.yml');
-    }
+    $loader = new YamlFileLoader($container, new FileLocator($root . '/config'));
+    $loader->load('config.yml');
 
     return $container;
 }

@@ -61,6 +61,12 @@ class BuildCommand extends Command
         $cacheDir = sprintf('%s/%s', $root, $this->container->get('cache_dir'));
         $cacheDirExists = is_dir($cacheDir);
 
+        $removeCacheDir = sprintf('Removing existing cache directory %s', $cacheDir);
+        $output->writeln($removeCacheDir);
+
+        $cmd = sprintf('rm -rf %s', $cacheDir);
+        system($cmd);
+
         if (!$this->container->get('is_debug')) {
             if (!$cacheDirExists) {
                 $createCacheDir = sprintf('Creating cache directory %s', $cacheDir);
@@ -80,7 +86,7 @@ class BuildCommand extends Command
             $dumper = new PhpDumper($cachableContainer);
             $cached = $dumper->dump([
                 'namespace' => 'Cached',
-                'class' => 'Container'
+                'class' => 'CachedContainer'
             ]);
 
             file_put_contents($containerCacheFile, $cached);
@@ -96,12 +102,6 @@ class BuildCommand extends Command
 
             $cachingRouter = sprintf('Wrote router cache to %s/%s', $cacheDir, $this->container->get('router_cache_file'));
             $output->writeln($cachingRouter);
-        } elseif($cacheDirExists) {
-            $removeCacheDir = sprintf('Removing cache directory %s', $cacheDir);
-            $output->writeln($removeCacheDir);
-
-            $cmd = sprintf('rm -rf %s', $cacheDir);
-            system($cmd);
         }
     }
 
