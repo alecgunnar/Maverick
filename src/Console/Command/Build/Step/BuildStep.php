@@ -16,7 +16,7 @@ abstract class BuildStep
     /**
      * @param Command $command
      */
-    public function configure(Command $command)
+    final public function configure(Command $command)
     {
         $this->command = $command;
 
