@@ -1,6 +1,6 @@
 <?php
 
-namespace Maverick\Container;
+namespace Maverick\Container\Adapter;
 
 use Interop\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
@@ -10,7 +10,7 @@ use Maverick\Container\Exception\NotFoundException;
 use InvalidArgumentException;
 use Exception;
 
-class SymfonyContainerAdapter implements ContainerInterface
+class SymfonyDIAdapter implements ContainerInterface
 {
     /**
      * @var SymfonyContainerInterface
