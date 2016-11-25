@@ -1,6 +1,6 @@
 <?php
 
-namespace Maverick\Console\Command;
+namespace Maverick\Console\Command\Build;
 
 use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;

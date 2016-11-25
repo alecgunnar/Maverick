@@ -1,12 +1,11 @@
-vendor/
-test/coverage/
-cache/
-.vagrant/
-log/
-build/
+/vendor/
+/test/coverage/
+/cache/
+/log/
+/build/
 
-phpunit.xml
-composer.lock
-*.log
-config/environment.yml
-public/index.php
+/phpunit.xml
+/composer.lock
+/*.log
+/config/environment.yml
+/public/index.php
