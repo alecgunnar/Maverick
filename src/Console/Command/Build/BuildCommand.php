@@ -2,20 +2,30 @@
 
 namespace Maverick\Console\Command\Build;
 
-use Interop\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Exception;
+use Maverick\Console\Command\Build\Step\BuildStep;
+use RuntimeException;
 
 class BuildCommand extends Command
 {
     /**
-     * @var ContainerInterface
+     * @var BuildStep[]
      */
-    protected $container;
+    protected $buildSteps = [];
+
+    /**
+     * @param BuildStep $buildStep
+     *
+     * @return static
+     */
+    public function addBuildStep(BuildStep $buildStep)
+    {
+        $this->buildSteps[] = $buildStep;
+        return $this;
+    }
 
     protected function configure()
     {
@@ -23,100 +33,22 @@ class BuildCommand extends Command
             ->setDescription('Prepare the application for runtime')
             ->setHelp('Copies environment based configuration and scripts to their runtime locations.');
 
-        $this->addArgument('environment', InputArgument::OPTIONAL, 'Which environment is being built for?');
+        $this->addOption('environment', null, InputOption::VALUE_OPTIONAL, 'What environment would you like to build for?', null);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $environment = $input->getArgument('environment') ?? 'prod';
-        $buildingFor = sprintf('Building for %s', $environment);
-        $output->writeln($buildingFor);
+        $environment = $input->getOption('environment') ?? $_ENV['MAVERICK_ENVIRONMENT'] ?? false;
 
-        $root = getcwd();
-        $buildingRoot = sprintf('Building in %s', $root);
-        $output->writeln($buildingRoot);
+        if (!$environment) {
+            throw new RuntimeException('Cannot determine build environment.');
+        }
 
-        $configFrom = sprintf('%s/config/environment/%s.yml', $root, $environment);
-        $configTo = sprintf('%s/config/environment.yml', $root);
-        $output->writeln('Copying environment config');
-
-        $this->assertFileExists($configFrom);
-
-        copy($configFrom, $configTo);
-
-        $indexFrom = sprintf('%s/app/%s.php', $root, $environment);
-        $indexTo = sprintf('%s/public/index.php', $root);
-        $output->writeln('Copying environment index');
-
-        $this->assertFileExists($indexFrom);
-
-        copy($indexFrom, $indexTo);
-
-        $cachableContainer = \Maverick\bootstrap($root, true);
-        $this->container = $cachableContainer->get('container');
-
-        $this->assertContainerHasParameter('is_debug');
-        $this->assertContainerHasParameter('cache_dir');
-
-        $cacheDir = sprintf('%s/%s', $root, $this->container->get('cache_dir'));
-        $cacheDirExists = is_dir($cacheDir);
-
-        $removeCacheDir = sprintf('Removing existing cache directory %s', $cacheDir);
-        $output->writeln($removeCacheDir);
-
-        $cmd = sprintf('rm -rf %s', $cacheDir);
-        system($cmd);
-
-        if (!$this->container->get('is_debug')) {
-            if (!$cacheDirExists) {
-                $createCacheDir = sprintf('Creating cache directory %s', $cacheDir);
-                $output->writeln($createCacheDir);
-
-                mkdir($cacheDir);
+        foreach ($this->buildSteps as $buildStep) {
+            if ($buildStep->shouldExecute($input)) {
+                $buildStep->configure($this, $environment)
+                    ->execute($input, $output);
             }
-
-            $output->writeln('Caching container');
-            $this->assertContainerHasParameter('container_cache_file');
-
-            $containerCacheFile = sprintf('%s/%s', $cacheDir, $this->container->get('container_cache_file'));
-
-            $cachableContainer->compile();
-
-            $dumper = new PhpDumper($cachableContainer);
-            $cached = $dumper->dump([
-                'namespace' => 'Cached',
-                'class' => 'CachedContainer'
-            ]);
-
-            file_put_contents($containerCacheFile, $cached);
-
-            $cachingContainer = sprintf('Wrote container cache to %s', $containerCacheFile);
-            $output->writeln($cachingContainer);
-
-            $this->assertContainerHasParameter('router_cache_file');
-
-            $output->writeln('Caching routes');
-
-            $this->container->get('fast_route.cached_dispatcher');
-
-            $cachingRouter = sprintf('Wrote router cache to %s/%s', $cacheDir, $this->container->get('router_cache_file'));
-            $output->writeln($cachingRouter);
-        }
-    }
-
-    protected function assertContainerHasParameter(string $name)
-    {
-        if (!$this->container->has($name)) {
-            $message = sprintf('The parameter `%s` is not defined within the container, it must be defined!', $name);
-            throw new Exception($message);
-        }
-    }
-
-    protected function assertFileExists(string $file)
-    {
-        if (!file_exists($file)) {
-            $message = sprintf('The file %s does not exist.', $file);
-            throw new Exception($message);
         }
     }
 }

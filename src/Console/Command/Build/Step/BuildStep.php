@@ -5,6 +5,7 @@ namespace Maverick\Console\Command\Build\Step;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class BuildStep
 {
@@ -14,13 +15,34 @@ abstract class BuildStep
     private $command;
 
     /**
-     * @param Command $command
+     * @var string
      */
-    final public function configure(Command $command)
+    private $environment;
+
+    /**
+     * @param Command $command
+     * @param string $environment
+     *
+     * @return static
+     */
+    final public function configure(Command $command, string $environment)
     {
         $this->command = $command;
+        $this->environment = $environment;
 
         $this->setup();
+
+        return $this;
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return bool
+     */
+    public function shouldExecute(InputInterface $input): bool
+    {
+        return true;
     }
 
     /**
@@ -49,6 +71,14 @@ abstract class BuildStep
     {
         $this->command->addOption($name, $shortcut, $mode, $description, $default);
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEnvironment(): string
+    {
+        return $this->environment;
     }
 
     /**
