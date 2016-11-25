@@ -7,9 +7,9 @@ use FastRoute\Dispatcher;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Maverick\Http\Router\Route\Collection\CollectionInterface;
-use Maverick\Http\Router\Route\RouteInterface;
+use Maverick\Http\Router\Route\Route;
 
-class FastRouteTest extends PHPUnit_Framework_TestCase
+class FastRouteRouterTest extends PHPUnit_Framework_TestCase
 {
     public function testMatchingRouteFoundReturnsFound()
     {
@@ -31,7 +31,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
             ->with($name)
             ->willReturn($this->getMockRoute());
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
 
         $this->assertEquals(RouterInterface::STATUS_FOUND, $instance->processRequest($request));
     }
@@ -51,7 +51,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
 
         $collection = $this->getMockCollection();
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
 
         $this->assertEquals(RouterInterface::STATUS_NOT_ALLOWED, $instance->processRequest($request));
     }
@@ -71,7 +71,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
 
         $collection = $this->getMockCollection();
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
 
         $this->assertEquals(RouterInterface::STATUS_NOT_FOUND, $instance->processRequest($request));
     }
@@ -97,7 +97,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
             ->with($name)
             ->willReturn($route);
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
         $instance->processRequest($request);
 
         $this->assertSame($route, $instance->getRoute());
@@ -125,7 +125,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
             ->with($name)
             ->willReturn($route);
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
         $instance->processRequest($request);
 
         $this->assertEquals($vars, $instance->getUriVars());
@@ -147,7 +147,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
 
         $collection = $this->getMockCollection();
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
         $instance->processRequest($request);
 
         $this->assertEquals($methods, $instance->getAllowedMethods());
@@ -168,7 +168,7 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
 
         $collection = $this->getMockCollection();
 
-        $instance = new FastRoute($dispatcher, $collection);
+        $instance = new FastRouteRouter($dispatcher, $collection);
 
         $this->assertEquals(RouterInterface::STATUS_NOT_FOUND, $instance->processRequest($request));
     }
@@ -215,7 +215,8 @@ class FastRouteTest extends PHPUnit_Framework_TestCase
 
     protected function getMockRoute()
     {
-        return $this->getMockBuilder(RouteInterface::class)
+        return $this->getMockBuilder(Route::class)
+            ->disableOriginalConstructor()
             ->getMock();
     }
 }

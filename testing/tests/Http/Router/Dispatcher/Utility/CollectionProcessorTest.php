@@ -4,7 +4,7 @@ namespace Maverick\Http\Router\Dispatcher\Utility;
 
 use PHPUnit_Framework_TestCase;
 use Maverick\Http\Router\Route\Collection\CollectionInterface;
-use Maverick\Http\Router\Route\RouteInterface;
+use Maverick\Http\Router\Route\Route;
 use FastRoute\RouteCollector;
 
 class CollectionProcessorTest extends PHPUnit_Framework_TestCase
@@ -60,7 +60,8 @@ class CollectionProcessorTest extends PHPUnit_Framework_TestCase
 
     protected function getMockRoute($method, $path, $callable)
     {
-        $route = $this->getMockBuilder(RouteInterface::class)
+        $route = $this->getMockBuilder(Route::class)
+            ->disableOriginalConstructor()
             ->getMock();
 
         $route->expects($this->once())

@@ -3,7 +3,7 @@
 namespace Maverick\Http\Router\Route\Collection;
 
 use PHPUnit_Framework_TestCase;
-use Maverick\Http\Router\Route\RouteInterface;
+use Maverick\Http\Router\Route\Route;
 
 class CollectionTest extends PHPUnit_Framework_TestCase
 {
@@ -76,7 +76,8 @@ class CollectionTest extends PHPUnit_Framework_TestCase
 
     protected function getMockRoute()
     {
-        return $this->getMockBuilder(RouteInterface::class)
+        return $this->getMockBuilder(Route::class)
+            ->disableOriginalConstructor()
             ->getMock();
     }
 }

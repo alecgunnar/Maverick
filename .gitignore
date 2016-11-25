@@ -1,5 +1,5 @@
 /vendor/
-/test/coverage/
+/testing/coverage/
 /cache/
 /log/
 /build/

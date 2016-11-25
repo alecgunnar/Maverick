@@ -16,11 +16,6 @@ class ConfigLoader implements LoaderInterface
     /**
      * @var string
      */
-    const MISSING_ATTRIBUTE_EXCEPTION = 'All routes must have a "%s" attribute. Please check your configuration.';
-
-    /**
-     * @var string
-     */
     const DEFAULT_METHOD = 'GET';
 
     public function __construct(array $routes)
@@ -39,16 +34,6 @@ class ConfigLoader implements LoaderInterface
         string $prefix = ''
     ) {
         foreach ($routes as $name => $route) {
-            if (isset($route['group'])) {
-                $this->parseRoutes(
-                    $route['group'],
-                    $collection,
-                    $this->cleanRoutePath($route['path'])
-                );
-
-                continue;
-            }
-
             if (is_string($name)) {
                 $route['name'] = $route['name'] ?? $name;
             }
@@ -73,8 +58,10 @@ class ConfigLoader implements LoaderInterface
         $this->checkForAttribute($route, 'path');
         $this->checkForAttribute($route, 'call');
 
-        $route['method'] = $route['method'] ?? self::DEFAULT_METHOD;
-        $route['methods'] = isset($route['methods']) ? $route['methods'] : [$route['method']];
+        if (!isset($route['methods'])) {
+            $route['method'] = $route['method'] ?? self::DEFAULT_METHOD;
+            $route['methods'] = is_array($route['method']) ? $route['method'] : [$route['method']];
+        }
 
         if (!is_array($route['methods'])) {
             throw new Exception('The "methods" attribute for all routes must be an array of valid HTTP methods.');
@@ -88,7 +75,7 @@ class ConfigLoader implements LoaderInterface
     protected function checkForAttribute(array $values, string $attr)
     {
         if (!isset($values[$attr])) {
-            $msg = sprintf(self::MISSING_ATTRIBUTE_EXCEPTION, $attr);
+            $msg = sprintf('All routes must have a "%s" attribute. Please check your configuration.', $attr);
             throw new Exception($msg);
         }
     }
