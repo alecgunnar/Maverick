@@ -33,7 +33,7 @@ class BuildCommand extends Command
             ->setDescription('Prepare the application for runtime')
             ->setHelp('Copies environment based configuration and scripts to their runtime locations.');
 
-        $this->addOption('environment', null, InputOption::VALUE_OPTIONAL, 'What environment would you like to build for?', null);
+        $this->addOption('environment', 'env', InputOption::VALUE_REQUIRED, 'What environment would you like to build for?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

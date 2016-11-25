@@ -107,6 +107,29 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($environment, $tester->getDisplay());
     }
 
+    public function testEnvironmentTakenFromShortcutOptionAndSentToSteps()
+    {
+        $step = new class extends BuildStep {
+            public function execute(InputInterface $input, OutputInterface $output)
+            {
+                $output->write($this->getEnvironment());
+            }
+        };
+
+        $environment = 'env_name';
+        $instance = new BuildCommand();
+
+        $instance->addBuildStep($step);
+
+        $tester = new CommandTester($instance);
+
+        $tester->execute([
+            '-env' => $environment
+        ]);
+
+        $this->assertEquals($environment, $tester->getDisplay());
+    }
+
     /**
      * @backupGlobals enabled
      */
