@@ -1,6 +1,6 @@
 <?php
 
-namespace Maverick\Handler\Whoops;
+namespace Maverick\Handler\Error\Whoops;
 
 use Whoops\Handler\Handler;
 use Maverick\View\ViewInterface;

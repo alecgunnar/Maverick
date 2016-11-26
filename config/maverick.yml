@@ -52,7 +52,7 @@ services:
   ##################################################  
 
   error_handler:
-    class: 'Maverick\Handler\WhoopsErrorHandler'
+    class: 'Maverick\Handler\Error\WhoopsErrorHandler'
     arguments:
       - '@whoops.run'
 
@@ -123,11 +123,11 @@ services:
   # Error Handlers
   ##################################################
 
-  maverick.handler.whoops.http_exception:
-    class: 'Maverick\Handler\Whoops\HttpExceptionHandler'
+  maverick.handler.error.whoops.http_exception:
+    class: 'Maverick\Handler\Error\Whoops\HttpExceptionHandler'
 
-  maverick.handler.whoops.safe_render:
-    class: 'Maverick\Handler\Whoops\SafeRenderHandler'
+  maverick.handler.error.whoops.safe_render:
+    class: 'Maverick\Handler\Error\Whoops\SafeRenderHandler'
     arguments:
       - '@fatal_error_view'
     calls:
@@ -142,7 +142,7 @@ services:
     class: 'Whoops\Run'
     calls:
       - ['pushHandler', ['@whoops.handler.pretty']]
-      - ['pushHandler', ['@maverick.handler.whoops.http_exception']]
+      - ['pushHandler', ['@maverick.handler.error.whoops.http_exception']]
 
   whoops.handler.pretty:
     class: 'Whoops\Handler\PrettyPageHandler'

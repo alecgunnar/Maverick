@@ -1,6 +1,6 @@
 <?php
 
-namespace Maverick\Handler;
+namespace Maverick\Handler\Error;
 
 interface ErrorHandlerInterface
 {
