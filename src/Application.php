@@ -2,15 +2,23 @@
 
 namespace Maverick;
 
+use Maverick\Handler\ErrorHandlerInterface;
 use Maverick\Http\Router\RouterInterface;
+use Maverick\Http\Router\Route\RouteInterface;
 use Maverick\Http\Exception\NotFoundException;
 use Maverick\Http\Exception\NotAllowedException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Interop\Container\ContainerInterface;
+use UnexpectedValueException;
 
 class Application
 {
+    /**
+     * @var RouterInterface
+     */
+    protected $router;
+
     /**
      * @var ContainerInterface
      */
@@ -22,18 +30,31 @@ class Application
     const RESPONSE_NOT_RETURNED_MESSAGE = 'Route action did not return an instance of %s.';
 
     /**
+     * If the last argument, the error handler is
+     * provided, it will be automatically enabled.
+     *
+     * @param RouterInterface $router
      * @param ContainerInterface $container
+     * @param ErrorHandlerInterface $errorHandler = null
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(RouterInterface $router, ContainerInterface $container, ErrorHandlerInterface $errorHandler = null)
     {
+        $this->router = $router;
         $this->container = $container;
 
-        $this->container->get('whoops.run')
-            ->register();
+        if ($errorHandler) {
+            $errorHandler->enable();
+        }
     }
 
     /**
-     * @param ServerRequestInterface $request = null
+     * Given a request, this method will determine
+     * which route, if any, matched the request.
+     * If a matching route is found, the action will
+     * be loaded from the container and called being
+     * passed the provided request.
+     *
+     * @param ServerRequestInterface $request
      *
      * @throws HttpException
      * @throws NotFoundException
@@ -42,11 +63,9 @@ class Application
      *
      * @return ResponseInterface $response
      */
-    public function handleRequest(ServerRequestInterface $request = null): ResponseInterface
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        $request = $request ?? $this->container->get('server_request');
-        $router = $this->container->get('router');
-        $status = $router->processRequest($request);
+        $status = $this->router->processRequest($request);
 
         switch ($status) {
             case RouterInterface::STATUS_NOT_FOUND:
@@ -62,13 +81,15 @@ class Application
 
         if (!($response instanceof ResponseInterface)) {
             $msg = sprintf(self::RESPONSE_NOT_RETURNED_MESSAGE, ResponseInterface::class);
-            throw new \UnexpectedValueException($msg);
+            throw new UnexpectedValueException($msg);
         }
 
         return $response;
     }
 
     /**
+     * Sends the response back to the client
+     *
      * @param ResponseInterface $response
      *
      * @throws RuntimeException

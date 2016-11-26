@@ -1,6 +1,6 @@
 <?php
 
-namespace Maverick\Handler;
+namespace Maverick\Handler\Whoops;
 
 use Whoops\Handler\Handler;
 use Maverick\Http\Exception\HttpExceptionInterface;
