@@ -49,9 +49,9 @@ class Application
 
     /**
      * Given a request, this method will determine
-     * which route, if any, matched the request.
-     * If a matching route is found, the action will
-     * be loaded from the container and called being
+     * which route, if any, matches the request. If a
+     * matching route is found, the action will be
+     * loaded from the container and called being
      * passed the provided request.
      *
      * @param ServerRequestInterface $request

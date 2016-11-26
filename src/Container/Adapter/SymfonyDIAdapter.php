@@ -6,7 +6,7 @@ use Interop\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface as SymfonyContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Maverick\Container\Exception\RetrievalException;
-use Maverick\Container\Exception\NotFoundException;
+use Maverick\Container\Exception\UnknownServiceException;
 use InvalidArgumentException;
 use Exception;
 
@@ -34,7 +34,7 @@ class SymfonyDIAdapter implements ContainerInterface
                 return $this->container->getParameter($name);
             }
         } catch (InvalidArgumentException $exception) {
-            throw new NotFoundException($name);
+            throw new UnknownServiceException($name);
         } catch (Exception $exception) {
             throw new RetrievalException($name, $exception->getMessage());
         }

@@ -2,7 +2,8 @@
 
 namespace Maverick\Container\Exception;
 
-use Interop\Containter\Exception\ContainerException;
+use Interop\Container\Exception\ContainerException;
+use Exception;
 
 class RetrievalException extends Exception implements ContainerException
 {
