@@ -30,6 +30,19 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     public function testHandleRequestThrowsExceptionIfNoRouteMatchesPath()
     {
         $this->expectException(NotFoundException::class);
+
+        $router = $this->getMockRouter();
+        $container = $this->getMockContainer();
+        $request = $this->getMockRequest();
+
+        $router->expects($this->once())
+            ->method('processRequest')
+            ->with($request)
+            ->willReturn(RouterInterface::STATUS_NOT_FOUND);
+
+        $instance = new Application($router, $container, $handler);
+
+        $instance->handleRequest($request);
     }
 
     public function testHandleRequestThrowsExceptionIfNoRouteMatchesPathAndMethod()
