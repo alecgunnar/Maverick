@@ -2,7 +2,7 @@
 
 namespace Maverick;
 
-use Maverick\Handler\ErrorHandlerInterface;
+use Maverick\Handler\Error\ErrorHandlerInterface;
 use Maverick\Http\Router\RouterInterface;
 use Maverick\Http\Router\Route\RouteInterface;
 use Maverick\Http\Exception\NotFoundException;
