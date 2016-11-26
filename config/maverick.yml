@@ -61,7 +61,7 @@ services:
   ##################################################
 
   container:
-    class: 'Maverick\Container\SymfonyContainerAdapter'
+    class: 'Maverick\Container\Adapter\SymfonyDIAdapter'
     arguments:
       - '@service_container'
 
