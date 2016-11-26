@@ -179,7 +179,7 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    protected function getMockRequest($method, $uri)
+    protected function getMockRequest(string $method, string $uri)
     {
         $request = $this->getMockBuilder(ServerRequestInterface::class)
             ->getMock();
@@ -195,7 +195,7 @@ class FastRouteRouterTest extends PHPUnit_Framework_TestCase
         return $request;
     }
 
-    protected function getMockUri($uri)
+    protected function getMockUri(string $uri)
     {
         $mock = $this->getMockBuilder(UriInterface::class)
             ->getMock();

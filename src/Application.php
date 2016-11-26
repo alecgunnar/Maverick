@@ -73,7 +73,7 @@ class Application
             case RouterInterface::STATUS_NOT_ALLOWED:
                 throw new NotAllowedException($request);
             case RouterInterface::STATUS_FOUND:
-                $route = $router->getRoute();
+                $route = $this->router->getRoute();
         }
 
         $callable = $this->container->get($route->getService());
