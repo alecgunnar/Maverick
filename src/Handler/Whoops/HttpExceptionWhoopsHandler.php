@@ -1,11 +1,11 @@
 <?php
 
-namespace Maverick\Handler\Error\Whoops;
+namespace Maverick\Handler\Whoops;
 
 use Whoops\Handler\Handler;
 use Maverick\Http\Exception\HttpExceptionInterface;
 
-class HttpExceptionHandler extends Handler
+class HttpExceptionWhoopsHandler extends Handler
 {
     public function handle()
     {

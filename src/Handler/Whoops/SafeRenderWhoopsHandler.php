@@ -1,11 +1,11 @@
 <?php
 
-namespace Maverick\Handler\Error\Whoops;
+namespace Maverick\Handler\Whoops;
 
 use Whoops\Handler\Handler;
 use Maverick\View\ViewInterface;
 
-class SafeRenderHandler extends Handler
+class SafeRenderWhoopsHandler extends Handler
 {
     /**
      * @var ViewInterface
