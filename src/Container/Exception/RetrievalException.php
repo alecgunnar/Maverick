@@ -13,7 +13,7 @@ class RetrievalException extends Exception implements ContainerException
      */
     public function __construct(string $name, string $reason = null)
     {
-        $message = sprintf('The service "%s" could not be retrieved from the container. Reason: ', $name, $reason ?? 'Unknown');
+        $message = sprintf('The service "%s" could not be retrieved from the container. Reason: %s', $name, $reason ?? 'Unknown');
         parent::__construct($message);
     }
 }

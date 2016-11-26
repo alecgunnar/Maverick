@@ -5,7 +5,7 @@ namespace Maverick\Container\Exception;
 use Interop\Container\Exception\NotFoundException;
 use Exception;
 
-class UnknownServiceException extends Exception implements NotFoundException
+class UnknownEntryException extends Exception implements NotFoundException
 {
     /**
      * @param string $name
