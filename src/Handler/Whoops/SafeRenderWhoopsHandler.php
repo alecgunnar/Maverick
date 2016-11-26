@@ -35,7 +35,7 @@ class SafeRenderWhoopsHandler extends Handler
         return Handler::QUIT;
     }
 
-    public function addView(string $code, ViewInterface $view)
+    public function addView(int $code, ViewInterface $view)
     {
         $this->views[$code] = $view;
     }
