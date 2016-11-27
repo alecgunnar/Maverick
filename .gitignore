@@ -9,3 +9,4 @@
 /*.log
 /config/environment.yml
 /public/index.php
+/testing/fixtures/cache

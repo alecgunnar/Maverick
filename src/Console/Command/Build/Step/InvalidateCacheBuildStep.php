@@ -29,7 +29,7 @@ class InvalidateCacheBuildStep extends BuildStep
 
         $this->rmdir($directory);
 
-        mkdir($directory);
+        mkdir($directory, 0777, true);
     }
 
     protected function rmdir(string $directory) {
