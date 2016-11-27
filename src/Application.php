@@ -25,11 +25,6 @@ class Application
     protected $container;
 
     /**
-     * @var string
-     */
-    const RESPONSE_NOT_RETURNED_MESSAGE = 'Route action did not return an instance of %s.';
-
-    /**
      * If the last argument, the error handler is
      * provided, it will be automatically enabled.
      *
@@ -80,7 +75,7 @@ class Application
         $response = $callable($request);
 
         if (!($response instanceof ResponseInterface)) {
-            $msg = sprintf(self::RESPONSE_NOT_RETURNED_MESSAGE, ResponseInterface::class);
+            $msg = sprintf('Route action did not return an instance of %s.', ResponseInterface::class);
             throw new UnexpectedValueException($msg);
         }
 
