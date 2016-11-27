@@ -4,6 +4,8 @@ namespace Maverick;
 
 use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStream;
+use Symfony\Component\DependencyInjection\Container;
+use Maverick\Handler\Error\ErrorHandlerInterface;
 use RuntimeException;
 
 class BootstrapTest extends PHPUnit_Framework_TestCase
@@ -51,6 +53,17 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
         $container = \Maverick\bootstrap($root, true);
 
         $this->assertNotInstanceOf(\Cached\CachedContainer::class, $container);
+    }
+
+    public function testErrorHandlerIsRegistered()
+    {
+        require_once(__DIR__ . '/../fixtures/CachedContainer.php');
+
+        $root = $this->getRootPath();
+
+        $container = \Maverick\bootstrap($root);
+
+        $this->assertEquals($container->get('error_handler'), set_error_handler(function () { }));
     }
 
     protected function getRootPath(string $name = 'test', string $value = 'value', string $directory = 'config', string $file = 'config.yml')

@@ -25,7 +25,6 @@ services:
     arguments:
       - '@router'
       - '@container'
-      - '@error_handler'
 
   ##################################################
   # Console Application
@@ -41,12 +40,18 @@ services:
     calls:
       - ['addBuildStep', ['@maverick.console.command.build.step.copy_config']]
       - ['addBuildStep', ['@maverick.console.command.build.step.copy_script']]
+      - ['addBuildStep', ['@maverick.console.command.build.step.bust_cache']]
 
   maverick.console.command.build.step.copy_config:
     class: 'Maverick\Console\Command\Build\Step\CopyConfigBuildStep'
 
   maverick.console.command.build.step.copy_script:
     class: 'Maverick\Console\Command\Build\Step\CopyScriptBuildStep'
+
+  maverick.console.command.build.step.bust_cache:
+    class: 'Maverick\Console\Command\Build\Step\BustCacheBuildStep'
+    arguments:
+      - '%cache_dir%'
 
   ##################################################
   # Error Handler

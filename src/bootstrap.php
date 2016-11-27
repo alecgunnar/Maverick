@@ -25,17 +25,22 @@ use RuntimeException;
  * `$root` directory of your application (specified by
  * the first argument).
  *
+ * The last step in the bootstrap is to enable the
+ * error handler.
+ *
  * @param string $root
  * @param bool $debug = false
  */
 function bootstrap(string $root, bool $debug = false): ContainerInterface
 {
+    $container = null;
+
     /*
      * Try to load the container from the cache
      */
 
     if (!$debug && class_exists(CachedContainer::class)) {
-        return new CachedContainer();
+        $container = new CachedContainer();
     }
 
     /*
@@ -43,19 +48,25 @@ function bootstrap(string $root, bool $debug = false): ContainerInterface
      * Build it from the config files
      */
 
-    $from = $root . '/config';
-    $file = 'config.yml';
-    $fqfp = $from . '/' . $file;
+    if (!($container instanceof ContainerInterface)) {
+        $from = $root . '/config';
+        $file = 'config.yml';
+        $fqfp = $from . '/' . $file;
 
-    if (!file_exists($fqfp)) {
-        throw new RuntimeException('Could not find the configuration file at: ' . $fqfp);
+        if (!file_exists($fqfp)) {
+            throw new RuntimeException('Could not find the configuration file at: ' . $fqfp);
+        }
+
+        $container = new ContainerBuilder();
+        $container->setParameter('root_dir', $root);
+
+        $loader = new YamlFileLoader($container, new FileLocator($from));
+        $loader->load($file);
     }
 
-    $container = new ContainerBuilder();
-    $container->setParameter('root_dir', $root);
-
-    $loader = new YamlFileLoader($container, new FileLocator($from));
-    $loader->load($file);
+    if ($container->has('error_handler')) {
+        $container->get('error_handler')->enable();
+    }
 
     return $container;
 }
