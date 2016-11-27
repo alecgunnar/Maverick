@@ -14,6 +14,7 @@
         "symfony/config": "^3.1",
         "symfony/dependency-injection": "^3.1",
         "symfony/console": "^3.1",
+        "symfony/yaml": "^3.1",
 
         "psr/http-message": "^1.0",
         "nikic/fast-route": "^1.0",
