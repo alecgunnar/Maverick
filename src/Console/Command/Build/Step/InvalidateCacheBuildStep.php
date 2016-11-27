@@ -4,7 +4,6 @@ namespace Maverick\Console\Command\Build\Step;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use RuntimeException;
 
 class InvalidateCacheBuildStep extends BuildStep
 {
@@ -28,11 +27,25 @@ class InvalidateCacheBuildStep extends BuildStep
         $output->writeln('Invalidating cache directory:');
         $output->writeln(sprintf("\tDirectory:\t%s", $directory));
 
-        if (is_dir($directory)) {
-            $rmrf = sprintf('rm -rf "%s"', $directory);
-            system($rmrf);
-        }
+        $this->rmdir($directory);
 
         mkdir($directory);
+    }
+
+    protected function rmdir(string $directory) {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        foreach (glob($directory . '/*') as $target) {
+            if (is_dir($target)) {
+                $this->rmdir($target);
+                continue;
+            }
+
+            unlink($target);
+        }
+
+        rmdir($directory);
     }
 }
