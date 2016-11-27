@@ -9,17 +9,27 @@ use Symfony\Component\Config\FileLocator;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Cached\CachedContainer;
+use RuntimeException;
 
 /**
- * @param string $root = null
+ * This function will simply return the application's
+ * container. If not in debug mode (specified by the
+ * second argument), an attempt to load the cached
+ * container will be made. If the cached container
+ * cannot be loaded, the container will be built from
+ * the existing configuration file.
+ *
+ * The expected configuration file should be called
+ * `config.yml`, and should live inside of the `config`
+ * directory which itself should live inside of the
+ * `$root` directory of your application (specified by
+ * the first argument).
+ *
+ * @param string $root
  * @param bool $debug = false
  */
-function bootstrap(string $root = null, bool $debug = false): ContainerInterface
+function bootstrap(string $root, bool $debug = false): ContainerInterface
 {
-    $container = null;
-
-    $root = $root ?? __DIR__;
-
     /*
      * Try to load the container from the cache
      */
@@ -33,11 +43,19 @@ function bootstrap(string $root = null, bool $debug = false): ContainerInterface
      * Build it from the config files
      */
 
+    $from = $root . '/config';
+    $file = 'config.yml';
+    $fqfp = $from . '/' . $file;
+
+    if (!file_exists($fqfp)) {
+        throw new RuntimeException('Could not find the configuration file at: ' . $fqfp);
+    }
+
     $container = new ContainerBuilder();
     $container->setParameter('root_dir', $root);
 
-    $loader = new YamlFileLoader($container, new FileLocator($root . '/config'));
-    $loader->load('config.yml');
+    $loader = new YamlFileLoader($container, new FileLocator($from));
+    $loader->load($file);
 
     return $container;
 }
