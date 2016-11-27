@@ -37,6 +37,11 @@ class CacheContainerBuildStep extends BuildStep
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $file = sprintf('%s/%s', $this->getRoot(), $this->file);
+        
+        $output->writeln('Caching the container:');
+        $output->writeln(sprintf("\tFile:\t%s", $file));
+
         $container = \Maverick\bootstrap($this->getRoot(), true);
         $container->compile();
 
@@ -45,8 +50,6 @@ class CacheContainerBuildStep extends BuildStep
             'namespace' => $this->namespace,
             'class' => $this->class
         ]);
-
-        $file = sprintf('%s/%s', $this->getRoot(), $this->file);
 
         file_put_contents($file, $dumped);
     }
