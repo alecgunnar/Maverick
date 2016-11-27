@@ -41,6 +41,7 @@ services:
       - ['addBuildStep', ['@maverick.console.command.build.step.copy_config']]
       - ['addBuildStep', ['@maverick.console.command.build.step.copy_script']]
       - ['addBuildStep', ['@maverick.console.command.build.step.invalidate_cache']]
+      - ['addBuildStep', ['@maverick.console.command.build.step.cache_container']]
 
   maverick.console.command.build.step.copy_config:
     class: 'Maverick\Console\Command\Build\Step\CopyConfigBuildStep'
@@ -52,6 +53,11 @@ services:
     class: 'Maverick\Console\Command\Build\Step\InvalidateCacheBuildStep'
     arguments:
       - '%cache_dir%'
+
+  maverick.console.command.build.step.cache_container:
+    class: 'Maverick\Console\Command\Build\Step\CacheContainerBuildStep'
+    arguments:
+      - '%cache_dir%/%container_cache_file%'
 
   ##################################################
   # Error Handler
