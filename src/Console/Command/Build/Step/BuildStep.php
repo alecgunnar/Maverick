@@ -20,15 +20,21 @@ abstract class BuildStep
     private $environment;
 
     /**
+     * @var string
+     */
+    private $root;
+
+    /**
      * @param Command $command
      * @param string $environment
      *
      * @return static
      */
-    final public function configure(Command $command, string $environment)
+    final public function configure(Command $command, string $environment, string $root)
     {
         $this->command = $command;
         $this->environment = $environment;
+        $this->root = $root;
 
         $this->setup();
 
@@ -79,6 +85,14 @@ abstract class BuildStep
     protected function getEnvironment(): string
     {
         return $this->environment;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getRoot(): string
+    {
+        return $this->root;
     }
 
     /**

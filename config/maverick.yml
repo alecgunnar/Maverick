@@ -37,7 +37,16 @@ services:
       - ['add', ['@maverick.console.command.build']]
 
   maverick.console.command.build:
-    class: 'Maverick\Console\Command\BuildCommand'
+    class: 'Maverick\Console\Command\Build\BuildCommand'
+    calls:
+      - ['addBuildStep', ['@maverick.console.command.build.step.copy_config']]
+      - ['addBuildStep', ['@maverick.console.command.build.step.copy_script']]
+
+  maverick.console.command.build.step.copy_config:
+    class: 'Maverick\Console\Command\Build\Step\CopyConfigBuildStep'
+
+  maverick.console.command.build.step.copy_script:
+    class: 'Maverick\Console\Command\Build\Step\CopyScriptBuildStep'
 
   ##################################################
   # HTTP Request

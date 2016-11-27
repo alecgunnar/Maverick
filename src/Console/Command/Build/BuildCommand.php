@@ -34,11 +34,13 @@ class BuildCommand extends Command
             ->setHelp('Copies environment based configuration and scripts to their runtime locations.');
 
         $this->addOption('environment', 'env', InputOption::VALUE_REQUIRED, 'What environment would you like to build for?');
+        $this->addOption('root', null, InputOption::VALUE_OPTIONAL, 'Where is the application located?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $environment = $input->getOption('environment') ?? $_ENV['MAVERICK_ENVIRONMENT'] ?? false;
+        $root = $input->getOption('root') ?? getcwd();
 
         if (!$environment) {
             throw new RuntimeException('Cannot determine build environment.');
@@ -46,7 +48,7 @@ class BuildCommand extends Command
 
         foreach ($this->buildSteps as $buildStep) {
             if ($buildStep->shouldExecute($input)) {
-                $buildStep->configure($this, $environment)
+                $buildStep->configure($this, $environment, $root)
                     ->execute($input, $output);
             }
         }

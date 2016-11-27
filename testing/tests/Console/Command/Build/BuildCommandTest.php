@@ -166,6 +166,53 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
         $tester->execute([]);
     }
 
+    public function testRootDirectoryFromOptionUsedIfProvided()
+    {
+        $step = new class extends BuildStep {
+            public function execute(InputInterface $input, OutputInterface $output)
+            {
+                $output->write($this->getRoot());
+            }
+        };
+
+        $root = '/root/path/to/application';
+        $instance = new BuildCommand();
+
+        $instance->addBuildStep($step);
+
+        $tester = new CommandTester($instance);
+
+        $tester->execute([
+            '-env' => 'test',
+            '--root' => $root
+        ]);
+
+        $this->assertEquals($root, $tester->getDisplay());
+    }
+
+    public function testRootDirectoryFromGetcwdIsUsedIfOptionNotProvided()
+    {
+        $step = new class extends BuildStep {
+            public function execute(InputInterface $input, OutputInterface $output)
+            {
+                $output->write($this->getRoot());
+            }
+        };
+
+        $root = '/root/path/to/application';
+        $instance = new BuildCommand();
+
+        $instance->addBuildStep($step);
+
+        $tester = new CommandTester($instance);
+
+        $tester->execute([
+            '-env' => 'test'
+        ]);
+
+        $this->assertEquals(getcwd(), $tester->getDisplay());
+    }
+
     protected function getMockBuildStep()
     {
         return $this->getMockForAbstractClass(BuildStep::class);

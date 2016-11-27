@@ -56,7 +56,7 @@ class BuildStepTest extends PHPUnit_Framework_TestCase
             }
         };
 
-        $instance->configure($command, 'env');
+        $instance->configure($command, 'env', '/');
     }
 
     protected function getMockCommand()
