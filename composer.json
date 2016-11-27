@@ -25,7 +25,8 @@
     "require-dev": {
         "phpunit/phpunit": "^5.5",
         "mikey179/vfsStream": "^1.6",
-        "codeclimate/php-test-reporter": "dev-master"
+        "codeclimate/php-test-reporter": "dev-master",
+        "ralouphie/getallheaders": "^2.0"
     },
     "autoload": {
         "psr-4": {

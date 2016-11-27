@@ -86,13 +86,19 @@ class Application
      * Sends the response back to the client
      *
      * @param ResponseInterface $response
-     *
-     * @throws RuntimeException
      */
     public function sendResponse(ResponseInterface $response)
     {
-        if (headers_sent()) {
-            throw new \RuntimeException('A response has already been sent, you cannot send another.');
+        if (!headers_sent()) {
+            $header = sprintf('HTTP/%s %s %s', $response->getProtocolVersion(), $response->getStatusCode(), $response->getReasonPhrase());
+            header($header);
+
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    $header = sprintf('%s: %s', $name, $value);
+                    header($header, false);
+                }
+            }
         }
 
         echo (string) $response->getBody();

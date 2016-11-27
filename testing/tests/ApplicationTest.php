@@ -12,6 +12,7 @@ use Maverick\Controller\RenderableController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Interop\Container\ContainerInterface;
 use UnexpectedValueException;
 
@@ -142,9 +143,63 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $instance->handleRequest($request);
     }
 
-    public function testSendResponseThrowsExceptionIfHeadersAlreadySent()
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSentResponseSendsStatusHeadersAndBody()
     {
-        
+        $version = '1.1';
+        $statusCode = 200;
+        $reasonPhrase = 'OK';
+        $headers = [
+            'hello' => ['earth', 'luna'],
+            'from' => ['mars']
+        ];
+
+        $expectHeaders = [
+            'hello' => 'luna',
+            'from' => 'mars'
+        ];
+
+        $body = 'hello mars from earth';
+
+        $stream = $this->getMockStream();
+
+        $stream->expects($this->once())
+            ->method('__toString')
+            ->willReturn($body);
+
+        $response = $this->getMockResponse();
+
+        $response->expects($this->once())
+            ->method('getProtocolVersion')
+            ->willReturn($version);
+
+        $response->expects($this->once())
+            ->method('getStatusCode')
+            ->willReturn($statusCode);
+
+        $response->expects($this->once())
+            ->method('getReasonPhrase')
+            ->willReturn($reasonPhrase);
+
+        $response->expects($this->once())
+            ->method('getHeaders')
+            ->willReturn($headers);
+
+        $response->expects($this->once())
+            ->method('getBody')
+            ->willReturn($stream);
+
+        $instance = new Application($this->getMockRouter(), $this->getMockContainer());
+
+        ob_start();
+        $instance->sendResponse($response);
+
+        $this->assertEquals($body, ob_get_clean());
+
+        // Need a way to test headers are being sent...
+        // $this->assertEquals($expectHeaders, getallheaders());
     }
 
     protected function getMockRouter()
@@ -203,6 +258,12 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     protected function getMockResponse()
     {
         return $this->getMockBuilder(ResponseInterface::class)
+            ->getMock();
+    }
+
+    protected function getMockStream()
+    {
+        return $this->getMockBuilder(StreamInterface::class)
             ->getMock();
     }
 
