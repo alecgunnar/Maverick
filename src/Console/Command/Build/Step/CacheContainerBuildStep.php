@@ -40,7 +40,7 @@ class CacheContainerBuildStep extends BuildStep
         $file = sprintf('%s/%s', $this->getRoot(), $this->file);
         
         $output->writeln('Caching the container:');
-        $output->writeln(sprintf("\tFile:\t%s", $file));
+        $output->writeln(sprintf("\tFile:\t\t%s", $file));
 
         $container = \Maverick\bootstrap($this->getRoot(), true);
         $container->compile();
