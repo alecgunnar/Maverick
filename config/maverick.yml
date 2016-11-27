@@ -49,14 +49,6 @@ services:
     class: 'Maverick\Console\Command\Build\Step\CopyScriptBuildStep'
 
   ##################################################
-  # HTTP Request
-  ##################################################
-
-  server_request:
-    class: 'Psr\Http\Message\ServerRequestInterface'
-    factory: ['GuzzleHttp\Psr7\ServerRequest', 'fromGlobals']
-
-  ##################################################
   # Error Handler
   ##################################################  
 
