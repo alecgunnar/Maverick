@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use RuntimeException;
 
-class BustCacheBuildStep extends BuildStep
+class InvalidateCacheBuildStep extends BuildStep
 {
     /**
      * @var string
@@ -25,7 +25,7 @@ class BustCacheBuildStep extends BuildStep
     {
         $directory = $this->getRoot() . '/' . $this->directory;
 
-        $output->writeln('Busting cache directory:');
+        $output->writeln('Invalidating cache directory:');
         $output->writeln(sprintf("\tDirectory:\t%s", $directory));
 
         if (is_dir($directory)) {
