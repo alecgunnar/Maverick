@@ -23,7 +23,7 @@
     </filter>
 
     <logging>
-        <log type="coverage-html" target="./testing/coverage/html" />
+        <!-- <log type="coverage-html" target="./testing/coverage/html" /> -->
         <log type="coverage-clover" target="./build/logs/clover.xml" />
     </logging>
 
