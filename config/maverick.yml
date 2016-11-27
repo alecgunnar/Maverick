@@ -6,8 +6,11 @@ parameters:
   config_dir: 'config'
   cache_dir: 'cache'
 
-  container_cache_file: 'CachedContainer.php'
-  router_cache_file: 'Router.php'
+  cached_container_file: 'CachedContainer.php'
+  cached_container_namespace: 'Cached'
+  cached_container_class: 'CachedContainer'
+
+  cached_router_file: 'Router.php'
 
   routes:
     welcome:
@@ -57,7 +60,9 @@ services:
   maverick.console.command.build.step.cache_container:
     class: 'Maverick\Console\Command\Build\Step\CacheContainerBuildStep'
     arguments:
-      - '%cache_dir%/%container_cache_file%'
+      - '%cache_dir%/%cached_container_file%'
+      - '%cached_container_namespace%'
+      - '%cached_container_class%'
 
   ##################################################
   # Error Handler
@@ -168,7 +173,7 @@ services:
     factory: 'FastRoute\cachedDispatcher'
     arguments:
       - '@maverick.router.dispatcher.utility.collection_processor'
-      - {cacheFile: '%root_dir%/%cache_dir%/%router_cache_file%'}
+      - {cacheFile: '%root_dir%/%cache_dir%/%cached_router_file%'}
 
   fast_route.dispatcher:
     alias: 'fast_route.cached_dispatcher'

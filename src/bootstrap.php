@@ -26,12 +26,12 @@ use RuntimeException;
  * the first argument).
  *
  * The last step in the bootstrap is to enable the
- * error handler.
+ * error handler if the third argument is true.
  *
  * @param string $root
  * @param bool $debug = false
  */
-function bootstrap(string $root, bool $debug = false): ContainerInterface
+function bootstrap(string $root, bool $debug = false, bool $enable = true): ContainerInterface
 {
     $container = null;
 
@@ -64,7 +64,7 @@ function bootstrap(string $root, bool $debug = false): ContainerInterface
         $loader->load($file);
     }
 
-    if ($container->has('error_handler')) {
+    if ($enable && $container->has('error_handler')) {
         $container->get('error_handler')->enable();
     }
 

@@ -15,7 +15,7 @@ if (!file_exists($autoloader)) {
 
 require($autoloader);
 
-$container = \Maverick\bootstrap($root, true);
+$container = \Maverick\bootstrap($root, true, false);
 $application = $container->get('console_application');
 $application->run();
 
