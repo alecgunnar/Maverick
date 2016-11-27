@@ -4,6 +4,7 @@ namespace Maverick;
 
 use PHPUnit_Framework_TestCase;
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 use Symfony\Component\DependencyInjection\Container;
 use Maverick\Handler\Error\ErrorHandlerInterface;
 use RuntimeException;
@@ -14,10 +15,26 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
     {
         $name = 'test_param';
         $value = 'test value';
+        $root = vfsStream::setup();
 
-        $root = $this->getRootPath($name, $value);
+        $this->addConfigFile($root, $name, $value);
 
-        $container = \Maverick\bootstrap($root);
+        $container = \Maverick\bootstrap($root->url());
+
+        $this->assertTrue($container->hasParameter($name));
+        $this->assertEquals($value, $container->getParameter($name));
+    }
+
+    public function testBootstrapLoadsEnvironmentConfigIfItExists()
+    {
+        $name = 'test_param';
+        $value = 'test value';
+        $root = vfsStream::setup();
+
+        $this->addConfigFile($root);
+        $this->addConfigFile($root, $name, $value, 'environment.yml');
+
+        $container = \Maverick\bootstrap($root->url());
 
         $this->assertTrue($container->hasParameter($name));
         $this->assertEquals($value, $container->getParameter($name));
@@ -25,21 +42,21 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
 
     public function testBootstrapThrowsExceptionIfConfigFileDoesNotExist()
     {
-        $root = $this->getRootPath('test', 'value', 'configuration', 'application.yml');
+        $root = vfsStream::setup();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Could not find the configuration file at: ' . $root . '/config/config.yml');
+        $this->expectExceptionMessage('Could not find the configuration file at: ' . $root->url() . '/config/config.yml');
 
-        \Maverick\bootstrap($root);
+        \Maverick\bootstrap($root->url());
     }
 
     public function testBootstrapLoadsCachedContainerWhenItExistsAndNotInDebugMode()
     {
         require_once(__DIR__ . '/../fixtures/CachedContainer.php');
 
-        $root = $this->getRootPath();
+        $root = vfsStream::setup();
 
-        $container = \Maverick\bootstrap($root);
+        $container = \Maverick\bootstrap($root->url());
 
         $this->assertInstanceOf(\Cached\CachedContainer::class, $container);
     }
@@ -48,9 +65,10 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
     {
         require_once(__DIR__ . '/../fixtures/CachedContainer.php');
 
-        $root = $this->getRootPath();
+        $root = vfsStream::setup();
+        $this->addConfigFile($root);
 
-        $container = \Maverick\bootstrap($root, true);
+        $container = \Maverick\bootstrap($root->url(), true);
 
         $this->assertNotInstanceOf(\Cached\CachedContainer::class, $container);
     }
@@ -59,17 +77,15 @@ class BootstrapTest extends PHPUnit_Framework_TestCase
     {
         require_once(__DIR__ . '/../fixtures/CachedContainer.php');
 
-        $root = $this->getRootPath();
+        $root = vfsStream::setup();
 
-        $container = \Maverick\bootstrap($root);
+        $container = \Maverick\bootstrap($root->url());
 
         $this->assertEquals($container->get('error_handler'), set_error_handler(function () { }));
     }
 
-    protected function getRootPath(string $name = 'test', string $value = 'value', string $directory = 'config', string $file = 'config.yml')
+    protected function addConfigFile(vfsStreamDirectory $root, string $name = 'test', string $value = 'value', string $file = 'config.yml', string $directory = 'config')
     {
-        $root = vfsStream::setup();
-
         $format = <<<YAML
 parameters:
     %s: %s
@@ -78,7 +94,5 @@ YAML;
         vfsStream::newFile($directory . DIRECTORY_SEPARATOR . $file)
             ->at($root)
             ->withContent(sprintf($format, $name, $value));
-
-        return $root->url();
     }
 }

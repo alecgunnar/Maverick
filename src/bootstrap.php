@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Cached\CachedContainer;
 use RuntimeException;
+use InvalidArgumentException;
 
 /**
  * This function will simply return the application's
@@ -24,6 +25,10 @@ use RuntimeException;
  * directory which itself should live inside of the
  * `$root` directory of your application (specified by
  * the first argument).
+ *
+ * A second configuration file in the same directory
+ * but called `environment.yml` may be created to
+ * specify environment based configs.
  *
  * The last step in the bootstrap is to enable the
  * error handler.
@@ -53,15 +58,22 @@ function bootstrap(string $root, bool $debug = false): ContainerInterface
         $file = 'config.yml';
         $fqfp = $from . '/' . $file;
 
-        if (!file_exists($fqfp)) {
-            throw new RuntimeException('Could not find the configuration file at: ' . $fqfp);
-        }
-
         $container = new ContainerBuilder();
         $container->setParameter('root_dir', $root);
 
         $loader = new YamlFileLoader($container, new FileLocator($from));
-        $loader->load($file);
+
+        try {
+            $loader->load($file);
+        } catch (InvalidArgumentException $exception) {
+            throw new RuntimeException('Could not find the configuration file at: ' . $fqfp);
+        }
+
+        try {
+            $loader->load('environment.yml');
+        } catch (InvalidArgumentException $exception) {
+            // Let it go -- don't worry about it
+        }
     }
 
     if ($container->has('error_handler')) {
