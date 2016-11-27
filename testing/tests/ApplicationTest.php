@@ -107,6 +107,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
     public function testHandleRequestThrowsExceptionIfActionDoesNotReturnResponse()
     {
         $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Route action did not return an instance of ' . ResponseInterface::class . '.');
 
         $action = 'action_name';
 
