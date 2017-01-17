@@ -18,7 +18,7 @@ if (!file_exists($autoloader)) {
 
 require $autoloader;
 
-// Create the cache directory  if it does not already exist
+// Create the cache directory if it does not already exist
 
 if (!is_dir($cache)) {
     mkdir($cache);
