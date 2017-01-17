@@ -87,7 +87,7 @@ class Application
      *
      * @param ResponseInterface $response
      */
-    public function sendResponse(ResponseInterface $response)
+    public function sendResponse(ResponseInterface $response): void
     {
         if (!headers_sent()) {
             $header = sprintf('HTTP/%s %s %s', $response->getProtocolVersion(), $response->getStatusCode(), $response->getReasonPhrase());
