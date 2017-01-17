@@ -35,7 +35,7 @@ class CacheContainerBuildStep extends BuildStep
         $this->class = $class;
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $file = sprintf('%s/%s', $this->getRoot(), $this->file);
         

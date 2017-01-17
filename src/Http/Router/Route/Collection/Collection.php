@@ -17,12 +17,12 @@ class Collection implements CollectionInterface
      */
     const INVALID_ROUTE_NAME_EXCEPTION = 'A route named "%s" does not exist.';
 
-    public function withRoute(string $name, Route $route)
+    public function withRoute(string $name, Route $route): void
     {
         $this->routes[$name] = $route;
     }
 
-    public function withRoutes(CollectionInterface $routes)
+    public function withRoutes(CollectionInterface $routes): void
     {
         $this->routes = array_merge($this->routes, $routes->all());
     }

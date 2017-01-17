@@ -19,12 +19,12 @@ class WhoopsErrorHandler implements ErrorHandlerInterface
         $this->whoops = $whoops;
     }
 
-    public function enable()
+    public function enable(): void
     {
         $this->whoops->register();
     }
 
-    public function disable()
+    public function disable(): void
     {
         $this->whoops->unregister();
     }

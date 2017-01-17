@@ -20,7 +20,7 @@ class Configurator implements ConfiguratorInterface
         $this->loader = $loader;
     }
 
-    public function configure(CollectionInterface $collection)
+    public function configure(CollectionInterface $collection): void
     {
         $this->loader->loadRoutes($collection);
     }

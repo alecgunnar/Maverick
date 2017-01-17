@@ -21,7 +21,7 @@ class BuildCommand extends Command
      *
      * @return static
      */
-    public function addBuildStep(BuildStep $buildStep)
+    public function addBuildStep(BuildStep $buildStep): BuildCommand
     {
         $this->buildSteps[] = $buildStep;
         return $this;

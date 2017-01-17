@@ -13,14 +13,14 @@ interface CollectionInterface extends Countable
      * @param string $name
      * @param Route $route
      */
-    public function withRoute(string $name, Route $route);
+    public function withRoute(string $name, Route $route): void;
 
     /**
      * Adds all of the routes to the collection
      *
      * @param CollectionInterface $routes
      */
-    public function withRoutes(CollectionInterface $routes);
+    public function withRoutes(CollectionInterface $routes): void;
 
     /**
      * Returns an array of all of the routes

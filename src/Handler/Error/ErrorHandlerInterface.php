@@ -7,10 +7,10 @@ interface ErrorHandlerInterface
     /**
      * Enable this error handler
      */
-    public function enable();
+    public function enable(): void;
 
     /**
      * Disable this error handler
      */
-    public function disable();
+    public function disable(): void;
 }

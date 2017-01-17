@@ -23,7 +23,7 @@ class ConfigLoader implements LoaderInterface
         $this->routes = $routes;
     }
 
-    public function loadRoutes(CollectionInterface $collection)
+    public function loadRoutes(CollectionInterface $collection): void
     {
         $this->parseRoutes($this->routes, $collection);
     }
@@ -32,7 +32,7 @@ class ConfigLoader implements LoaderInterface
         array $routes,
         CollectionInterface $collection,
         string $prefix = ''
-    ) {
+    ): void {
         foreach ($routes as $name => $route) {
             if (is_string($name)) {
                 $route['name'] = $route['name'] ?? $name;
@@ -46,7 +46,7 @@ class ConfigLoader implements LoaderInterface
         array $route,
         CollectionInterface $collection,
         string $prefix = ''
-    ) {
+    ): void {
         $route = $this->processRouteConfig($route);
         $path = $this->cleanRoutePath($route['path'], $prefix);
 
@@ -72,7 +72,7 @@ class ConfigLoader implements LoaderInterface
         return $route;
     }
 
-    protected function checkForAttribute(array $values, string $attr)
+    protected function checkForAttribute(array $values, string $attr): void
     {
         if (!isset($values[$attr])) {
             $msg = sprintf('All routes must have a "%s" attribute. Please check your configuration.', $attr);

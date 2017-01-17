@@ -11,5 +11,5 @@ interface LoaderInterface
      *
      * @param CollectionInterface $collection
      */
-    public function loadRoutes(CollectionInterface $collection);
+    public function loadRoutes(CollectionInterface $collection): void;
 }

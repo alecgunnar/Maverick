@@ -8,7 +8,7 @@ use RuntimeException;
 
 class CopyConfigBuildStep extends BuildStep
 {
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $source = sprintf('%s/config/environment/%s.yml', $this->getRoot(), $this->getEnvironment());
         $destination = sprintf('%s/config/environment.yml', $this->getRoot());

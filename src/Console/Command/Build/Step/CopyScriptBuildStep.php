@@ -8,7 +8,7 @@ use RuntimeException;
 
 class CopyScriptBuildStep extends BuildStep
 {
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $source = sprintf('%s/app/%s.php', $this->getRoot(), $this->getEnvironment());
         $public = sprintf('%s/public/', $this->getRoot());

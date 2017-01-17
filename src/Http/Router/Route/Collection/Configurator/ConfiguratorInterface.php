@@ -11,5 +11,5 @@ interface ConfiguratorInterface
      *
      * @param CollectionInterface $collection
      */
-    public function configure(CollectionInterface $collection);
+    public function configure(CollectionInterface $collection): void;
 }

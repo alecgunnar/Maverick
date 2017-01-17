@@ -20,7 +20,7 @@ class InvalidateCacheBuildStep extends BuildStep
         $this->directory = $directory;
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         $directory = $this->getRoot() . '/' . $this->directory;
 

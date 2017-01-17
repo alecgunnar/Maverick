@@ -30,7 +30,7 @@ abstract class BuildStep
      *
      * @return static
      */
-    final public function configure(Command $command, string $environment, string $root)
+    final public function configure(Command $command, string $environment, string $root): BuildStep
     {
         $this->command = $command;
         $this->environment = $environment;
@@ -55,14 +55,14 @@ abstract class BuildStep
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    abstract public function execute(InputInterface $input, OutputInterface $output);
+    abstract public function execute(InputInterface $input, OutputInterface $output): void;
 
     /**
      * @see Symfony\Component\Console\Command::addArgument This method is a proxy
      *
      * @return BuildStep
      */
-    protected function addArgument(string $name, int $mode = null, string $description = '', $default = null)
+    protected function addArgument(string $name, int $mode = null, string $description = '', $default = null): BuildStep
     {
         $this->command->addArgument($name, $mode, $description, $default);
         return $this;
@@ -73,7 +73,7 @@ abstract class BuildStep
      *
      * @return BuildStep
      */
-    protected function addOption(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null)
+    protected function addOption(string $name, string $shortcut = null, int $mode = null, string $description = '', $default = null): BuildStep
     {
         $this->command->addOption($name, $shortcut, $mode, $description, $default);
         return $this;
@@ -99,7 +99,7 @@ abstract class BuildStep
      * Override this method to call addOption
      * and addArgument as needed.
      */
-    protected function setup()
+    protected function setup(): void
     {
         // Defaults to doing nothing
     }

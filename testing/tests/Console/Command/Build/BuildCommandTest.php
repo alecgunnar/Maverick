@@ -14,14 +14,14 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testCommandCallsStepsInQueueOrder()
     {
         $stepA = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write('a');
             }
         };
 
         $stepB = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write('b');
             }
@@ -44,7 +44,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testCommandCallsStepsInQueueOrderAndSkippedIfTheyDecideToBe()
     {
         $stepA = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write('a');
             }
@@ -56,14 +56,14 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
                 return false;
             }
 
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write('b');
             }
         };
 
         $stepC = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write('c');
             }
@@ -87,7 +87,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testEnvironmentTakenFromOptionAndSentToSteps()
     {
         $step = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write($this->getEnvironment());
             }
@@ -110,7 +110,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testEnvironmentTakenFromShortcutOptionAndSentToSteps()
     {
         $step = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write($this->getEnvironment());
             }
@@ -136,7 +136,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testEnvironmentTakenFromEnvIfNoOptionProvidedAndSentToSteps()
     {
         $step = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write($this->getEnvironment());
             }
@@ -169,7 +169,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testRootDirectoryFromOptionUsedIfProvided()
     {
         $step = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write($this->getRoot());
             }
@@ -193,7 +193,7 @@ class BuildCommandTest extends PHPUnit_Framework_TestCase
     public function testRootDirectoryFromGetcwdIsUsedIfOptionNotProvided()
     {
         $step = new class extends BuildStep {
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
                 $output->write($this->getRoot());
             }

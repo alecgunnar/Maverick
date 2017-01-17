@@ -44,13 +44,13 @@ class BuildStepTest extends PHPUnit_Framework_TestCase
                 $this->argArgs = array_values($arg);
             }
 
-            protected function setup()
+            protected function setup(): void
             {
                 $this->addOption(...$this->optArgs);
                 $this->addArgument(...$this->argArgs);
             }
 
-            public function execute(InputInterface $input, OutputInterface $output)
+            public function execute(InputInterface $input, OutputInterface $output): void
             {
 
             }
