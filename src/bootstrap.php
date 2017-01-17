@@ -35,6 +35,7 @@ use InvalidArgumentException;
  *
  * @param string $root
  * @param bool $debug = false
+ * @param bool $enable = true
  */
 function bootstrap(string $root, bool $debug = false, bool $enable = true): ContainerInterface
 {
