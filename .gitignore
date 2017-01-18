@@ -4,6 +4,7 @@
 /log/
 /build/
 
+/public/index.php
 /phpunit.xml
 /composer.lock
 /*.log

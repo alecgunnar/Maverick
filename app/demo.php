@@ -18,15 +18,9 @@ if (!file_exists($autoloader)) {
 
 require $autoloader;
 
-// Create the cache directory if it does not already exist
-
-if (!is_dir($cache)) {
-    mkdir($cache);
-}
-
 // Load the container and the application from it
 
-$container = \Maverick\bootstrap($root, true);
+$container = \Maverick\bootstrap($root);
 $app = $container->get('application');
 
 // Run the application

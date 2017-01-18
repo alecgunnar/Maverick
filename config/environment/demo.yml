@@ -1,0 +1,12 @@
+services:
+  fast_route.cached_dispatcher:
+      class: 'FastRoute\Dispatcher'
+      factory: 'FastRoute\simpleDispatcher'
+      arguments:
+        - '@maverick.router.dispatcher.utility.collection_processor'
+
+  whoops.run:
+    class: 'Whoops\Run'
+    calls:
+      - ['pushHandler', ['@maverick.handler.whoops.safe_render']]
+      - ['pushHandler', ['@maverick.handler.whoops.http_exception']]
